@@ -1,5 +1,30 @@
 # countdownApp — Progress
 
+## Session 17 — 2026-08-08
+
+### Completed
+- **PERF FIX — beachballing a CountdownView-ban** — `CountdownRowView.swift`, `CountdownView.swift`.
+  Root cause: minden `CountdownRowView` saját `TimelineView(.periodic(from: .now, by: 1.0))`-t
+  tartalmazott. N sor = N timer, mindegyik másodpercenként triggerelte a SwiftUI render-ciklust
+  és a `CountdownView.itemList` újraszámolását (`activeItems` + `orderedFreeItems` sortokkal),
+  ami main thread torlódást okozott beachballinggal.
+  Fix: a `TimelineView` felkerült a `CountdownView.itemList` szintjére (egyetlen timer),
+  `ctx.date` lekerül `now: Date` paraméterként minden `CountdownRowView`-hoz.
+  `CountdownRowView.body` egyszerűen `rowContent(at: now)`-t hív, nincs saját timer.
+- **FOCUS FIX — AddCountdownSheet TextField** — `AddCountdownSheet.swift`.
+  A `TextField` hiányzó `.focusable(false)`-t kapott; sheet megnyitásakor a FocusBridge
+  window-mismatch hibát okozhatott.
+- **UI — holdak U-ív alakban** — `CalculateView.swift`.
+  A 9 `pink_moon` kép korábban egyenes `HStack`-ben volt. Most `GeometryReader` +
+  parabolaoffset: `t = i / 8` (0…1), `arcOffset = arcDepth * (4t² - 4t)` → a szélső
+  holdak fent, a középső (5-ös) lent, látványos U-ív. `arcDepth = 28pt`, `frame(height: 80)`.
+- Files changed: `CountdownRowView.swift`, `CountdownView.swift`, `AddCountdownSheet.swift`, `CalculateView.swift`
+
+### Open tasks
+- None.
+
+---
+
 ## Session 16 — 2026-08-07
 
 ### Completed

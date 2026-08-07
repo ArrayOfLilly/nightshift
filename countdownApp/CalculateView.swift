@@ -13,8 +13,6 @@ import SwiftUI
 
 struct CalculateView: View {
 
-    /// Persisted as TimeInterval (seconds since 1970) so the last-used values
-    /// survive app restarts. Default = now (evaluated at first launch only).
     @AppStorage("calculateFromDate") private var fromInterval: Double = Date().timeIntervalSince1970
     @AppStorage("calculateToDate")   private var toInterval:   Double = Date().timeIntervalSince1970
 
@@ -36,7 +34,6 @@ struct CalculateView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
 
-                    // ── Title ─────────────────────────────────────────────
                     Text("CALCULATE")
                         .font(AppTheme.alienLeagueBold(32))
                         .foregroundStyle(AppTheme.background)
@@ -44,7 +41,6 @@ struct CalculateView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, 20)
 
-                    // ── From ──────────────────────────────────────────────
                     Text("FROM")
                         .font(AppTheme.alienLeague(20))
                         .foregroundStyle(Color.white.opacity(0.9))
@@ -53,7 +49,6 @@ struct CalculateView: View {
                         set: { fromInterval = $0.timeIntervalSince1970 }
                     ))
 
-                    // ── To ────────────────────────────────────────────────
                     Text("TO")
                         .font(AppTheme.alienLeague(20))
                         .foregroundStyle(Color.white.opacity(0.9))
@@ -61,7 +56,7 @@ struct CalculateView: View {
                         get: { toDate },
                         set: { toInterval = $0.timeIntervalSince1970 }
                     ))
-                    // ── Reset To → now ────────────────────────────────────
+
                     Button {
                         toInterval = Date().timeIntervalSince1970
                     } label: {
@@ -80,32 +75,38 @@ struct CalculateView: View {
                     .buttonStyle(.plain)
                     .focusable(false)
 
-                    // ── Divider ───────────────────────────────────────────
                     Rectangle()
                         .fill(Color.white.opacity(0.25))
                         .frame(height: 1)
                         .padding(.vertical, 4)
 
-                    // ── Result label ──────────────────────────────────────
                     Text(resultLabel.uppercased())
                         .font(AppTheme.alienLeague(20))
                         .foregroundStyle(Color.white.opacity(0.9))
 
-                    // ── Result value (quantity large, unit small) ─────────
                     resultRow
 
-                    // ── Illustration — pink moon phase series (Moon 3) ─────
-                    // Each image gets an equal share of the available width (maxWidth: .infinity
-                    // inside an HStack distributes space evenly on macOS without GeometryReader).
-                    HStack(spacing: 12) {
-                        ForEach(1...9, id: \.self) { i in
-                            Image("pink_moon_\(i)")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(maxWidth: .infinity)
-                                .opacity(0.85)
+                    // ── Illustration — moon phases in a U-arc ─────────────
+                    GeometryReader { geo in
+                        let count = 9
+                        let w = geo.size.width
+                        let moonSize = (w - CGFloat(count - 1) * 12) / CGFloat(count)
+                        let arcDepth: CGFloat = 28
+                        HStack(spacing: 12) {
+                            ForEach(0..<count, id: \.self) { i in
+                                let t = CGFloat(i) / CGFloat(count - 1)
+                                // U shape: parabola, 0 at edges, -1 at center
+                                let arcOffset = arcDepth * (4 * t * t - 4 * t)
+                                Image("pink_moon_\(i + 1)")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: moonSize)
+                                    .opacity(0.85)
+                                    .offset(y: -arcOffset)
+                            }
                         }
                     }
+                    .frame(height: 80)
                     .padding(.top, 20)
                 }
                 .padding(.horizontal, 28)
