@@ -68,6 +68,7 @@ struct AddCountdownSheet: View {
                         .textFieldStyle(.roundedBorder)
                         .font(AppTheme.alienLeague(15))
                 }
+                .focusable(false)
 
                 // ── Deadline stepper ───────────────────────────────────
                 VStack(alignment: .leading, spacing: 8) {
