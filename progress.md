@@ -1,5 +1,17 @@
 # countdownApp — Progress
 
+## Session 16 — következő session feladatok
+
+### Open tasks
+1. **Stepper long-press repeat** (`CountdownDetailView.swift`) — nyomva tartásra
+   ismételt lépés, rövid tap még mindig egyet lép. Initial delay ~0.4s, majd ~0.1s
+   interval. Lásd spec.md részletes leírás.
+2. **Calculate oldal — állapotmegőrzés + Reset gomb** (`CalculateView.swift`) —
+   From/To értékek perzisztálása (`@AppStorage` / UserDefaults TimeInterval-ként),
+   + To reset gomb a stepper mellé/alá (dark bg, amber ikon). Lásd spec.md.
+
+---
+
 ## Session 15 — 2026-08-07
 
 ### Completed

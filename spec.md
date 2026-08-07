@@ -92,6 +92,33 @@ Default tab on launch: Countdown.
 
 ## Jövőbeli ötletek
 
+### Stepper long-press repeat (nem implementált)
+- Érintett fájl: `CountdownDetailView.swift` (componentStepper helper)
+- Jelenlegi viselkedés: minden chevron gomb egyetlen `Button`, egyet lép kattintásra.
+- Kívánt viselkedés: nyomva tartásra ismételje a lépést, de az első kattintás
+  (rövid tap) még mindig csak egyet lépjen — tehát a standard "initial delay then
+  repeat" pattern.
+- Javasolt implementáció: cseréljük a `Button`-t egy `simultaneousGesture`-t használó
+  nézetté, amely `.onLongPressGesture(minimumDuration:, pressing:perform:)` segítségével
+  indít egy `Timer.scheduledTimer`-t (pl. 0.4s initial delay után, majd ~0.1s interval),
+  és `onEnded` / `pressing == false` állapotban törli a timert.
+  Alternatíva: külön `LongPressStepperButton` `@ViewBuilder` komponens, hogy a
+  `componentStepper` helper tiszta maradjon.
+- Az initial delay értéke nincs meghatározva — kb. 0.4–0.5s szokásos (macOS
+  kulcsismétlési késedelemhez hasonló), de kísérletezni kell.
+
+### Calculate oldal — állapotmegőrzés + Reset gomb (nem implementált)
+- Érintett fájl: `CalculateView.swift`
+- Jelenlegi viselkedés: a From/To stepper értékek minden megnyitáskor resetelnek
+  (nincs perzisztencia).
+- Kívánt viselkedés 1 — állapotmegőrzés: az utoljára beállított From és To értékek
+  megmaradjanak alkalmazás-újraindítás után is. Javasolt: `@AppStorage` vagy
+  `UserDefaults` a két `Date` érték TimeInterval-ként tárolva.
+- Kívánt viselkedés 2 — Reset gomb: a To stepper alatt (vagy mellette) legyen egy
+  reset gomb, amely a To értékét `Date()` (now)-ra állítja. Vizuálisan illeszkedjen
+  a meglévő stepper designhoz (dark bg, amber ikon/szöveg, RoundedRectangle).
+  From értéket NE érintse a reset.
+
 ### Free-slot kézi színválasztó (IMPLEMENTÁLT — Session 15)
 - `AppTheme.freeColors`: mind a 12 szín aktív (778005 · 51422E · 30271B · 293B72 ·
   4D70D8 · 403873 · 593C73 · 8A4273 · 723F73 · DD3B72 · DD114A · B70E26).
