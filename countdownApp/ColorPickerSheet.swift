@@ -69,17 +69,15 @@ struct ColorPickerSheet: View {
                             )
                     )
 
-                if let label {
-                    Text(label)
-                        .font(AppTheme.alienLeague(9))
-                        .foregroundStyle(AppTheme.dark.opacity(0.75))
-                        .kerning(1)
-                }
-
                 if isSelected {
                     Image(systemName: "checkmark")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(AppTheme.dark.opacity(0.75))
+                } else if let label {
+                    Text(label)
+                        .font(AppTheme.alienLeague(9))
+                        .foregroundStyle(AppTheme.dark.opacity(0.75))
+                        .kerning(1)
                 }
             }
         }

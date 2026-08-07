@@ -28,11 +28,11 @@ enum AppTheme {
     /// 778005 · 30271B · 293B72 · 4D70D8 · 403873
     /// 593C73 · 8A4273 · 723F73 · DD3B72 · DD114A · B70E26
     static let freeColors: [Color] = [
-        Color(red: 0x77/255, green: 0x80/255, blue: 0x05/255), // 0  #778005 olive-yellow
-        Color(red: 0x51/255, green: 0x42/255, blue: 0x2E/255), // 1  #51422E lighter brown
         Color(red: 0x30/255, green: 0x27/255, blue: 0x1B/255), // 2  #30271B dark brown
-        Color(red: 0x29/255, green: 0x3B/255, blue: 0x72/255), // 3  #293B72 navy
+        Color(red: 0x51/255, green: 0x42/255, blue: 0x2E/255), // 1  #51422E lighter brown
+        Color(red: 0x77/255, green: 0x80/255, blue: 0x05/255), // 0  #778005 olive-yellow
         Color(red: 0x4D/255, green: 0x70/255, blue: 0xD8/255), // 4  #4D70D8 blue
+        Color(red: 0x29/255, green: 0x3B/255, blue: 0x72/255), // 3  #293B72 navy
         Color(red: 0x40/255, green: 0x38/255, blue: 0x73/255), // 5  #403873 dark purple
         Color(red: 0x59/255, green: 0x3C/255, blue: 0x73/255), // 6  #593C73 purple
         Color(red: 0x8A/255, green: 0x42/255, blue: 0x73/255), // 7  #8A4273 magenta-purple
