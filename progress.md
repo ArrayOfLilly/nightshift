@@ -1,14 +1,31 @@
 # countdownApp — Progress
 
-## Session 16 — következő session feladatok
+## Session 16 — 2026-08-07
+
+### Completed
+- **Stepper long-press repeat** — `LongPressStepperButton.swift` (új fájl),
+  `CountdownDetailView.swift`, `CalculateView.swift`.
+  Új `LongPressStepperButton` struct: `DragGesture(minimumDistance: 0)` alapú,
+  `onChanged` → azonnali első lépés + `Timer` indítása `initialDelay` (0.40s) után,
+  lejárt timer `startRepeating()`-et hív amely `repeatInterval` (0.08s) ütemben
+  ismétli az action-t; `onEnded` → timer invalidate. Rövid tap = 1 lépés, nyomva
+  tartás = gyorsuló ismétlés. Mindkét view `componentStepper` helpere `Button` →
+  `LongPressStepperButton` cserére frissítve, szín paraméterei igazítva.
+- **Calculate oldal — állapotmegőrzés** — `CalculateView.swift`.
+  `@State` Date páros → `@AppStorage("calculateFromDate/ToDate")` Double
+  (TimeInterval). Computed `fromDate`/`toDate` property-k wrap-elik a storage-t,
+  `adjustDate` binding-ja érintetlen. Az utoljára beállított From/To értékek
+  megmaradnak újraindítás után.
+- **Calculate oldal — NOW reset gomb** — `CalculateView.swift`.
+  A „TO" felirat mellé inline `NOW` gomb kerül (`arrow.counterclockwise` ikon +
+  szöveg, `Color.white.opacity(0.12)` háttér, amber fg), amely `toInterval =
+  Date().timeIntervalSince1970`-re állítja a To értéket. From-ot nem érinti.
+- **spec.md frissítve** — mindkét szekció implementáltra átírva.
+- Files changed: `LongPressStepperButton.swift` (új), `CountdownDetailView.swift`,
+  `CalculateView.swift`
 
 ### Open tasks
-1. **Stepper long-press repeat** (`CountdownDetailView.swift`) — nyomva tartásra
-   ismételt lépés, rövid tap még mindig egyet lép. Initial delay ~0.4s, majd ~0.1s
-   interval. Lásd spec.md részletes leírás.
-2. **Calculate oldal — állapotmegőrzés + Reset gomb** (`CalculateView.swift`) —
-   From/To értékek perzisztálása (`@AppStorage` / UserDefaults TimeInterval-ként),
-   + To reset gomb a stepper mellé/alá (dark bg, amber ikon). Lásd spec.md.
+- None.
 
 ---
 

@@ -312,16 +312,12 @@ struct CountdownDetailView: View {
                 .font(AppTheme.alienLeague(10))
                 .foregroundStyle(AppTheme.dark.opacity(0.6))
 
-            Button(action: onInc) {
-                Image(systemName: "chevron.up")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(AppTheme.dark)
-                    .frame(width: 32, height: 22)
-                    .background(AppTheme.dark.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
-            }
-            .buttonStyle(.plain)
-            .focusable(false)
+            LongPressStepperButton(
+                systemImage: "chevron.up",
+                action: onInc,
+                foregroundColor: AppTheme.dark,
+                backgroundColor: AppTheme.dark.opacity(0.12)
+            )
 
             Text(value)
                 .font(AppTheme.alienLeagueBold(15))
@@ -329,16 +325,12 @@ struct CountdownDetailView: View {
                 .frame(minWidth: 36)
                 .multilineTextAlignment(.center)
 
-            Button(action: onDec) {
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(AppTheme.dark)
-                    .frame(width: 32, height: 22)
-                    .background(AppTheme.dark.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
-            }
-            .buttonStyle(.plain)
-            .focusable(false)
+            LongPressStepperButton(
+                systemImage: "chevron.down",
+                action: onDec,
+                foregroundColor: AppTheme.dark,
+                backgroundColor: AppTheme.dark.opacity(0.12)
+            )
         }
         .frame(maxWidth: .infinity)
     }

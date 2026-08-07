@@ -13,8 +13,19 @@ import SwiftUI
 
 struct CalculateView: View {
 
-    @State private var fromDate: Date = Date()
-    @State private var toDate:   Date = Date()
+    /// Persisted as TimeInterval (seconds since 1970) so the last-used values
+    /// survive app restarts. Default = now (evaluated at first launch only).
+    @AppStorage("calculateFromDate") private var fromInterval: Double = Date().timeIntervalSince1970
+    @AppStorage("calculateToDate")   private var toInterval:   Double = Date().timeIntervalSince1970
+
+    private var fromDate: Date {
+        get { Date(timeIntervalSince1970: fromInterval) }
+        nonmutating set { fromInterval = newValue.timeIntervalSince1970 }
+    }
+    private var toDate: Date {
+        get { Date(timeIntervalSince1970: toInterval) }
+        nonmutating set { toInterval = newValue.timeIntervalSince1970 }
+    }
 
     private var cal: Calendar { Calendar.current }
 
@@ -37,13 +48,39 @@ struct CalculateView: View {
                     Text("FROM")
                         .font(AppTheme.alienLeague(20))
                         .foregroundStyle(Color.white.opacity(0.9))
-                    dateStepper(date: $fromDate)
+                    dateStepper(date: Binding(
+                        get: { fromDate },
+                        set: { fromInterval = $0.timeIntervalSince1970 }
+                    ))
 
                     // ── To ────────────────────────────────────────────────
-                    Text("TO")
-                        .font(AppTheme.alienLeague(20))
-                        .foregroundStyle(Color.white.opacity(0.9))
-                    dateStepper(date: $toDate)
+                    HStack(alignment: .firstTextBaseline, spacing: 10) {
+                        Text("TO")
+                            .font(AppTheme.alienLeague(20))
+                            .foregroundStyle(Color.white.opacity(0.9))
+                        Spacer()
+                        Button {
+                            toInterval = Date().timeIntervalSince1970
+                        } label: {
+                            HStack(spacing: 5) {
+                                Image(systemName: "arrow.counterclockwise")
+                                    .font(.system(size: 11, weight: .bold))
+                                Text("NOW")
+                                    .font(AppTheme.alienLeague(12))
+                            }
+                            .foregroundStyle(AppTheme.background)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Color.white.opacity(0.12))
+                            .clipShape(RoundedRectangle(cornerRadius: 7))
+                        }
+                        .buttonStyle(.plain)
+                        .focusable(false)
+                    }
+                    dateStepper(date: Binding(
+                        get: { toDate },
+                        set: { toInterval = $0.timeIntervalSince1970 }
+                    ))
 
                     // ── Divider ───────────────────────────────────────────
                     Rectangle()
@@ -132,29 +169,23 @@ struct CalculateView: View {
             Text(label)
                 .font(AppTheme.alienLeague(10))
                 .foregroundStyle(Color.white.opacity(0.6))
-            Button(action: onInc) {
-                Image(systemName: "chevron.up")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(AppTheme.background)
-                    .frame(width: 32, height: 22)
-                    .background(Color.white.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
-            }
-            .buttonStyle(.plain)
+            LongPressStepperButton(
+                systemImage: "chevron.up",
+                action: onInc,
+                foregroundColor: AppTheme.background,
+                backgroundColor: Color.white.opacity(0.12)
+            )
             Text(value)
                 .font(AppTheme.alienLeagueBold(15))
                 .foregroundStyle(AppTheme.background)
                 .frame(minWidth: 36)
                 .multilineTextAlignment(.center)
-            Button(action: onDec) {
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(AppTheme.background)
-                    .frame(width: 32, height: 22)
-                    .background(Color.white.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
-            }
-            .buttonStyle(.plain)
+            LongPressStepperButton(
+                systemImage: "chevron.down",
+                action: onDec,
+                foregroundColor: AppTheme.background,
+                backgroundColor: Color.white.opacity(0.12)
+            )
         }
         .frame(maxWidth: .infinity)
     }

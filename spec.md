@@ -92,7 +92,7 @@ Default tab on launch: Countdown.
 
 ## Jövőbeli ötletek
 
-### Stepper long-press repeat (nem implementált)
+### Stepper long-press repeat (IMPLEMENTÁLT — Session 16)
 - Érintett fájl: `CountdownDetailView.swift` (componentStepper helper)
 - Jelenlegi viselkedés: minden chevron gomb egyetlen `Button`, egyet lép kattintásra.
 - Kívánt viselkedés: nyomva tartásra ismételje a lépést, de az első kattintás
@@ -107,7 +107,7 @@ Default tab on launch: Countdown.
 - Az initial delay értéke nincs meghatározva — kb. 0.4–0.5s szokásos (macOS
   kulcsismétlési késedelemhez hasonló), de kísérletezni kell.
 
-### Calculate oldal — állapotmegőrzés + Reset gomb (nem implementált)
+### Calculate oldal — állapotmegőrzés + Reset gomb (IMPLEMENTÁLT — Session 16)
 - Érintett fájl: `CalculateView.swift`
 - Jelenlegi viselkedés: a From/To stepper értékek minden megnyitáskor resetelnek
   (nincs perzisztencia).
@@ -154,7 +154,8 @@ countdownApp/  (Swift source root)
 ├── AddCountdownSheet.swift    — Sheet: add new countdown item
 ├── CountdownRowView.swift     — Single list row (label pill + time + toggle + FREE badge)
 ├── CountdownView.swift        — List screen (NavigationStack root, drag-to-reorder)
-├── ColorPickerSheet.swift     — Sheet: free-slot accent color picker
+├── ColorPickerSheet.swift       — Sheet: free-slot accent color picker
+├── LongPressStepperButton.swift — Reusable chevron button with tap + hold-to-repeat
 ├── CountdownDetailView.swift  — Full-screen Spooky Tomato single-item display
 └── countdownAppApp.swift      — @main entry point (unchanged)
 ```
