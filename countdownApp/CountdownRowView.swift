@@ -21,12 +21,9 @@ struct CountdownRowView: View {
     var index: Int = 0
     @State private var copyFeedback: Bool = false
 
-    /// Free-slot accent color: uses manually chosen index if set, else hash fallback.
+    /// Free-slot accent color: uses manually chosen index if set, else default #593C73 (index 6).
     private var itemFreeColor: Color {
-        if let idx = item.accentColorIndex {
-            return AppTheme.freeColor(for: idx)
-        }
-        return AppTheme.freeColor(for: abs(item.id.hashValue))
+        AppTheme.freeColor(for: item.accentColorIndex ?? 6)
     }
 
     var body: some View {
