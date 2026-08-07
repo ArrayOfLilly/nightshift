@@ -3,11 +3,11 @@
 //  countdownApp
 //
 //  Countdown list screen.
+//  Single TimelineView ticks every second at the top level;
+//  `now` is passed down to each CountdownRowView — no per-row timers.
 //  Active rows: sorted by deadline ASC (automatic).
 //  Free (expired) rows: manually reorderable via drag-to-reorder;
 //    freeOrder [UUID] drives render order, persisted to UserDefaults "freeSlotOrder".
-//    IDs absent from freeOrder append alphabetically as fallback.
-//  Each row taps through to CountdownDetailView (full Spooky Tomato design).
 //
 
 import SwiftUI
@@ -27,7 +27,6 @@ struct CountdownView: View {
         NavigationStack {
             ZStack {
                 AppTheme.background.ignoresSafeArea()
-
                 VStack(spacing: 0) {
                     itemList
                     addButton
@@ -59,13 +58,11 @@ struct CountdownView: View {
     private func orderedFreeItems(at now: Date) -> [CountdownItem] {
         let expired = items.filter { $0.isExpired(at: now) }
         var result: [CountdownItem] = []
-        // Respect manual freeOrder first
         for id in freeOrder {
             if let item = expired.first(where: { $0.id == id }) {
                 result.append(item)
             }
         }
-        // Expired items not yet in freeOrder — alphabetical fallback
         let positioned = Set(result.map { $0.id })
         let remaining = expired
             .filter { !positioned.contains($0.id) }
@@ -90,72 +87,71 @@ struct CountdownView: View {
     // MARK: - Subviews
 
     private var itemList: some View {
-        ScrollView {
-            let now    = Date()
+        TimelineView(.periodic(from: .now, by: 1.0)) { ctx in
+            let now    = ctx.date
             let active = activeItems(at: now)
             let free   = orderedFreeItems(at: now)
 
-            LazyVStack(spacing: 10) {
+            ScrollView {
+                LazyVStack(spacing: 10) {
 
-                // ── Title ────────────────────────────────────
-                Text("ACCOUNT COOLDOWN")
-                    .font(AppTheme.alienLeagueBold(32))
-                    .foregroundStyle(AppTheme.dark)
-                    .kerning(4)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.top, 20)
-                    .padding(.bottom, 4)
+                    Text("ACCOUNT COOLDOWN")
+                        .font(AppTheme.alienLeagueBold(32))
+                        .foregroundStyle(AppTheme.dark)
+                        .kerning(4)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 20)
+                        .padding(.bottom, 4)
 
-                // Active rows — auto-sorted by deadline ASC, no drag
-                ForEach(active, id: \.id) { item in
-                    if let idx = items.firstIndex(where: { $0.id == item.id }) {
-                        NavigationLink {
-                            CountdownDetailView(item: $items[idx]) {
-                                let id = items[idx].id
-                                items.removeAll { $0.id == id }
-                                save()
+                    ForEach(active, id: \.id) { item in
+                        if let idx = items.firstIndex(where: { $0.id == item.id }) {
+                            NavigationLink {
+                                CountdownDetailView(item: $items[idx]) {
+                                    let id = items[idx].id
+                                    items.removeAll { $0.id == id }
+                                    save()
+                                }
+                            } label: {
+                                CountdownRowView(item: binding(for: item), now: now)
                             }
-                        } label: {
-                            CountdownRowView(item: binding(for: item))
+                            .buttonStyle(.plain)
+                            .focusable(false)
                         }
-                        .buttonStyle(.plain)
-                        .focusable(false)
                     }
-                }
 
-                // Free (expired) rows — manually reorderable via drag-to-reorder
-                ForEach(free, id: \.id) { item in
-                    if let idx = items.firstIndex(where: { $0.id == item.id }) {
-                        NavigationLink {
-                            CountdownDetailView(item: $items[idx]) {
-                                let id = items[idx].id
-                                items.removeAll { $0.id == id }
-                                freeOrder.removeAll { $0 == id }
-                                save()
+                    ForEach(free, id: \.id) { item in
+                        if let idx = items.firstIndex(where: { $0.id == item.id }) {
+                            NavigationLink {
+                                CountdownDetailView(item: $items[idx]) {
+                                    let id = items[idx].id
+                                    items.removeAll { $0.id == id }
+                                    freeOrder.removeAll { $0 == id }
+                                    save()
+                                }
+                            } label: {
+                                CountdownRowView(item: binding(for: item), now: now)
                             }
-                        } label: {
-                            CountdownRowView(item: binding(for: item))
-                        }
-                        .buttonStyle(.plain)
-                        .focusable(false)
-                        .onDrag {
-                            draggingID = item.id
-                            return NSItemProvider(object: item.id.uuidString as NSString)
-                        }
-                        .onDrop(
-                            of: [.plainText],
-                            delegate: FreeSlotDropDelegate(
-                                targetItem: item,
-                                freeItems:  free,
-                                freeOrder:  $freeOrder,
-                                draggingID: $draggingID
+                            .buttonStyle(.plain)
+                            .focusable(false)
+                            .onDrag {
+                                draggingID = item.id
+                                return NSItemProvider(object: item.id.uuidString as NSString)
+                            }
+                            .onDrop(
+                                of: [.plainText],
+                                delegate: FreeSlotDropDelegate(
+                                    targetItem: item,
+                                    freeItems:  free,
+                                    freeOrder:  $freeOrder,
+                                    draggingID: $draggingID
+                                )
                             )
-                        )
+                        }
                     }
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 14)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 14)
         }
     }
 
@@ -203,7 +199,7 @@ struct CountdownView: View {
     }
 }
 
-// MARK: - Drop delegate for free-slot reordering
+// MARK: - Drop delegate
 
 private struct FreeSlotDropDelegate: DropDelegate {
 
@@ -212,14 +208,8 @@ private struct FreeSlotDropDelegate: DropDelegate {
     @Binding var freeOrder:  [UUID]
     @Binding var draggingID: UUID?
 
-    func dropUpdated(info: DropInfo) -> DropProposal? {
-        DropProposal(operation: .move)
-    }
-
-    func performDrop(info: DropInfo) -> Bool {
-        draggingID = nil
-        return true
-    }
+    func dropUpdated(info: DropInfo) -> DropProposal? { DropProposal(operation: .move) }
+    func performDrop(info: DropInfo) -> Bool { draggingID = nil; return true }
 
     func dropEntered(info: DropInfo) {
         guard
@@ -228,7 +218,6 @@ private struct FreeSlotDropDelegate: DropDelegate {
             let fi = freeItems.firstIndex(where: { $0.id == from }),
             let ti = freeItems.firstIndex(where: { $0.id == targetItem.id })
         else { return }
-
         var ids = freeItems.map { $0.id }
         ids.move(fromOffsets: IndexSet(integer: fi), toOffset: ti > fi ? ti + 1 : ti)
         freeOrder = ids

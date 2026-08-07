@@ -2,15 +2,8 @@
 //  CountdownRowView.swift
 //  countdownApp
 //
-//  A single countdown entry card.
-//  Uses TimelineView to tick every second when showing remaining time.
-//  Binding<CountdownItem> allows the toggle state to propagate back to the list.
-//  Free-slot background color is picked from AppTheme.freeColors based on item UUID hash.
-//  Layout: outer accent ring (padding 5, cornerRadius 18) wraps a full-width dark pill
-//  (cornerRadius 12) containing label + copy icon + Spacer + time/FREE text.
-//  Toggle button sits outside the pill on the accent ring, right side, non-expired only.
-//  Expired rows: pill spans the full width alone, no toggle.
-//  Copy button uses simultaneousGesture so the parent NavigationLink still fires on tap.
+//  Receives `now: Date` from the parent CountdownView's single TimelineView —
+//  no per-row timer. This avoids N concurrent timers hammering the main thread.
 //
 
 import SwiftUI
@@ -18,21 +11,17 @@ import SwiftUI
 struct CountdownRowView: View {
 
     @Binding var item: CountdownItem
+    var now: Date = Date()
     var index: Int = 0
     @State private var copyFeedback: Bool = false
 
-    /// Free-slot accent color: uses manually chosen index if set, else default #593C73 (index 6).
     private var itemFreeColor: Color {
         AppTheme.freeColor(for: item.accentColorIndex ?? 6)
     }
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 1.0)) { ctx in
-            rowContent(at: ctx.date)
-        }
+        rowContent(at: now)
     }
-
-    // MARK: - Row content
 
     @ViewBuilder
     private func rowContent(at now: Date) -> some View {
@@ -41,16 +30,13 @@ struct CountdownRowView: View {
 
         VStack(alignment: .leading, spacing: 6) {
 
-            // ── Top row: dark pill + toggle/FREE ──
             HStack(alignment: .center, spacing: 10) {
 
-                // Dark pill — tapping anywhere copies the label
                 HStack(spacing: 8) {
                     Text(copyFeedback ? "COPIED" : (item.label.isEmpty ? "—" : item.label))
                         .font(AppTheme.alienLeague(14))
                         .foregroundStyle(Color.white.opacity(copyFeedback ? 0.5 : 0.8))
                         .lineLimit(1)
-
                     Spacer(minLength: 8)
                 }
                 .padding(.horizontal, 4)
@@ -67,12 +53,9 @@ struct CountdownRowView: View {
                     UIPasteboard.general.string = trimmed
                     #endif
                     copyFeedback = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                        copyFeedback = false
-                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { copyFeedback = false }
                 })
 
-                // Right side: toggle (non-expired) or FREE badge (expired)
                 if expired {
                     Text("FREE ✓")
                         .font(AppTheme.alienLeagueBold(13))
@@ -91,7 +74,6 @@ struct CountdownRowView: View {
                 }
             }
 
-            // ── Bottom: time/date — on the accent ring, below the pill ──
             if !expired {
                 if item.showRemaining {
                     Text(item.remainingFormatted(at: now))
@@ -118,5 +100,4 @@ struct CountdownRowView: View {
             radius: 10, x: 0, y: 0
         )
     }
-
 }
