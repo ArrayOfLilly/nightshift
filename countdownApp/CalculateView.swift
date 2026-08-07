@@ -54,33 +54,31 @@ struct CalculateView: View {
                     ))
 
                     // ── To ────────────────────────────────────────────────
-                    HStack(alignment: .firstTextBaseline, spacing: 10) {
-                        Text("TO")
-                            .font(AppTheme.alienLeague(20))
-                            .foregroundStyle(Color.white.opacity(0.9))
-                        Spacer()
-                        Button {
-                            toInterval = Date().timeIntervalSince1970
-                        } label: {
-                            HStack(spacing: 5) {
-                                Image(systemName: "arrow.counterclockwise")
-                                    .font(.system(size: 11, weight: .bold))
-                                Text("NOW")
-                                    .font(AppTheme.alienLeague(12))
-                            }
-                            .foregroundStyle(AppTheme.background)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 5)
-                            .background(Color.white.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: 7))
-                        }
-                        .buttonStyle(.plain)
-                        .focusable(false)
-                    }
+                    Text("TO")
+                        .font(AppTheme.alienLeague(20))
+                        .foregroundStyle(Color.white.opacity(0.9))
                     dateStepper(date: Binding(
                         get: { toDate },
                         set: { toInterval = $0.timeIntervalSince1970 }
                     ))
+                    // ── Reset To → now ────────────────────────────────────
+                    Button {
+                        toInterval = Date().timeIntervalSince1970
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 12, weight: .bold))
+                            Text("RESET TO NOW")
+                                .font(AppTheme.alienLeague(13))
+                        }
+                        .foregroundStyle(AppTheme.background)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.white.opacity(0.18))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.plain)
+                    .focusable(false)
 
                     // ── Divider ───────────────────────────────────────────
                     Rectangle()

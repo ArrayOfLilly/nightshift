@@ -35,8 +35,8 @@ enum AppTheme {
         Color(red: 0x29/255, green: 0x3B/255, blue: 0x72/255), // 3  #293B72 navy
         Color(red: 0x40/255, green: 0x38/255, blue: 0x73/255), // 5  #403873 dark purple
         Color(red: 0x59/255, green: 0x3C/255, blue: 0x73/255), // 6  #593C73 purple
-        Color(red: 0x8A/255, green: 0x42/255, blue: 0x73/255), // 7  #8A4273 magenta-purple
         Color(red: 0x72/255, green: 0x3F/255, blue: 0x73/255), // 8  #723F73 mid purple
+        Color(red: 0x8A/255, green: 0x42/255, blue: 0x73/255), // 7  #8A4273 magenta-purple
         Color(red: 0xDD/255, green: 0x3B/255, blue: 0x72/255), // 9  #DD3B72 pink-red
         Color(red: 0xDD/255, green: 0x11/255, blue: 0x4A/255), // 10 #DD114A hot red-pink
         Color(red: 0xB7/255, green: 0x0E/255, blue: 0x26/255), // 11 #B70E26 deep red
