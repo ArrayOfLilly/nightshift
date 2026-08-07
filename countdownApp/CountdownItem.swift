@@ -15,6 +15,9 @@ struct CountdownItem: Identifiable, Codable, Equatable {
     var label    : String        // e.g. "GPT-4 Free"
     var deadline : Date          // when the account/resource resets
     var showRemaining: Bool = true  // true = show DD:HH:MM:SS  |  false = show deadline date
+    /// Manually selected color index into AppTheme.freeColors.
+    /// nil = auto (hash-based fallback). Only meaningful for free (expired) slots.
+    var accentColorIndex: Int? = nil
 
     // MARK: - Helpers called from the view with a live Date reference
     // (views pass Date() from a TimelineView so the display updates every second)

@@ -144,6 +144,7 @@ struct AddCountdownSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: 5))
             }
             .buttonStyle(.plain)
+            .focusable(false)
             Text(value)
                 .font(AppTheme.alienLeagueBold(15))
                 .foregroundStyle(AppTheme.dark)
@@ -158,6 +159,7 @@ struct AddCountdownSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: 5))
             }
             .buttonStyle(.plain)
+            .focusable(false)
         }
         .frame(maxWidth: .infinity)
     }

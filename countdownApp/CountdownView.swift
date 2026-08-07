@@ -91,11 +91,20 @@ struct CountdownView: View {
 
     private var itemList: some View {
         ScrollView {
-            let now     = Date()
-            let active  = activeItems(at: now)
-            let free    = orderedFreeItems(at: now)
+            let now    = Date()
+            let active = activeItems(at: now)
+            let free   = orderedFreeItems(at: now)
 
             LazyVStack(spacing: 10) {
+
+                // ── Title ────────────────────────────────────
+                Text("ACCOUNT COOLDOWN")
+                    .font(AppTheme.alienLeagueBold(32))
+                    .foregroundStyle(AppTheme.dark)
+                    .kerning(4)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 20)
+                    .padding(.bottom, 4)
 
                 // Active rows — auto-sorted by deadline ASC, no drag
                 ForEach(active, id: \.id) { item in
@@ -110,6 +119,7 @@ struct CountdownView: View {
                             CountdownRowView(item: binding(for: item))
                         }
                         .buttonStyle(.plain)
+                        .focusable(false)
                     }
                 }
 
@@ -127,6 +137,7 @@ struct CountdownView: View {
                             CountdownRowView(item: binding(for: item))
                         }
                         .buttonStyle(.plain)
+                        .focusable(false)
                         .onDrag {
                             draggingID = item.id
                             return NSItemProvider(object: item.id.uuidString as NSString)

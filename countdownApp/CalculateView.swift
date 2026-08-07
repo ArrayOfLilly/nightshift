@@ -5,6 +5,8 @@
 //  Time-difference calculator — extracted from the original ContentView.
 //  From/To dates are edited via the same component stepper used in CountdownDetailView.
 //  Result: quantity in alienLeagueBold (38pt), unit in alienLeague (18pt, reduced opacity).
+//  Colors: dark brown (AppTheme.dark) background; amber (AppTheme.background) text/icons;
+//  transparent elements use Color.white.opacity(X) — not amber-opacity.
 //
 
 import SwiftUI
@@ -18,7 +20,7 @@ struct CalculateView: View {
 
     var body: some View {
         ZStack {
-            AppTheme.background.ignoresSafeArea()
+            AppTheme.calculateBackground.ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
@@ -26,7 +28,7 @@ struct CalculateView: View {
                     // ── Title ─────────────────────────────────────────────
                     Text("CALCULATE")
                         .font(AppTheme.alienLeagueBold(32))
-                        .foregroundStyle(AppTheme.dark)
+                        .foregroundStyle(AppTheme.background)
                         .kerning(4)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, 20)
@@ -34,58 +36,42 @@ struct CalculateView: View {
                     // ── From ──────────────────────────────────────────────
                     Text("FROM")
                         .font(AppTheme.alienLeague(20))
-                        .foregroundStyle(AppTheme.dark.opacity(0.9))
+                        .foregroundStyle(Color.white.opacity(0.9))
                     dateStepper(date: $fromDate)
 
                     // ── To ────────────────────────────────────────────────
                     Text("TO")
                         .font(AppTheme.alienLeague(20))
-                        .foregroundStyle(AppTheme.dark.opacity(0.9))
+                        .foregroundStyle(Color.white.opacity(0.9))
                     dateStepper(date: $toDate)
 
                     // ── Divider ───────────────────────────────────────────
                     Rectangle()
-                        .fill(AppTheme.dark.opacity(0.25))
+                        .fill(Color.white.opacity(0.25))
                         .frame(height: 1)
                         .padding(.vertical, 4)
 
                     // ── Result label ──────────────────────────────────────
                     Text(resultLabel.uppercased())
                         .font(AppTheme.alienLeague(20))
-                        .foregroundStyle(AppTheme.dark.opacity(0.9))
+                        .foregroundStyle(Color.white.opacity(0.9))
 
                     // ── Result value (quantity large, unit small) ─────────
                     resultRow
 
-                    // ── Illustration ──────────────────────────────────
-                    HStack {
-                        Spacer()
-                        Image("full moon v1")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 120)
-                            .opacity(0.85)
-                        Spacer()
-                        Image("crescent moon v1")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 120)
-                            .opacity(0.85)
-                        Spacer()
-                        Image("waning moon v1")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 120)
-                            .opacity(0.85)
-                        Spacer()
-                        Image("lunar eclipse v1")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 120)
-                            .opacity(0.85)
+                    // ── Illustration — pink moon phase series (Moon 3) ─────
+                    // Each image gets an equal share of the available width (maxWidth: .infinity
+                    // inside an HStack distributes space evenly on macOS without GeometryReader).
+                    HStack(spacing: 12) {
+                        ForEach(1...9, id: \.self) { i in
+                            Image("pink_moon_\(i)")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: .infinity)
+                                .opacity(0.85)
+                        }
                     }
                     .padding(.top, 20)
-                    .padding(.horizontal, 12)
                 }
                 .padding(.horizontal, 28)
                 .padding(.bottom, 40)
@@ -131,7 +117,7 @@ struct CalculateView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
-        .background(AppTheme.dark.opacity(0.12))
+        .background(Color.white.opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -145,27 +131,27 @@ struct CalculateView: View {
         VStack(spacing: 4) {
             Text(label)
                 .font(AppTheme.alienLeague(10))
-                .foregroundStyle(AppTheme.dark.opacity(0.6))
+                .foregroundStyle(Color.white.opacity(0.6))
             Button(action: onInc) {
                 Image(systemName: "chevron.up")
                     .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(AppTheme.dark)
+                    .foregroundStyle(AppTheme.background)
                     .frame(width: 32, height: 22)
-                    .background(AppTheme.dark.opacity(0.12))
+                    .background(Color.white.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 5))
             }
             .buttonStyle(.plain)
             Text(value)
                 .font(AppTheme.alienLeagueBold(15))
-                .foregroundStyle(AppTheme.dark)
+                .foregroundStyle(AppTheme.background)
                 .frame(minWidth: 36)
                 .multilineTextAlignment(.center)
             Button(action: onDec) {
                 Image(systemName: "chevron.down")
                     .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(AppTheme.dark)
+                    .foregroundStyle(AppTheme.background)
                     .frame(width: 32, height: 22)
-                    .background(AppTheme.dark.opacity(0.12))
+                    .background(Color.white.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 5))
             }
             .buttonStyle(.plain)
@@ -182,11 +168,11 @@ struct CalculateView: View {
             ForEach(parts.indices, id: \.self) { i in
                 Text(parts[i].quantity)
                     .font(AppTheme.alienLeagueBold(38))
-                    .foregroundStyle(AppTheme.dark)
+                    .foregroundStyle(AppTheme.background)
                     .monospacedDigit()
                 Text(parts[i].unit)
                     .font(AppTheme.alienLeague(18))
-                    .foregroundStyle(AppTheme.dark.opacity(0.5))
+                    .foregroundStyle(Color.white.opacity(0.5))
                     .padding(.trailing, i < parts.count - 1 ? 6 : 0)
             }
         }

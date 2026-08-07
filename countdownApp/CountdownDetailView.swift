@@ -7,21 +7,119 @@
 //  Reached via NavigationLink from CountdownView.
 //  Deadline is editable via component steppers (year/month/day/hour/minute).
 //
+//  Label editing uses FocusedNSTextField (NSViewRepresentable) instead of SwiftUI
+//  TextField + @FocusState. @FocusState inside a NavigationLink destination on macOS
+//  causes FocusBridge to attempt first-responder assignment before the view is
+//  attached to a window, producing a KeyViewProxy/window-mismatch crash on every
+//  render pass (toggle, TimelineView tick, etc.). NSTextField manages its own
+//  first-responder lifecycle through AppKit and does not go through FocusBridge.
+//
 
 import SwiftUI
+import AppKit
+
+// MARK: - NSViewRepresentable label text field
+
+/// A plain NSTextField wrapper that:
+/// - matches the Alien League Bold 36pt / kerning-4 / dark-0.8 style
+/// - requests first responder via the AppKit window directly (no SwiftUI FocusBridge)
+/// - calls `onCommit` on Return key or focus loss
+private struct FocusedNSTextField: NSViewRepresentable {
+
+    @Binding var text: String
+    var onCommit: () -> Void
+
+    func makeNSView(context: Context) -> NSTextField {
+        let tf = NSTextField()
+        tf.delegate = context.coordinator
+        tf.isBordered = false
+        tf.isBezeled = false
+        tf.drawsBackground = false
+        tf.focusRingType = .none
+        tf.lineBreakMode = .byTruncatingTail
+        tf.maximumNumberOfLines = 1
+        return tf
+    }
+
+    func updateNSView(_ nsView: NSTextField, context: Context) {
+        // Only push text when the field is not being edited to avoid caret jumping.
+        if !context.coordinator.isEditing {
+            nsView.stringValue = text
+        }
+        // Apply style every update (font objects are cheap to recreate).
+        if let font = NSFont(name: "AlienLeagueBold", size: 36)
+            ?? NSFont(name: "Alien League Bold", size: 36) {
+            nsView.font = font
+        } else {
+            nsView.font = NSFont.boldSystemFont(ofSize: 36)
+        }
+        nsView.textColor = NSColor(AppTheme.dark).withAlphaComponent(0.8)
+        // NOTE: Do NOT call makeFirstResponder here.
+        // Calling it — even async — causes AppKit to notify SwiftUI's hosting
+        // infrastructure, which triggers FocusBridge.moveFocus on a KeyViewProxy
+        // that is not yet attached to a window, producing the
+        // "different window (null)" crash. The user clicked the label to enter
+        // edit mode, so clicking into the NSTextField to type is acceptable UX.
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(text: $text, onCommit: onCommit)
+    }
+
+    final class Coordinator: NSObject, NSTextFieldDelegate {
+        @Binding var text: String
+        var onCommit: () -> Void
+        var isEditing: Bool = false
+
+        init(text: Binding<String>, onCommit: @escaping () -> Void) {
+            _text = text
+            self.onCommit = onCommit
+        }
+
+        func controlTextDidBeginEditing(_ obj: Notification) {
+            isEditing = true
+        }
+
+        func controlTextDidChange(_ obj: Notification) {
+            guard let tf = obj.object as? NSTextField else { return }
+            text = tf.stringValue
+        }
+
+        func controlTextDidEndEditing(_ obj: Notification) {
+            isEditing = false
+            onCommit()
+        }
+
+        func control(_ control: NSControl, textView: NSTextView,
+                     doCommandBy selector: Selector) -> Bool {
+            if selector == #selector(NSResponder.insertNewline(_:)) {
+                onCommit()
+                control.window?.makeFirstResponder(nil)
+                return true
+            }
+            return false
+        }
+    }
+}
+
+// MARK: - CountdownDetailView
 
 struct CountdownDetailView: View {
 
     @Binding var item: CountdownItem
     let onDelete: () -> Void
 
-    @State private var copyFeedback: Bool = false
-    @State private var isEditing:    Bool = false
-    @FocusState private var labelFocused: Bool
+    @State private var copyFeedback:   Bool = false
+    @State private var isEditing:      Bool = false
+    @State private var showColorPicker: Bool = false
     /// Local to this view (not item.showRemaining, which is the row's own toggle) —
     /// the detail screen always opens showing remaining time, regardless of what the
     /// row list was last toggled to.
-    @State private var showRemaining: Bool = true
+    @State private var showRemaining:  Bool = true
+    /// Local mirror of item.deadline — drives immediate stepper visual feedback.
+    /// @Binding writes propagate to CountdownView but don't guarantee an immediate
+    /// re-render of this destination view on macOS NavigationStack.
+    @State private var localDeadline: Date = Date()
 
     private var cal: Calendar { Calendar.current }
 
@@ -34,25 +132,16 @@ struct CountdownDetailView: View {
                 // ── Account label — tap to edit ──
                 HStack(alignment: .center, spacing: 12) {
                     if isEditing {
-                        TextField("", text: $item.label)
-                            .font(AppTheme.alienLeagueBold(36))
-                            .foregroundStyle(AppTheme.dark.opacity(0.8))
-                            .kerning(4)
-                            .lineLimit(1)
-                            .textFieldStyle(.plain)
-                            .focused($labelFocused)
-                            .onSubmit {
-                                isEditing = false
-                            }
-                            .onChange(of: labelFocused) {
-                                if !labelFocused { isEditing = false }
-                            }
-                            .padding(.bottom, 2)
-                            .overlay(alignment: .bottom) {
-                                Rectangle()
-                                    .frame(height: 1.5)
-                                    .foregroundStyle(AppTheme.dark.opacity(0.35))
-                            }
+                        FocusedNSTextField(text: $item.label) {
+                            isEditing = false
+                        }
+                        .frame(height: 44)
+                        .padding(.bottom, 2)
+                        .overlay(alignment: .bottom) {
+                            Rectangle()
+                                .frame(height: 1.5)
+                                .foregroundStyle(AppTheme.dark.opacity(0.35))
+                        }
                     } else {
                         Text(item.label.isEmpty ? "Countdown" : item.label.uppercased())
                             .font(AppTheme.alienLeagueBold(36))
@@ -62,18 +151,13 @@ struct CountdownDetailView: View {
                             .truncationMode(.tail)
                             .onTapGesture {
                                 isEditing = true
-                                labelFocused = true
                             }
                     }
 
                     Button {
                         let trimmed = item.label.trimmingCharacters(in: .whitespaces)
-                        #if os(macOS)
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(trimmed, forType: .string)
-                        #else
-                        UIPasteboard.general.string = trimmed
-                        #endif
                         copyFeedback = true
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
                             copyFeedback = false
@@ -87,6 +171,7 @@ struct CountdownDetailView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
+                    .focusable(false)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 28)
@@ -128,6 +213,24 @@ struct CountdownDetailView: View {
                         .background(AppTheme.dark)
                         .clipShape(RoundedRectangle(cornerRadius: 9))
                     }
+                    .focusable(false)
+
+                    // ── Color picker — only for free (expired) slots ──
+                    if item.isExpired(at: Date()) {
+                        Button {
+                            showColorPicker = true
+                        } label: {
+                            Image(systemName: "paintbrush")
+                                .foregroundStyle(AppTheme.background)
+                                .frame(width: 44, height: 44)
+                                .background(AppTheme.dark)
+                                .clipShape(RoundedRectangle(cornerRadius: 9))
+                        }
+                        .focusable(false)
+                        .sheet(isPresented: $showColorPicker) {
+                            ColorPickerSheet(selectedIndex: $item.accentColorIndex)
+                        }
+                    }
 
                     Button(action: onDelete) {
                         Image(systemName: "trash")
@@ -136,11 +239,23 @@ struct CountdownDetailView: View {
                             .background(AppTheme.dark)
                             .clipShape(RoundedRectangle(cornerRadius: 9))
                     }
+                    .focusable(false)
                 }
                 .padding(.bottom, 36)
             }
         }
         .navigationTitle("")
+        .onAppear {
+            // Free slots have a stale, long-past deadline. Snap it to "now" once on
+            // entry so the stepper starts from a sane base.
+            if item.isExpired(at: Date()) {
+                let now = Date()
+                item.deadline  = now
+                localDeadline  = now
+            } else {
+                localDeadline = item.deadline
+            }
+        }
     }
 
     // MARK: - Deadline stepper
@@ -206,6 +321,7 @@ struct CountdownDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 5))
             }
             .buttonStyle(.plain)
+            .focusable(false)
 
             Text(value)
                 .font(AppTheme.alienLeagueBold(15))
@@ -222,6 +338,7 @@ struct CountdownDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 5))
             }
             .buttonStyle(.plain)
+            .focusable(false)
         }
         .frame(maxWidth: .infinity)
     }
@@ -256,14 +373,20 @@ struct CountdownDetailView: View {
     // MARK: - Helpers
 
     private func component(_ c: Calendar.Component) -> Int {
-        let source = item.isExpired(at: Date()) ? Date() : item.deadline
-        return cal.component(c, from: source)
+        cal.component(c, from: localDeadline)
     }
 
     private func adjust(_ c: Calendar.Component, by value: Int) {
-        let base = item.isExpired(at: Date()) ? Date() : item.deadline
+        // If the item is still expired, snap the base to now before applying the delta.
+        var base = localDeadline
+        if item.isExpired(at: Date()) {
+            base = Date()
+            localDeadline = base
+            item.deadline  = base
+        }
         if let newDate = cal.date(byAdding: c, value: value, to: base) {
-            item.deadline = newDate
+            localDeadline = newDate   // immediate @State re-render
+            item.deadline  = newDate  // propagate to CountdownView via @Binding
         }
     }
 
@@ -271,6 +394,6 @@ struct CountdownDetailView: View {
         let fmt = DateFormatter()
         fmt.dateFormat = "MMM"
         fmt.locale = Locale(identifier: "en_US")
-        return fmt.string(from: item.deadline).uppercased()
+        return fmt.string(from: localDeadline).uppercased()
     }
 }

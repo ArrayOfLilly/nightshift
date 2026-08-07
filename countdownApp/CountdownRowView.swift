@@ -21,9 +21,12 @@ struct CountdownRowView: View {
     var index: Int = 0
     @State private var copyFeedback: Bool = false
 
-    /// Stable color per item derived from UUID hash — cycles through AppTheme.freeColors
+    /// Free-slot accent color: uses manually chosen index if set, else hash fallback.
     private var itemFreeColor: Color {
-        AppTheme.freeColor(for: abs(item.id.hashValue))
+        if let idx = item.accentColorIndex {
+            return AppTheme.freeColor(for: idx)
+        }
+        return AppTheme.freeColor(for: abs(item.id.hashValue))
     }
 
     var body: some View {
@@ -87,6 +90,7 @@ struct CountdownRowView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 7))
                     }
                     .buttonStyle(.plain)
+                    .focusable(false)
                 }
             }
 
