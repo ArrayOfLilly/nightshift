@@ -12,6 +12,11 @@
 //  BUG-18 fix: NavigationLink(value:) + .navigationDestination(for:) pattern.
 //  CountdownDetailView is only constructed on navigation, not on every TimelineView tick.
 //
+//  BUG-19 fix: .navigationDestination closure uses binding(for:) helper instead of
+//  $items[idx] direct subscript. The idx captured at navigation time becomes stale
+//  when items mutate (deadline change → active/free reclassification); binding(for:)
+//  always resolves against the live items array by ID.
+//
 
 import SwiftUI
 import UniformTypeIdentifiers
@@ -42,13 +47,11 @@ struct CountdownView: View {
                 }
             }
             .navigationDestination(for: CountdownItem.self) { item in
-                if let idx = items.firstIndex(where: { $0.id == item.id }) {
-                    CountdownDetailView(item: $items[idx]) {
-                        let id = items[idx].id
-                        items.removeAll { $0.id == id }
-                        freeOrder.removeAll { $0 == id }
-                        save()
-                    }
+                CountdownDetailView(item: binding(for: item)) {
+                    let id = item.id
+                    items.removeAll { $0.id == id }
+                    freeOrder.removeAll { $0 == id }
+                    save()
                 }
             }
         }

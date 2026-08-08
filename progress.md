@@ -11,15 +11,18 @@
   megsemmisült — még ha a user nem navigált sehova.
   Fix:
   1. `CountdownItem`: `Hashable` conformance hozzáadva (`NavigationLink(value:)` feltétele).
-  2. `CountdownView`: Mindkét `ForEach`-ben (active + free sorok) a
-     `NavigationLink { destination } label:` szintaxis lecserélve
-     `NavigationLink(value: item) { label }` alakra.
-  3. `CountdownView`: `.navigationDestination(for: CountdownItem.self)` modifier hozzáadva
-     a `NavigationStack`-re — `CountdownDetailView` mostantól csak navigáláskor konstruálódik.
-     Delete callback egységesítve: mindkét esetben törli a `freeOrder`-ből is
-     (active sornál no-op, free sornál szükséges).
-  Eredmény: nincs per-tick `CountdownDetailView` allokáció, nincs felesleges
-  Swift runtime demangling másodpercenként.
+  2. `CountdownView`: Mindkét `ForEach`-ben `NavigationLink(value:)` pattern.
+  3. `CountdownView`: `.navigationDestination(for: CountdownItem.self)` a NavigationStack-re.
+  Eredmény: nincs per-tick `CountdownDetailView` allokáció.
+
+- **BUG-19 FIX — Free slot nem kerül át active-ba deadline változtatás után** —
+  `CountdownView.swift`.
+  Root cause: a `.navigationDestination` closure-ban `$items[idx]` direct subscript
+  binding volt, ahol az `idx` a navigálás pillanatában lett rögzítve. Ha az `items`
+  tömb ezután mutálódott (deadline frissítés → active/free átsorolás), az `idx` stale
+  maradt — a módosítás nem propagálódott az `activeItems`/`orderedFreeItems` számításhoz.
+  Fix: `.navigationDestination` closure-ban `$items[idx]` helyett `binding(for: item)`
+  helper — ez mindig ID alapján keres a live `items` tömbben, sosem stale.
 - Files changed: `CountdownItem.swift`, `CountdownView.swift`
 
 ### Open tasks
@@ -181,6 +184,8 @@
 
 ---
 
+## Session 11.2 — 2026-08-07
+
 ### Completed
 - **CRASH FIX (complete) — FocusBridge KeyViewProxy window-mismatch** —
   `CountdownDetailView.swift`.
@@ -193,15 +198,11 @@
   observation path. SwiftUI then calls `FocusBridge.moveFocus`, which tries to validate
   a `KeyViewProxy` that is not yet attached to any window → "different window (null)".
   Fix: removed the `makeFirstResponder` dispatch and the `didRequestFocus` Coordinator
-  property entirely. The user already tapped the label to enter edit mode; clicking into
-  the NSTextField to type is acceptable UX.
+  property entirely.
 
   **Trigger 2 — focusable `Button` elements in the key view loop:**
   `.buttonStyle(.plain)` on macOS does NOT remove focusability. All 13 buttons in
-  CountdownDetailView (copy, 10× stepper chevrons, toggle, delete) participated in the
-  SwiftUI key view loop. When the NavigationLink destination is first rendered before
-  being attached to a window, SwiftUI attempts to assign the initial key view loop first
-  responder via FocusBridge → same "different window (null)" error.
+  CountdownDetailView participated in the SwiftUI key view loop.
   Fix: added `.focusable(false)` to every button in CountdownDetailView.
 - Files changed: `CountdownDetailView.swift`
 
@@ -218,12 +219,10 @@
   Root cause: `@Binding var item` write (`item.deadline = newDate`) eljut a CountdownView-ba
   és frissíti `items[idx]`-et, de macOS NavigationStack destination esetén SwiftUI nem
   garantálja az azonnali re-rendert a detail view-ban. A stepper értékek csak kilépés
-  után frissültek (amikor CountdownView újrarenderelte a sort és visszajött a binding).
+  után frissültek.
   Fix: `@State private var localDeadline: Date` hozzáadva mint lokális tükör.
   `component()` és `monthAbbrev()` ebből olvas (azonnali @State re-render).
-  `adjust()` mindkettőt írja: `localDeadline` a vizuális visszajelzésért,
-  `item.deadline` a binding-on keresztüli perzisztenciáért.
-  `.onAppear` mindkettőt szinkronizálja (snap + sima eset).
+  `adjust()` mindkettőt írja. `.onAppear` mindkettőt szinkronizálja.
 - Files changed: `CountdownDetailView.swift`
 
 ### Open tasks
@@ -237,15 +236,9 @@
 - **CRASH FIX (partial) — FocusBridge KeyViewProxy window-mismatch** — `CountdownDetailView.swift`:
   root cause: `@FocusState private var labelFocused: Bool` inside a NavigationLink
   destination on macOS causes SwiftUI's `FocusBridge` to attempt AppKit first-responder
-  assignment on every render pass (TimelineView tick, toggle, layout) before the view is
-  attached to a window — producing `Setting KeyViewProxy as first responder but it is in
-  a different window (null)`. The crash triggered on any state change, including the
-  "Show Remaining / Show Deadline" toggle.
-  Fix: removed `@FocusState` entirely; replaced the SwiftUI `TextField + .focused()`
-  combo with `FocusedNSTextField` (`NSViewRepresentable` wrapping `NSTextField`). AppKit
-  manages its own first-responder lifecycle and does not go through FocusBridge. First
-  responder was requested via `DispatchQueue.main.async { nsView.window?.makeFirstResponder }`
-  — but this itself triggered FocusBridge (see Session 11 fix above).
+  assignment on every render pass before the view is attached to a window.
+  Fix: removed `@FocusState` entirely; replaced with `FocusedNSTextField`
+  (`NSViewRepresentable` wrapping `NSTextField`).
 - Files changed: `CountdownDetailView.swift`
 
 ### Open tasks
@@ -256,16 +249,10 @@
 ## Session 9 — 2026-08-07
 
 ### Completed
-- **Moon strip responsive sizing** — `CalculateView.swift`: macOS-only app; replaced
-  `GeometryReader` + `ScrollView` approach with a plain `HStack(spacing: 12)` where each
-  image has `.frame(maxWidth: .infinity)`. SwiftUI distributes the available width equally
-  among all 9 images automatically — no manual calculation, no padding mismatch, resizes
-  correctly as the macOS window changes size.
+- **Moon strip responsive sizing** — `CalculateView.swift`: replaced `GeometryReader` +
+  `ScrollView` with plain `HStack(spacing: 12)`, `.frame(maxWidth: .infinity)` per image.
 - **Free-slot deadline stepper — defensive adjust() fix** — `CountdownDetailView.swift`:
-  added second snap guard directly inside `adjust()`: if `item.isExpired` at call time, snap
-  `base = Date()` before applying the delta. This is a fallback for cases where `.onAppear`
-  did not fire (macOS NavigationLink timing edge case). Both `.onAppear` and `adjust()` now
-  independently guarantee a sane base, so the stepper is reliably editable from first tap.
+  added second snap guard directly inside `adjust()`.
 - Files changed: `CalculateView.swift`, `CountdownDetailView.swift`
 
 ### Open tasks
@@ -276,30 +263,14 @@
 ## Session 8 — 2026-08-07
 
 ### Decisions (user, closed — no further action)
-- **Swipe-to-delete in list**: not needed — was tried before and deliberately removed;
-  delete stays DetailView-only. Closed.
-- **Tap-to-edit label in list**: intentional as-is — tapping the label in the list
-  copies it; editing stays DetailView-only. Closed.
+- **Swipe-to-delete in list**: not needed — delete stays DetailView-only. Closed.
+- **Tap-to-edit label in list**: intentional as-is. Closed.
 
 ### Completed
-- **CalculateView moon strip replaced** — the 4-image fixed HStack ("01 full moon" …
-  "04 lunar eclipse", Moon v1 set) swapped for the pink moon series in
-  `Assets.xcassets/Moon 3/` (`pink_moon_1` … `pink_moon_9`, 9 images). Now rendered in
-  a horizontal `ScrollView` (`HStack(spacing: 18)`, `ForEach(1...9)`, frame width 90,
-  opacity 0.85) since 9 elements no longer fit a fixed-width Spacer-separated HStack.
-- **BUG FIX — free-slot deadline uneditable in DetailView**: root cause was
-  `component(_:)` / `adjust(_:by:)` in `CountdownDetailView.swift` recomputing
-  `Date()` as the base on *every* call while the item was still expired, instead of
-  once — so any adjustment that didn't push the deadline into the future in a single
-  step (e.g. decrementing, or small increments) was silently discarded on the next
-  render. Fix: added `.onAppear` that snaps `item.deadline = Date()` once if the item
-  is expired on entry; `component()`/`adjust()` now read/write `item.deadline`
-  directly, no more per-call `Date()` fallback. Free and active slots now behave
-  identically once inside DetailView.
+- **CalculateView moon strip replaced** — pink moon series, horizontal ScrollView.
+- **BUG FIX — free-slot deadline uneditable in DetailView**: `.onAppear` snaps
+  `item.deadline = Date()` once if expired; `component()`/`adjust()` read/write directly.
 - Files changed: `CalculateView.swift`, `CountdownDetailView.swift`
-
-### Open tasks
-- None carried forward from Session 7 (both closed by user decision above).
 
 ---
 
@@ -307,88 +278,48 @@
 
 ### Completed
 - **Free slot manual reorder implemented** — CountdownView.swift teljesen atirva:
-  - `@State private var freeOrder: [UUID]` — kezi sorrend tarolasa
-  - `@State private var draggingID: UUID?` — aktiv huzas kovetese
-  - `activeItems(at:)` — nem-lejart elemek deadline ASC sorrendben
-  - `orderedFreeItems(at:)` — lejart elemek `freeOrder` alapjan, hianyzok ABC-vel kozvetve
-  - `binding(for:)` helper — computed list sorokhoz Binding<CountdownItem>
-  - `.onDrag` + `.onDrop(of: [.plainText], delegate:)` minden szabad soron
-  - `FreeSlotDropDelegate` (private struct) — `dropEntered` live preview, `performDrop` cleanup
-  - `saveFreeOrder()` / `loadFreeOrder()` — UserDefaults "freeSlotOrder" key, invalid UUID-k szurve
-  - Active sorok: drag nincs, automatikus sorrend marad
-  - Design nem valtozot — CountdownRowView erintetlen, csak mozgato elemek kerultek be
-- **spec.md frissitve** — Manual Free-Slot Reorder szekcioval, freeSlotOrder persistence key felveve
-- **progress.md frissitve** — Session 7 completed dokumentalva
-- **Git commit** — inner Xcode project repo (Session 7 drag-to-reorder implementacio)
-
-### Open tasks (next session)
-- Swipe-to-delete alternativa (ha kell a listaban is)
-- Tap-to-edit label (jelenleg csak CountdownDetailView-ban szerkesztheto)
+  `freeOrder [UUID]`, `draggingID`, `activeItems(at:)`, `orderedFreeItems(at:)`,
+  `binding(for:)`, `.onDrag`/`.onDrop`, `FreeSlotDropDelegate`, `saveFreeOrder()`/`loadFreeOrder()`.
+- Files changed: `CountdownView.swift`
 
 ---
 
 ## Session 6 — 2026-08-07
 
 ### Completed
-- **Pencil icon removed** — `Image(systemName: "pencil")` + foregroundStyle + frame torolve
-- **Toggle kor hozzaadva** — toggle gomb `.background(AppTheme.dark).clipShape(Circle())` keretbe kerult,
-  ikon szine `AppTheme.background` (amber), meret 28x28
-- **Pill vertical padding csokkentve** — `.padding(.vertical, 8)` -> `.padding(.vertical, 4)`
-
-### Open tasks (next session — carried forward)
-- Swipe-to-delete alternativa (ha kell a listaban is)
-- Tap-to-edit label (jelenleg mindig szerkesztheto TextField)
+- Pencil icon removed; toggle kör hozzáadva; pill vertical padding csökkentve.
 
 ---
 
 ## Session 5 — 2026-08-07
 
-### Completed (handoff continuation, follow-up fixes)
-- **Pill vastagsag csokkentve** -- CountdownRowView: `.padding(14)` -> `.padding(4)`
-- **Toggle gomb kikerult a pill-bol** -- navigacios link mellett, accent szinen ul
-- **Detail nezet alapertelmezett remaining time** -- lokalis `@State showRemaining = true`
-- **Teljes sor egy pill-be vonva** -- label, copy, toggle, ceruza mind sotet pill-en
-- **Row label pill korrigalva** -- `RoundedRectangle(cornerRadius: 10)`, label + copy ikon
-- **CountdownRowView label pill (elso verzio)** -- Capsule(), feherrel, kesobb korrigalva
-- **Add gomb disabled kontraszt** -- disabled: `Color.white.opacity(0.8)`, enabled: amber
-- **Tab valto lecserelve** -- nativ Picker -> sajat HStack modeButton-okkal
-- **Ikon-hozzarendeles felcserelve** -- calculate: clock, countdown: at
-- **CountdownRowView label pill** -- sotet pill, `AppTheme.dark` hatter, konzisztens DetailView-val
-
-### Completed (earlier sub-sessions)
-- **AddCountdownSheet focus ring eltavolitva** -- `.focusable(false)`
-- **Account name pill visszaallitva** -- `.padding(.horizontal, 20)` + `.padding(.vertical, 10)`
-- **Countdown lett az alapertelmezett nezet** -- `selectedMode` init `.countdown`
+### Completed
+- Pill vastagság, toggle gomb, detail nézet alapértelmezett, tab váltó, ikon-hozzárendelés,
+  AddCountdownSheet focus ring, account name pill, alapértelmezett nézet.
 
 ---
 
 ## Session 4 — 2026-08-07
 
 ### Completed
-- Per-account free color → single color `#593C73` (AppTheme.freeColor)
-- FREE ✓ badge inline a label sorában (egy sor, nem kettő)
-- Deadline szerkesztés: ceruza gomb → 5 komponenses stepper CountdownDetailView-ban
-- Alapértelmezett deadline: Date() (most), nem +24h
-- macOS build fixek: navigationBarTitleDisplayMode, toolbarBackground, onChange deprecated signature
-- TextField foregroundColor fix (foregroundStyle nem működik macOS TextFielden)
-- Paradicsom méret: 300 → 420px; Account label méret: 28 → 36pt
+- Per-account free color → single color; FREE ✓ badge; deadline szerkesztés stepper;
+  alapértelmezett deadline Date(); macOS build fixek; TextField foregroundColor fix;
+  Paradicsom méret 420px; Account label 36pt.
 
 ---
 
 ## Session 3 — 2026-08-07
 
 ### Completed
-- FREE SLOT HIGHLIGHT: `AppTheme.freeGreen`, zold hatter, feher fg, glow shadow, "FREE ✓" badge
-- Files changed: `AppTheme.swift`, `CountdownRowView.swift`, `spec.md`, `progress.md`
+- FREE SLOT HIGHLIGHT: freeGreen, zöld háttér, fehér fg, glow shadow, "FREE ✓" badge.
 
 ---
 
 ## Session 1+2 — 2026-08-07
 
 ### Completed
-- Calculate mode: mukodik (date/time diff, from/to pickers)
-- Countdown mode architektura: CountdownView, CountdownDetailView, CountdownRowView,
-  AddCountdownSheet, CountdownItem model (Codable, Equatable, Identifiable)
+- Calculate mode; Countdown mode architektúra: CountdownView, CountdownDetailView,
+  CountdownRowView, AddCountdownSheet, CountdownItem (Codable, Equatable, Identifiable).
 
 ### Manual Xcode steps STILL NEEDED
 - [ ] Assets.xcassets: add spooky_tomato.png (name: "spooky_tomato")
