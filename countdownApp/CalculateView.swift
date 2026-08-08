@@ -41,30 +41,27 @@ struct CalculateView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, 20)
 
-                    // CALC-4 fix: NOW button next to each label; both snap to minute boundary.
-                    HStack {
-                        Text("FROM")
-                            .font(AppTheme.alienLeague(20))
-                            .foregroundStyle(Color.white.opacity(0.9))
-                        Spacer()
-                        nowButton { fromInterval = snapToMinute(Date()).timeIntervalSince1970 }
-                    }
+                    Text("FROM")
+                        .font(AppTheme.alienLeague(20))
+                        .foregroundStyle(Color.white.opacity(0.9))
                     dateStepper(date: Binding(
                         get: { fromDate },
                         set: { fromInterval = snapToMinute($0).timeIntervalSince1970 }
                     ))
-
-                    HStack {
-                        Text("TO")
-                            .font(AppTheme.alienLeague(20))
-                            .foregroundStyle(Color.white.opacity(0.9))
-                        Spacer()
-                        nowButton { toInterval = snapToMinute(Date()).timeIntervalSince1970 }
+                    nowButton(label: "RESET FROM NOW") {
+                        fromInterval = snapToMinute(Date()).timeIntervalSince1970
                     }
+
+                    Text("TO")
+                        .font(AppTheme.alienLeague(20))
+                        .foregroundStyle(Color.white.opacity(0.9))
                     dateStepper(date: Binding(
                         get: { toDate },
                         set: { toInterval = snapToMinute($0).timeIntervalSince1970 }
                     ))
+                    nowButton(label: "RESET TO NOW") {
+                        toInterval = snapToMinute(Date()).timeIntervalSince1970
+                    }
 
                     Rectangle()
                         .fill(Color.white.opacity(0.25))
@@ -109,19 +106,19 @@ struct CalculateView: View {
     // MARK: - NOW button
 
     @ViewBuilder
-    private func nowButton(action: @escaping () -> Void) -> some View {
+    private func nowButton(label: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: 5) {
+            HStack(spacing: 6) {
                 Image(systemName: "arrow.counterclockwise")
-                    .font(.system(size: 11, weight: .bold))
-                Text("NOW")
+                    .font(.system(size: 12, weight: .bold))
+                Text(label)
                     .font(AppTheme.alienLeague(13))
             }
             .foregroundStyle(AppTheme.background)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
             .background(Color.white.opacity(0.18))
-            .clipShape(RoundedRectangle(cornerRadius: 7))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
         .focusable(false)
