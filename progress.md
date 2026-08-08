@@ -579,7 +579,26 @@ Fix: `snapToMinute()` helper floors any Date to minute boundary.
 `adjustDate` snaps on every stepper write. Both NOW buttons snap.
 NOW button added to FROM label; standalone "RESET TO NOW" button removed.
 
-**CALC-1 — No years/months/weeks granularity** — backlog, no ETA.
+**CALC-1 — No years/months/weeks granularity** — partially planned, see below.
+
+### CALC-1 implementation plan
+
+**Concept:** two display modes for the result, toggled by the user.
+- **DAYS mode** (current): fixed, context-free `d h m s` breakdown. Always shown by default.
+- **CAL mode** (new): calendar-aware `y mo d h m s` via `cal.dateComponents([.year, .month, .day, .hour, .minute, .second], from: fromDate, to: toDate)`. Leading zero components hidden (e.g. if 0 years and 0 months, show only `d h m s`).
+
+**Toggle:**
+- Placed below the result row.
+- Two buttons styled like the RESET FROM/TO NOW buttons (same font, padding, background, cornerRadius).
+- Labels: `DAYS` and `CAL`.
+- Active button: stronger background (e.g. `Color.white.opacity(0.35)`) or amber fill.
+- `@AppStorage("calculateDisplayMode")` persists the selection (`"days"` / `"cal"`).
+
+**Implementation notes:**
+- `resultParts` stays as-is for DAYS mode.
+- New `calResultParts` computed var uses `Calendar.current.dateComponents` between `fromDate` and `toDate` (order-aware: always from the earlier to the later, sign tracked separately via existing `isFuture`).
+- `resultRow` switches between the two based on mode.
+- Weeks excluded (confusing alongside years/months).
 
 ---
 
