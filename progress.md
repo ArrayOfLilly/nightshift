@@ -1,5 +1,20 @@
 # countdownApp — Progress
 
+## Session 22 — 2026-08-08
+
+### In progress
+- **Kulcs infó a usertől**: a beachball eddig mindig **több óra háttérben futás** után jelentkezett, nem a kattintgatás mennyiségétől függően — app indítás után azonnali intenzív kattintgatás/rendezgetés NEM vált ki hangot. Ez arra utal, hogy a felhalmozódás inkább az idő (== a `TimelineView` 1Hz tick száma) függvénye, nem a user-interakció mennyiségéé.
+- **TEMP DEBUG bevezetve** — `CountdownView.swift`: `TimelineView(.periodic(from: .now, by: 1.0))` → `by: 0.01` (100× gyorsabb tick), hogy órákat percekbe sűrítsünk teszt céljából. **VISSZA KELL ÁLLÍTANI 1.0-ra a teszt után** — keresd a "TEMP DEBUG" kommentet a fájlban.
+- Terv: ezzel a build-del futtatni Time Profilert ~10-20 percig (ez ekvivalens sok órányi valós tickel), és megnézni, jelentkezik-e a hang gyorsabban. Ha igen → erős bizonyíték, hogy a tick-szám maga a felhalmozódás forrása (pl. SwiftUI AttributeGraph / NavigationStack belső cache nem ürül hosszú futás alatt).
+
+### Open tasks
+- [ ] Time Profiler felvétel a felgyorsított build-del (0.01s tick), 10-20 perc, majd hang esetén backtrace elemzés.
+- [ ] Ha megvan az eredmény: TimelineView interval VISSZAállítása 1.0-ra, commit.
+- [ ] (Session 21-ből még nyitva) Korábbi 2 elkülönítő teszt (csak reorder / csak deadline-váltás) már kevésbé releváns, mivel órás időtáv kell hozzájuk — előbb a felgyorsított tick-teszt fut, az gyorsabb választ ad.
+- Files changed: `CountdownView.swift` (TEMP, revert pending)
+
+---
+
 ## Session 21 — 2026-08-08
 
 ### Completed
