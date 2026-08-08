@@ -123,8 +123,13 @@ struct CountdownView: View {
 
     // MARK: - Subviews
 
+    // ⚠️ TEMP DEBUG (Session 22, 2026-08-08) — tick interval sped up 100× to
+    // compress hours of real-time TimelineView ticks into minutes, to test
+    // whether the beachball is caused by tick COUNT accumulating over long
+    // background runtime rather than by user interaction. REVERT to 1.0
+    // before normal use — search "TEMP DEBUG" to find this.
     private var itemList: some View {
-        TimelineView(.periodic(from: .now, by: 1.0)) { ctx in
+        TimelineView(.periodic(from: .now, by: 0.01)) { ctx in
             let now     = ctx.date
             let entries = rowEntries(at: now)
             let free    = orderedFreeItems(at: now)
