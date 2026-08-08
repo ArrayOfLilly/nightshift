@@ -15,6 +15,43 @@
 
 ---
 
+## Session 22 — 2026-08-08
+
+### 🎯 FINDING — root cause candidate located
+
+**Trigger nem a drag/deadline-váltás maga volt, hanem egy sima SCROLL kb. 1 perccel a matatás (active/free váltogatás + reorder) UTÁN.** Előtte semmi gyanús, utána semmi gyanús — egyetlen tű a szénakazalban.
+
+Backtrace a Severe Hang pillanatában (innermost → outward):
+```
+AG::Subgraph::foreach_ancestor<AG::Subgraph::propagate_dirty_flags()::$_0>
+AG::Subgraph::propagate_dirty_flags()
+AG::Graph::propagate_dirty(AG::AttributeID)
+AG::Graph::value_set(AG::data::ptr<AG::Node>, AGSwiftMetadata...)
+LazyLayoutViewCache.updateItemPhase(_:)
+LazyLayoutViewCache.updateItemPhases()
+protocol witness for GraphMutation.apply() in conformance LazyL...
+specialized GraphHost.runTransaction(_:do:id:)
+GraphHost.flushTransactions()
+... NSHostingView begin-transaction / Update.ensure / NSRunLoop observer flush ...
+```
+
+**Értelmezés**: a scroll a `LazyVStack`/`LazyLayoutViewCache` belső "item phase" trackingjét (mely elemek jelennek meg/tűnnek el) triggereli — ez normális, MINDEN scroll ezt csinálja. Ez egy `GraphMutation`-t indít, ami a SwiftUI AttributeGraph-ban `propagate_dirty` → `foreach_ancestor`-t hív, hogy az ÖSSZES érintett ős-node-ot dirty-nek jelölje. **Az hogy ez a lépés akad be** (nem maga a scroll logika) arra utal, hogy az ancestor-halmaz, amit be kell járni, kórosan nagy/mély.
+
+**Munkahipotézis a következő session-nek**: a BUG-20 fix (Session 19) szándékosan MEGVÁLTOZTATJA a RowEntry identity-t (`"a-UUID"` ↔ `"f-UUID"`) minden active↔free átsoroláskor, hogy a SwiftUI friss view-t építsen a helyes megjelenéssel. Ez azt jelenti: minden egyes átsoroláskor egy ÚJ AttributeGraph subgraph jön létre a régi helyett. **Gyanú**: a régi subgraph-ok AttributeGraph-oldali könyvelése (nem feltétlen a Swift ARC-retain, hanem az AG saját belső gráf-node nyilvántartása) nem ürül ki tökéletesen minden reclassification után — így minden active↔free váltás egy kicsit növeli az ancestor-halmazt, és elég sok váltás után BÁRMILYEN, akár teljesen független graph-mutation (mint egy scroll) hosszú `foreach_ancestor` bejárást fizet meg.
+
+Ez magyarázza mindent, amit eddig láttunk:
+- Miért nem gond azonnal indítás után (kevés váltás történt még).
+- Miért nem a passzív tick-szám a hibás (a 87 "szimulált" perc sima háttérfutás nem generált átsorolást, csak tick-eket — ezért volt negatív az eredmény).
+- Miért egy LÁTSZÓLAG független művelet (scroll) váltja ki, nem közvetlenül a váltás/reorder maga.
+
+### Next steps (következő session)
+- [ ] Igazolás: Allocations vagy Leaks instrument-tel megnézni, hogy az AG::Graph node-szám (vagy a process memória) monoton nő-e minden active↔free váltással, sosem csökken.
+- [ ] Ha igazolódik: keresni egy BUG-20-fixet, ami NEM cserél teljes ForEach identity-t reclassificationkor (ami friss subgraph-ot épít), hanem valahogy MEGTARTJA az identity-t és csak egy belső flag/verzió-számláló bumpolásával kényszerít ki tartalom-frissítést a meglévő subgraph-on belül. Ez trükkösebb SwiftUI-manipuláció, alaposabban meg kell tervezni, hogy a free/active vizuális frissülés (amit BUG-20 eredetileg megoldott) ne törjön el újra.
+- [ ] Alternatíva, ha a fenti túl kockázatos: explicit periodic "graph reset" workaround (pl. a NavigationStack/lista view-t időnként force-recreate-elni egy id()-cserével) — hack, de működhet tüneti kezelésként.
+- Files changed: nincs kód-változás ebben a körben, csak diagnózis.
+
+---
+
 ## Session 21 — 2026-08-08
 
 ### Completed
@@ -393,3 +430,168 @@
 - [x] Fonts bundled + registered at runtime — done Session 21 (see above; moved to resources/Font/, CTFontManagerRegisterFontsForURL in countdownAppApp.swift; no Info.plist key needed)
 - [x] Project Navigator: Add Files — done (Xcode 16 file-system-synchronized group, automatic)
 - [x] Verify Alien League PostScript name in Font Book — superseded Session 21 (font now bundle-registered, Font Book install no longer required)
+
+---
+
+## Session 23 — 2026-08-08
+
+### Diagnosztika — Allocations + külső statikus elemzés
+
+**Allocations eredmény (Mark Generation teszt):**
+- Gen C (baseline): 2,39 KiB / 41 obj
+- Gen D (15 active→free váltás után): 12,29 MiB / 48 896 obj — nagy ugrás
+- Gen E (15 free→active váltás után): 2,97 MiB / 18 976 obj — részleges visszaesés
+- Következtetés: monoton felhalmozódás NEM igazolódott. Az AG-subgraph akkumuláció hipotézis (Session 22) nem bizonyított.
+
+**Gemini statikus elemzés — 3 valós találat:**
+
+1. `binding(for:)` minden ticknél új Binding struct (CountdownView.swift ~line 110):
+   Minden ticknél az összes sorhoz új Binding<CountdownItem> példány. SwiftUI nem tudja
+   equality-check-elni → minden sor subgraphja potenciálisan dirty → propagate_dirty torlódás.
+   VALÓSZÍNŰLEG A FŐ OK.
+
+2. `.onDrop(delegate:)` minden ticknél új FreeSlotDropDelegate (CountdownView.swift ~line 173):
+   A delegate struct ($freeOrder, $draggingID Bindingekkel) minden ticknél újra létrejön.
+   Overhead valós, a "AppKit subgraph explosion" magyarázat spekulatív.
+
+3. RowEntry identity csere ("a-UUID"/"f-UUID"): ismert (BUG-20), másodlagos gyanú.
+
+4. LongPressStepperButton Timer double-add (LongPressStepperButton.swift ~line 48):
+   Valós bug (timer leak), de nem beachball-forrás.
+
+### Tervezett fixek (külön sessionökre bontva, prioritás sorrendben)
+
+- Session 23-A: binding(for:) kiváltása — stabil Binding generálás TimelineView-on belül.
+- Session 23-B: onDrop delegate kiemelése a tick-loopból.
+- Session 23-C (opcionális): RowEntry identity alternatíva ha A+B nem elég.
+- Session 23-D: LongPressStepperButton timer double-add fix.
+- Minden session végén: TimelineView tick visszaállítása 1.0-ra + commit, ha fix tesztelve.
+
+### Open tasks
+- [ ] ChatGPT statikus elemzés beérkezése + összehasonlítás Gemini-vel.
+- [ ] Session 23-A: binding(for:) fix.
+- [ ] Session 23-B: onDrop delegate fix.
+- [ ] Session 23-C: RowEntry identity alternatíva (ha szükséges).
+- [ ] Session 23-D: Timer double-add fix.
+- [ ] TimelineView tick visszaállítása 1.0-ra és commit.
+
+---
+
+## Session 23-A terv — 2026-08-08
+
+### Diagnózis összefoglaló (Gemini + ChatGPT alapján)
+
+A beachball root cause: a `TimelineView` minden ticknél (`0.01s` / normálisan `1s`)
+meghívja `rowEntries(at:)` + `orderedFreeItems(at:)` függvényeket, amelyek új array-t
+adnak vissza → `ForEach(entries)` minden ticknél teljes diff-et futtat →
+`LazyLayoutViewCache.updateItemPhases()` minden ticknél dolgozik.
+Ez önmagában 1Hz-en kezelhető. De sok active↔free váltás után a LazyVStack belső
+layout cache-e egyre több "phase transition" historyt halmoz, és amikor scroll érkezik
+(`LazyLayoutViewCache.updateItemPhases` → `AG::Subgraph::foreach_ancestor`),
+a teljes ancestor-bejárás drágává válik.
+
+### Tervezett fix — `cachedEntries` szétválasztás
+
+**Probléma:** `rowEntries()` és `orderedFreeItems()` a `TimelineView` closure-on BELÜL
+fut, minden tick újraszámolja az összes item osztályozását és rendezését, és új
+array-t ad a `ForEach`-nek — még akkor is ha SEMMI sem változott.
+
+**Fix lényege:** a ForEach inputját (`[RowEntry]`) leválasztani a tick-ről.
+Az entries-t csak akkor kell újraszámolni, amikor ténylegesen változik valami:
+- `items` mutál (deadline szerkesztés, törlés, hozzáadás)
+- `freeOrder` mutál (drag reorder)
+- Egy item deadline-ja átlép (active→free osztályozás változik)
+
+**Implementáció:**
+
+1. Új `@State` változók:
+   ```swift
+   @State private var cachedEntries:   [RowEntry]       = []
+   @State private var cachedFreeItems: [CountdownItem]  = []
+   @State private var nextDeadline:    Date?             = nil
+   ```
+
+2. `rebuildEntries(now:)` helper — kiszámítja az entries-t és a nextDeadline-t
+   (a legközelebbi még-aktív deadline, amikor az entries legközelebb változni fog):
+   ```swift
+   private mutating func rebuildEntries(now: Date) {
+       cachedEntries   = rowEntries(at: now)
+       cachedFreeItems = orderedFreeItems(at: now)
+       nextDeadline    = items
+           .filter { !$0.isExpired(at: now) }
+           .map { $0.deadline }
+           .min()
+   }
+   ```
+
+3. A `TimelineView` closure-on BELÜL csak `now`-t használ megjelenítésre;
+   az entries-t a cached state-ből veszi. Plusz: ha `nextDeadline` átlépett,
+   triggerel egy rebuild-et:
+   ```swift
+   TimelineView(.periodic(from: .now, by: 0.01)) { ctx in
+       let now = ctx.date
+       // Deadline crossing check — cheap, no array alloc
+       if let nd = nextDeadline, now >= nd {
+           rebuildEntries(now: now)
+       }
+       ScrollView {
+           LazyVStack { ForEach(cachedEntries) { ... } }
+       }
+   }
+   ```
+
+4. `.onChange(of: items)` és `.onChange(of: freeOrder)` meghívja `rebuildEntries`-t.
+
+5. `.onAppear` után is `rebuildEntries` fut.
+
+**Eredmény:** `ForEach(cachedEntries)` csak akkor kap új array-t, ha tényleg változás
+történt — nem minden ticknél. A `LazyVStack` diff futása ritka esemény lesz,
+nem folyamatos 100Hz-es munka.
+
+### Érintett fájl
+- `CountdownView.swift` — a `@State` változók, `rebuildEntries()`, `itemList`, `.onChange`, `.onAppear`
+
+### Kockázatok
+- A `mutating` nem működik `View`-n — `rebuildEntries` nem lehet mutating,
+  helyette `cachedEntries = ...` direkten a closure-ban. Ellenőrizni kell, hogy
+  a SwiftUI state-update a TimelineView closure-ból helyesen triggerel-e re-rendert.
+- `nextDeadline` check: ha pontosan a tick határán lép át, egy tickkel késhet.
+  Ez UX szempontból irreleváns (max 0.01s / 1s késés).
+
+### Implementáció előtt ellenőrizni
+- `CountdownItem.isExpired(at:)` definíciója — hogy a deadline check pontos legyen.
+
+---
+
+## Session 23 — végleges terv (2026-08-08)
+
+### Konszenzus (Gemini + ChatGPT, teljes kód alapján)
+
+Nem AG-leak, hanem pathológikus invalidáció/reconciliation pattern:
+- Timeline tick → új RowEntry array → ForEach diff → LazyLayoutViewCache munka minden ticknél
+- dropEntered → freeOrder mutation minden hover-eventnél → felesleges state churn
+- Scroll → LazyLayoutViewCache.updateItemPhases() → foreach_ancestor walk → beachball
+
+### Végrehajtási sorrend
+
+**23-A — dropEntered guard (triviális, 1 sor)**
+CountdownView.swift, FreeSlotDropDelegate.dropEntered:
+  if ids != freeOrder { freeOrder = ids }
+Eddig minden hover-eventnél mutálta freeOrder-t, még ha az order nem változott.
+Ez felesleges ForEach diff + LazyVStack reconciliation minden drag-mozdulatnál.
+
+**23-B — LazyVStack → VStack diagnosztika**
+Ideiglenesen VStack-ra cserélni. Ha eltűnik a beachball: igazolt hogy
+LazyLayoutViewCache a tettes, és a cachedEntries refaktor (23-C) indokolt.
+Ha nem tűnik el: a probléma máshol van (identity churn, binding overhead).
+
+**23-C — cachedEntries szétválasztás (ha 23-B igazolja)**
+rowEntries() és orderedFreeItems() kiemelése a TimelineView closure-ból.
+@State cachedEntries + @State cachedFreeItems + nextDeadline check.
+Csak .onChange(of: items) + .onChange(of: freeOrder) + deadline crossing triggerel rebuild-et.
+Részletes terv: lásd "Session 23-A terv" bejegyzés feljebb.
+
+**23-D — LongPressStepperButton timer double-add (önálló, kisebb)**
+Timer.scheduledTimer + RunLoop.main.add(..., .common) kettős regisztráció fix.
+
+**Minden session végén:** TimelineView tick visszaállítása 1.0-ra + commit.

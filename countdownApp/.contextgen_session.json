@@ -1,0 +1,17 @@
+{
+  "saved_at": "2026-08-08T21:09:27.780457",
+  "root": "/Users/ArrayOfLilly/tools/countdownApp/countdownApp/countdownApp",
+  "files": [
+    "AddCountdownSheet.swift",
+    "AppTheme.swift",
+    "CalculateView.swift",
+    "ColorPickerSheet.swift",
+    "ContentView.swift",
+    "CountdownDetailView.swift",
+    "CountdownItem.swift",
+    "CountdownRowView.swift",
+    "CountdownView.swift",
+    "LongPressStepperButton.swift",
+    "countdownAppApp.swift"
+  ]
+}
