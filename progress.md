@@ -1,5 +1,25 @@
 # countdownApp — Progress
 
+## Session 20 — 2026-08-08
+
+### Completed
+- **Session 19 BUG-20 fix commitolva** — a `RowEntry` identity fix (`CountdownItem.swift`, `CountdownView.swift`) korábban csak a working tree-ben volt, most bekerült a git history-ba a doksi-frissítésekkel együtt.
+- **Header cleanup** — `countdownAppApp.swift`: az Xcode-generált Hungarian "Created by Ildikó Kasza on 2026. 08. 06.." sor lecserélve angol leíró kommentre, a projekt többi fájljának header-konvenciójához igazítva. Teljes .swift grep (á/é/í/ó/ö/ő/ú/ü/ű) lefuttatva — ez volt az egyetlen találat.
+- **AppTheme.swift doc-hiba javítva** — a `freeColors` tömb feletti komment 11-et írt, a tömbben ténylegesen 12 szín van (30271B, 51422E, 778005, 4D70D8, 293B72, 403873, 593C73, 723F73, 8A4273, DD3B72, DD114A, B70E26); komment frissítve 12-re.
+- **spec.md pontatlanságok javítva + angolra egységesítve**:
+  - „Jövőbeli ötletek” (mixed HU) szekció → „Implemented Enhancements” + „Performance — Beachballing Fix” szekciókra cserélve, teljesen angolul, BUG-18/19/20 + Session 17 (N per-row timer) root cause-okkal dokumentálva.
+  - Színpaletta: mindenhol 11 → 12-re javítva (Countdown Mode szekció, Data Model, Implemented Enhancements).
+  - Fallback szín leírás javítva: NEM hash-alapú, hanem fix default index 6 (#593C73 lila) — a tényleges CountdownRowView.swift kód alapján ellenőrizve.
+  - `CountdownItem.accentColorIndex` mező hozzáadva a Data Model listához (korábban hiányzott a spec-ből).
+- **countdownApp-manual.md ellenőrizve** — tartalmilag pontos, nincs javítás szükséges (már helyesen "twelve accent colors" / "#593C73" szerepel benne).
+- **Git commit** (inner repo, /Users/ArrayOfLilly/tools/countdownApp/countdownApp): BUG-20 fix + header/doc cleanup egy commitban.
+- Files changed: countdownAppApp.swift, AppTheme.swift, spec.md, progress.md
+
+### Open tasks
+- None.
+
+---
+
 ## Session 19 — 2026-08-08
 
 ### Completed
@@ -23,6 +43,17 @@
   maradt — a módosítás nem propagálódott az `activeItems`/`orderedFreeItems` számításhoz.
   Fix: `.navigationDestination` closure-ban `$items[idx]` helyett `binding(for: item)`
   helper — ez mindig ID alapján keres a live `items` tömbben, sosem stale.
+
+- **BUG-20 FIX — Átsorolt slot megjelenése nem frissül (free→active vizuális stale)** —
+  `CountdownView.swift`.
+  Root cause: a két `ForEach` ugyanazt az `item.id` UUID-t használta SwiftUI identity-ként.
+  Amikor egy item átkerült a free listából az active listába, a SwiftUI az azonos UUID
+  alapján recycle-özte a `CountdownRowView`-t — nem hozta létre újra, így a free megjelenés
+  (accent color, FREE ✓ badge, nincs toggle gomb / countdown) megmaradt.
+  Fix: `RowEntry` private wrapper struct hozzáadva (`item` + `slotKind: "a"/"f"`),
+  `id` computed property = `"a-UUID"` / `"f-UUID"`. A két `ForEach` egyetlen
+  `ForEach(entries)` hívásra cserélve `RowEntry` elemekkel — átsoroláskor az ID
+  megváltozik, a SwiftUI új view-t hoz létre a helyes megjelenéssel.
 - Files changed: `CountdownItem.swift`, `CountdownView.swift`
 
 ### Open tasks

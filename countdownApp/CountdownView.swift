@@ -17,9 +17,24 @@
 //  when items mutate (deadline change → active/free reclassification); binding(for:)
 //  always resolves against the live items array by ID.
 //
+//  BUG-20 fix: RowEntry wrapper carries a slotKind ("a" / "f") alongside the item.
+//  ForEach uses RowEntry.listID (= "a-UUID" / "f-UUID") as identity. Without the
+//  prefix both ForEach loops share the same UUID identity space — SwiftUI recycles
+//  the view when an item moves free→active (same UUID, different list), so
+//  CountdownRowView keeps the stale free appearance. The prefix forces a new view
+//  identity on reclassification.
+//
 
 import SwiftUI
 import UniformTypeIdentifiers
+
+// MARK: - RowEntry
+
+private struct RowEntry: Identifiable {
+    let item:     CountdownItem
+    let slotKind: String        // "a" = active, "f" = free
+    var id: String { "\(slotKind)-\(item.id)" }
+}
 
 struct CountdownView: View {
 
@@ -87,6 +102,12 @@ struct CountdownView: View {
         return result
     }
 
+    private func rowEntries(at now: Date) -> [RowEntry] {
+        let active = activeItems(at: now).map { RowEntry(item: $0, slotKind: "a") }
+        let free   = orderedFreeItems(at: now).map { RowEntry(item: $0, slotKind: "f") }
+        return active + free
+    }
+
     // MARK: - Binding helper
 
     private func binding(for item: CountdownItem) -> Binding<CountdownItem> {
@@ -104,9 +125,9 @@ struct CountdownView: View {
 
     private var itemList: some View {
         TimelineView(.periodic(from: .now, by: 1.0)) { ctx in
-            let now    = ctx.date
-            let active = activeItems(at: now)
-            let free   = orderedFreeItems(at: now)
+            let now     = ctx.date
+            let entries = rowEntries(at: now)
+            let free    = orderedFreeItems(at: now)
 
             ScrollView {
                 LazyVStack(spacing: 10) {
@@ -119,33 +140,36 @@ struct CountdownView: View {
                         .padding(.top, 20)
                         .padding(.bottom, 4)
 
-                    ForEach(active, id: \.id) { item in
-                        NavigationLink(value: item) {
-                            CountdownRowView(item: binding(for: item), now: now)
-                        }
-                        .buttonStyle(.plain)
-                        .focusable(false)
-                    }
+                    ForEach(entries) { entry in
+                        let item = entry.item
+                        let isFree = entry.slotKind == "f"
 
-                    ForEach(free, id: \.id) { item in
-                        NavigationLink(value: item) {
-                            CountdownRowView(item: binding(for: item), now: now)
-                        }
-                        .buttonStyle(.plain)
-                        .focusable(false)
-                        .onDrag {
-                            draggingID = item.id
-                            return NSItemProvider(object: item.id.uuidString as NSString)
-                        }
-                        .onDrop(
-                            of: [.plainText],
-                            delegate: FreeSlotDropDelegate(
-                                targetItem: item,
-                                freeItems:  free,
-                                freeOrder:  $freeOrder,
-                                draggingID: $draggingID
+                        if isFree {
+                            NavigationLink(value: item) {
+                                CountdownRowView(item: binding(for: item), now: now)
+                            }
+                            .buttonStyle(.plain)
+                            .focusable(false)
+                            .onDrag {
+                                draggingID = item.id
+                                return NSItemProvider(object: item.id.uuidString as NSString)
+                            }
+                            .onDrop(
+                                of: [.plainText],
+                                delegate: FreeSlotDropDelegate(
+                                    targetItem: item,
+                                    freeItems:  free,
+                                    freeOrder:  $freeOrder,
+                                    draggingID: $draggingID
+                                )
                             )
-                        )
+                        } else {
+                            NavigationLink(value: item) {
+                                CountdownRowView(item: binding(for: item), now: now)
+                            }
+                            .buttonStyle(.plain)
+                            .focusable(false)
+                        }
                     }
                 }
                 .padding(.horizontal, 16)

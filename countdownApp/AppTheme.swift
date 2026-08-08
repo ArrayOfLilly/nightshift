@@ -24,9 +24,9 @@ enum AppTheme {
     /// White — used for numerals displayed on the tomato body
     static let timerText   = Color.white
 
-    /// Free-slot card color palette (11 options, rotated by item index)
-    /// 778005 · 30271B · 293B72 · 4D70D8 · 403873
-    /// 593C73 · 8A4273 · 723F73 · DD3B72 · DD114A · B70E26
+    /// Free-slot card color palette (12 options, rotated by item index)
+    /// 30271B · 51422E · 778005 · 4D70D8 · 293B72 · 403873
+    /// 593C73 · 723F73 · 8A4273 · DD3B72 · DD114A · B70E26
     static let freeColors: [Color] = [
         Color(red: 0x30/255, green: 0x27/255, blue: 0x1B/255), // 2  #30271B dark brown
         Color(red: 0x51/255, green: 0x42/255, blue: 0x2E/255), // 1  #51422E lighter brown

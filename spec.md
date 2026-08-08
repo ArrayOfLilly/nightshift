@@ -34,7 +34,7 @@ Default tab on launch: Countdown.
 - Each row: CountdownRowView — taps → CountdownDetailView
 - "+ ADD" button at bottom → AddCountdownSheet
 - **Free slots** (`deadline < now`): per-item accent color from `AppTheme.freeColors`
-  (11-color list, index = `abs(item.id.hashValue) % 11`); card shows "FREE ✓" badge
+  (12-color list; default index 6 / #593C73 purple unless overridden); card shows "FREE ✓" badge
   right of the label pill; colored glow shadow; no time text shown
 - **Active slots**: `cardSurface` background; toggle button (calendar/clock icon) right
   of label pill; time or deadline below
@@ -71,6 +71,7 @@ Default tab on launch: Countdown.
 - `label`         String  — e.g. "GPT-4 Free"
 - `deadline`      Date    — when the account/resource resets
 - `showRemaining` Bool    — row-level toggle state (persisted per item)
+- `accentColorIndex` Int? — manual free-slot color override (nil = default index 6 / #593C73)
 
 ### Persistence
 - UserDefaults + JSONEncoder / JSONDecoder
@@ -90,44 +91,74 @@ Default tab on launch: Countdown.
 
 ---
 
-## Jövőbeli ötletek
+## Implemented Enhancements (Sessions 15–16)
 
-### Stepper long-press repeat (IMPLEMENTÁLT — Session 16)
-- Érintett fájl: `CountdownDetailView.swift` (componentStepper helper)
-- Jelenlegi viselkedés: minden chevron gomb egyetlen `Button`, egyet lép kattintásra.
-- Kívánt viselkedés: nyomva tartásra ismételje a lépést, de az első kattintás
-  (rövid tap) még mindig csak egyet lépjen — tehát a standard "initial delay then
-  repeat" pattern.
-- Javasolt implementáció: cseréljük a `Button`-t egy `simultaneousGesture`-t használó
-  nézetté, amely `.onLongPressGesture(minimumDuration:, pressing:perform:)` segítségével
-  indít egy `Timer.scheduledTimer`-t (pl. 0.4s initial delay után, majd ~0.1s interval),
-  és `onEnded` / `pressing == false` állapotban törli a timert.
-  Alternatíva: külön `LongPressStepperButton` `@ViewBuilder` komponens, hogy a
-  `componentStepper` helper tiszta maradjon.
-- Az initial delay értéke nincs meghatározva — kb. 0.4–0.5s szokásos (macOS
-  kulcsismétlési késedelemhez hasonló), de kísérletezni kell.
+### Stepper long-press repeat (Session 16)
+- File: `CountdownDetailView.swift` / `CalculateView.swift` (componentStepper helper),
+  `LongPressStepperButton.swift` (new).
+- Each chevron button fires once on a short tap; holding it repeats the step after
+  an initial delay (0.40s), then every 0.08s until released.
+- Implemented via `LongPressStepperButton`, a `DragGesture(minimumDistance: 0)`-based
+  view (see that file's header for why `DragGesture` was used instead of
+  `LongPressGesture`).
 
-### Calculate oldal — állapotmegőrzés + Reset gomb (IMPLEMENTÁLT — Session 16)
-- Érintett fájl: `CalculateView.swift`
-- Jelenlegi viselkedés: a From/To stepper értékek minden megnyitáskor resetelnek
-  (nincs perzisztencia).
-- Kívánt viselkedés 1 — állapotmegőrzés: az utoljára beállított From és To értékek
-  megmaradjanak alkalmazás-újraindítás után is. Javasolt: `@AppStorage` vagy
-  `UserDefaults` a két `Date` érték TimeInterval-ként tárolva.
-- Kívánt viselkedés 2 — Reset gomb: a To stepper alatt (vagy mellette) legyen egy
-  reset gomb, amely a To értékét `Date()` (now)-ra állítja. Vizuálisan illeszkedjen
-  a meglévő stepper designhoz (dark bg, amber ikon/szöveg, RoundedRectangle).
-  From értéket NE érintse a reset.
+### Calculate mode — state persistence + NOW reset (Session 16)
+- File: `CalculateView.swift`.
+- From/To values persist across app restarts via `@AppStorage` (stored as
+  `TimeInterval`), instead of resetting to `Date()` on every open.
+- A `NOW` button next to the "TO" label resets only the To value to the current
+  time; From is untouched.
 
-### Free-slot kézi színválasztó (IMPLEMENTÁLT — Session 15)
-- `AppTheme.freeColors`: mind a 12 szín aktív (778005 · 51422E · 30271B · 293B72 ·
-  4D70D8 · 403873 · 593C73 · 8A4273 · 723F73 · DD3B72 · DD114A · B70E26).
-- `CountdownItem.accentColorIndex: Int?` — nil = auto hash-fallback, set = kézi szín.
-- `CountdownDetailView`: paintbrush gomb (trash előtt, csak expired slotokon) nyit
-  egy `ColorPickerSheet`-et.
-- `ColorPickerSheet` (új fájl): 4 oszlopos LazyVGrid, 11 paletta + AUTO swatch,
-  kiválasztás után dismiss. Amber háttér, Alien League Bold cím.
-- `CountdownRowView`: `itemFreeColor` `accentColorIndex`-et preferálja, hash-fallback marad.
+### Free-slot manual accent color (Session 15)
+- All 12 `AppTheme.freeColors` swatches are active (previously only 1).
+- `CountdownItem.accentColorIndex: Int?` — `nil` = default color (index 6, #593C73
+  purple), set = user's manual choice. Backward-compatible with old saved items
+  (decodes as `nil` if absent).
+- `CountdownDetailView`: a paintbrush button (visible only on expired/free slots,
+  placed before the trash icon) opens `ColorPickerSheet`.
+- `ColorPickerSheet` (new file): 4-column `LazyVGrid`, the 12 palette colors plus
+  one AUTO/reset swatch; picking a color dismisses the sheet.
+- `CountdownRowView`: `itemFreeColor` uses `item.accentColorIndex` when set,
+  otherwise falls back to the fixed default (index 6, #593C73).
+
+---
+
+## Performance — Beachballing Fix (Sessions 17–20)
+
+Symptom: the app would beachball (main-thread stall) during sustained use, most
+reproducibly when a slot switched between active/free or when free slots were
+reordered by drag.
+
+Four compounding root causes were found and fixed in `CountdownView.swift` /
+`CountdownItem.swift` / `CountdownRowView.swift`:
+
+1. **N per-row timers (Session 17).** Every `CountdownRowView` had its own
+   `TimelineView(.periodic(from: .now, by: 1.0))`. With N rows, N independent
+   1Hz timers each triggered a full `CountdownView.itemList` recomputation.
+   Fix: a single `TimelineView` lives at the `CountdownView.itemList` level;
+   `now: Date` is passed down to each row, which has no timer of its own.
+2. **Eager NavigationLink destination construction (BUG-18, Session 18–19).**
+   `NavigationLink { CountdownDetailView(...) }` evaluates the destination
+   closure on every render pass — so every row's detail view was allocated and
+   immediately deallocated on every 1Hz tick, whether or not the user had
+   navigated anywhere. Fix: `NavigationLink(value:)` + `.navigationDestination
+   (for: CountdownItem.self)` — the destination is now only constructed on an
+   actual navigation. Required adding `Hashable` conformance to `CountdownItem`.
+3. **Stale index binding after reclassification (BUG-19, Session 19).** The
+   `.navigationDestination` closure captured `$items[idx]` with `idx` fixed at
+   navigation time. If a deadline edit moved the item between the active/free
+   lists afterward, `idx` no longer pointed at the right element and edits
+   stopped propagating. Fix: a `binding(for: item)` helper that always resolves
+   against the live `items` array by ID instead of a captured index.
+4. **Stale row appearance after reclassification (BUG-20, Session 19).** Both
+   `ForEach` loops (active/free) used the same `item.id` UUID as SwiftUI
+   identity. When an item moved from free to active, SwiftUI recycled the
+   existing `CountdownRowView` under that UUID instead of creating a new one,
+   so the old "free" appearance (accent color, FREE badge, no toggle) stuck.
+   Fix: a private `RowEntry` wrapper carries `item` + `slotKind` (`"a"`/`"f"`);
+   its `id` is `"\(slotKind)-\(item.id)"`. Both lists are now rendered from one
+   `ForEach(entries)`, so a reclassification changes the identity and forces a
+   fresh view.
 
 ---
 

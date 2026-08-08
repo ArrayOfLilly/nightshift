@@ -2,7 +2,8 @@
 //  countdownAppApp.swift
 //  countdownApp
 //
-//  Created by Ildikó Kasza on 2026. 08. 06..
+//  App entry point. Single WindowGroup wrapping ContentView,
+//  which owns the Calculate / Countdown mode switcher.
 //
 
 import SwiftUI
