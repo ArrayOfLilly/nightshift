@@ -41,39 +41,30 @@ struct CalculateView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, 20)
 
-                    Text("FROM")
-                        .font(AppTheme.alienLeague(20))
-                        .foregroundStyle(Color.white.opacity(0.9))
+                    // CALC-4 fix: NOW button next to each label; both snap to minute boundary.
+                    HStack {
+                        Text("FROM")
+                            .font(AppTheme.alienLeague(20))
+                            .foregroundStyle(Color.white.opacity(0.9))
+                        Spacer()
+                        nowButton { fromInterval = snapToMinute(Date()).timeIntervalSince1970 }
+                    }
                     dateStepper(date: Binding(
                         get: { fromDate },
-                        set: { fromInterval = $0.timeIntervalSince1970 }
+                        set: { fromInterval = snapToMinute($0).timeIntervalSince1970 }
                     ))
 
-                    Text("TO")
-                        .font(AppTheme.alienLeague(20))
-                        .foregroundStyle(Color.white.opacity(0.9))
+                    HStack {
+                        Text("TO")
+                            .font(AppTheme.alienLeague(20))
+                            .foregroundStyle(Color.white.opacity(0.9))
+                        Spacer()
+                        nowButton { toInterval = snapToMinute(Date()).timeIntervalSince1970 }
+                    }
                     dateStepper(date: Binding(
                         get: { toDate },
-                        set: { toInterval = $0.timeIntervalSince1970 }
+                        set: { toInterval = snapToMinute($0).timeIntervalSince1970 }
                     ))
-
-                    Button {
-                        toInterval = Date().timeIntervalSince1970
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "arrow.counterclockwise")
-                                .font(.system(size: 12, weight: .bold))
-                            Text("RESET TO NOW")
-                                .font(AppTheme.alienLeague(13))
-                        }
-                        .foregroundStyle(AppTheme.background)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Color.white.opacity(0.18))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                    .buttonStyle(.plain)
-                    .focusable(false)
 
                     Rectangle()
                         .fill(Color.white.opacity(0.25))
@@ -113,6 +104,27 @@ struct CalculateView: View {
                 .padding(.bottom, 40)
             }
         }
+    }
+
+    // MARK: - NOW button
+
+    @ViewBuilder
+    private func nowButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 5) {
+                Image(systemName: "arrow.counterclockwise")
+                    .font(.system(size: 11, weight: .bold))
+                Text("NOW")
+                    .font(AppTheme.alienLeague(13))
+            }
+            .foregroundStyle(AppTheme.background)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Color.white.opacity(0.18))
+            .clipShape(RoundedRectangle(cornerRadius: 7))
+        }
+        .buttonStyle(.plain)
+        .focusable(false)
     }
 
     // MARK: - Date stepper
@@ -236,8 +248,13 @@ struct CalculateView: View {
 
     private func adjustDate(_ binding: Binding<Date>, _ c: Calendar.Component, by value: Int) {
         if let d = cal.date(byAdding: c, value: value, to: binding.wrappedValue) {
-            binding.wrappedValue = d
+            binding.wrappedValue = snapToMinute(d)
         }
+    }
+
+    // CALC-2/3 fix: floor to minute boundary so seconds never bleed into the result.
+    private func snapToMinute(_ date: Date) -> Date {
+        Date(timeIntervalSince1970: floor(date.timeIntervalSince1970 / 60) * 60)
     }
 
     private func monthAbbrev(from date: Date) -> String {

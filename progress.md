@@ -571,27 +571,15 @@ nem folyamatos 100Hz-es munka.
 The result only shows days, hours, minutes, seconds. No years/months/weeks breakdown.
 Not yet planned — future enhancement.
 
-**CALC-2 — Seconds not settable but always visible in result**
-The steppers only expose year/month/day/hour/minute components; seconds cannot be set.
-However the result display includes seconds — sourced from the hidden sub-minute
-precision of the stored `Date` values.
+**CALC-2 — Seconds not settable but always visible in result** ✅ FIXED Session 24
+**CALC-3 — From = To still shows non-zero difference** ✅ FIXED Session 24
+**CALC-4 — No "NOW" reset for From; "NOW" reset for To behaves incorrectly** ✅ FIXED Session 24
 
-**CALC-3 — From = To still shows non-zero difference**
-Root cause: CALC-2. Even after matching all stepper values, the underlying `Date`
-retains a seconds (and sub-second) component that was never zeroed out.
-Result: "From" and "To" appear identical in the UI but difference ≠ 0.
+Fix: `snapToMinute()` helper floors any Date to minute boundary.
+`adjustDate` snaps on every stepper write. Both NOW buttons snap.
+NOW button added to FROM label; standalone "RESET TO NOW" button removed.
 
-**CALC-4 — No "NOW" reset for From; "NOW" reset for To behaves incorrectly**
-Only "To" has a NOW reset button. Pressing it sets `toInterval = Date().timeIntervalSince1970`,
-which includes live seconds → increases (or unpredictably changes) the gap instead of
-reducing it. A "From" NOW button is missing entirely.
-
-### Fix sketch (not yet assigned to a session)
-- CALC-2/3 fix: when writing a stepper value back to storage, snap seconds to 0
-  (floor the Date to the minute boundary). One-liner in `adjust()` or `fromDate`/`toDate` setter.
-- CALC-4 fix: add a NOW button for From (mirroring To); fix NOW reset to snap to
-  minute boundary (same floor logic) so seconds don't bleed in.
-- CALC-1: backlog, no ETA.
+**CALC-1 — No years/months/weeks granularity** — backlog, no ETA.
 
 ---
 
