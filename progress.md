@@ -1,5 +1,26 @@
 # countdownApp — Progress
 
+## Session 21 — 2026-08-08
+
+### Completed
+- **Font bundling végre lezárva** (Session 1 óta nyitott manual step) — a 4 `.ttf` fizikailag áthelyezve a kinti `/Users/ArrayOfLilly/tools/countdownApp/` gyökérből a `countdownApp/countdownApp/resources/Font/` alá; a projekt Xcode 16 file-system-synchronized group-ot használ, tehát a pbxproj automatikusan felvette target membership-pel (nem kellett manuális pbxproj szerkesztés).
+  `countdownAppApp.swift`: `init()`-ben `CTFontManagerRegisterFontsForURL(_:.process:_)` hívás mind a 4 fontra (`Bundle.main.url(forResource:withExtension:)`, subdirectory fallback "Font"-ra is). `.process` scope = nem telepíti rendszerszinten, csak a futó app processzének regisztrálja. Ez független attól, hogy a Font Book-ban telepítve van-e a font — eddig valószínűleg CSAK azért működött a betűtípus, mert a user telepítette Font Book-ba, nem mert be volt csomagolva.
+  (Info.plist `ATSApplicationFontsPath` NEM kellett — a projekt `GENERATE_INFOPLIST_FILE=YES`-t használ fizikai Info.plist nélkül, és a szinkronizált resource-csoport miatt a path-flattening kiszámíthatatlan lett volna; a runtime `CTFontManagerRegisterFontsForURL` megbízhatóbb és debug-olható (print log, ha egy font nem található).)
+
+- **Beachball nyomozás — új infó + egy konkrét fix**: Time Profiler trace-t kaptunk (17 item, 4:19 perces felvétel, micro-hangok → Severe Hang a végén). A backtrace SwiftUI belső layout engine-ben (`UnaryLayoutEngine.sizeThatFits`, `PlacementContext.proposedSize.getter`, `AGGraphGetInputValue`) mutat aktív, valódi munkát — NEM deadlock/lock-wait. Kulcs infó a usertől: **app indítás után azonnal ugyanaz a kattintgatás NEM okoz hangot** — csak `hosszabb interakció/sok váltás UTÁN`. Ez inkább felhalmozódásra/torlódásra utal, mint egyszeri drága műveletre.
+  `CountdownRowView.swift` átnézve — nincs benne Timer, Combine subscription, NotificationCenter observer, tehát nem klasszikus retain-cycle onnan.
+  `CountdownView.swift` újraátnézve: a `FreeSlotDropDelegate.dropEntered` **minden egyes drag-hover eseménynél** (nem csak drop végén) `freeOrder = ids`-t írt, ami a régi `.onChange(of: freeOrder) { saveFreeOrder() }` miatt **szinkron UserDefaults írást váltott ki minden pointer-mozgásnál** egy drag közben — ha a drag sok hover-eseményt generál gyors egymásutánban, ez főszálon torlódó munkát jelent.
+  **Fix**: `saveFreeOrder()` leválasztva a `freeOrder` mutációjáról. `FreeSlotDropDelegate` kapott egy `onCommit: () -> Void` closure-t, amit csak `performDrop`-ban (drop VÉGÉN) hív meg — a `.onChange(of: freeOrder)` modifier törölve. A törlés (delete) ág explicit hívja `saveFreeOrder()`-t is (korábban az onChange intézte).
+  **Ez valószínűleg csak részleges fix** — a live-reorder-preview (a `freeOrder = ids` maga, minden hover-nél) továbbra is minden hover-eseménynél teljes ForEach re-diff-et vált ki; ezt szándékosan nem bántottam (UX-döntés, nagyobb átalakítás kéne). A "aktív/free váltás" trigger (RowEntry identity csere `a-`/`f-` prefix miatt, ld. BUG-20) külön gyanús marad — AttributeGraph subgraph teardown/rebuild overhead-jét nem tudom bizonyítani statikus kódolvasásból.
+
+### Open tasks
+- [ ] Teszt: PUSZTÁN reorder (semmilyen active/free váltás nélkül) okoz-e még hangot a UserDefaults-debounce fix után?
+- [ ] Teszt: PUSZTÁN deadline-szerkesztéssel kiváltott active↔free váltás (drag nélkül) okoz-e hangot?
+- [ ] Ha igen a 2. kérdésre: RowEntry identity csere overhead-jét kellene profilozni (Instruments "SwiftUI" instrument, vagy Point of Interest jelölők a reclassification körül).
+- Files changed: `countdownAppApp.swift`, `CountdownView.swift`, `resources/Font/*.ttf` (moved)
+
+---
+
 ## Session 20 — 2026-08-08
 
 ### Completed
@@ -353,8 +374,7 @@
   CountdownRowView, AddCountdownSheet, CountdownItem (Codable, Equatable, Identifiable).
 
 ### Manual Xcode steps STILL NEEDED
-- [ ] Assets.xcassets: add spooky_tomato.png (name: "spooky_tomato")
-- [ ] Drag 4 alienleague .ttf into Xcode (Copy + target membership)
-- [ ] Info.plist: "Fonts provided by application" array with 4 filenames
-- [ ] Project Navigator: Add Files → select all new .swift files
-- [ ] Verify Alien League PostScript name in Font Book
+- [x] Assets.xcassets: add spooky_tomato.png (name: "spooky_tomato") — done (session unknown, verified working Session 20)
+- [x] Fonts bundled + registered at runtime — done Session 21 (see above; moved to resources/Font/, CTFontManagerRegisterFontsForURL in countdownAppApp.swift; no Info.plist key needed)
+- [x] Project Navigator: Add Files — done (Xcode 16 file-system-synchronized group, automatic)
+- [x] Verify Alien League PostScript name in Font Book — superseded Session 21 (font now bundle-registered, Font Book install no longer required)

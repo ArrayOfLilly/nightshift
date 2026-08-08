@@ -67,6 +67,7 @@ struct CountdownView: View {
                     items.removeAll { $0.id == id }
                     freeOrder.removeAll { $0 == id }
                     save()
+                    saveFreeOrder()
                 }
             }
         }
@@ -74,8 +75,7 @@ struct CountdownView: View {
             load()
             loadFreeOrder()
         }
-        .onChange(of: items)     { save() }
-        .onChange(of: freeOrder) { saveFreeOrder() }
+        .onChange(of: items) { save() }
     }
 
     // MARK: - Sorted item lists
@@ -160,7 +160,8 @@ struct CountdownView: View {
                                     targetItem: item,
                                     freeItems:  free,
                                     freeOrder:  $freeOrder,
-                                    draggingID: $draggingID
+                                    draggingID: $draggingID,
+                                    onCommit:   saveFreeOrder
                                 )
                             )
                         } else {
@@ -230,9 +231,14 @@ private struct FreeSlotDropDelegate: DropDelegate {
     let freeItems:  [CountdownItem]
     @Binding var freeOrder:  [UUID]
     @Binding var draggingID: UUID?
+    let onCommit: () -> Void
 
     func dropUpdated(info: DropInfo) -> DropProposal? { DropProposal(operation: .move) }
-    func performDrop(info: DropInfo) -> Bool { draggingID = nil; return true }
+    func performDrop(info: DropInfo) -> Bool {
+        draggingID = nil
+        onCommit()
+        return true
+    }
 
     func dropEntered(info: DropInfo) {
         guard
