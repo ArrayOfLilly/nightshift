@@ -5,11 +5,12 @@
 //  Data model for a single countdown entry.
 //  Codable  → persisted to UserDefaults as JSON
 //  Equatable → required for SwiftUI onChange(of:) on the items array
+//  Hashable  → required for NavigationLink(value:) pattern (BUG-18 fix)
 //
 
 import Foundation
 
-struct CountdownItem: Identifiable, Codable, Equatable {
+struct CountdownItem: Identifiable, Codable, Equatable, Hashable {
 
     var id       = UUID()
     var label    : String        // e.g. "GPT-4 Free"

@@ -1,5 +1,61 @@
 # countdownApp — Progress
 
+## Session 19 — 2026-08-08
+
+### Completed
+- **BUG-18 FIX — NavigationLink destination eager construction minden TimelineView ticknél** —
+  `CountdownItem.swift`, `CountdownView.swift`.
+  Root cause: a `ForEach`-en belüli `NavigationLink { CountdownDetailView(...) }` szintaxis
+  a destination closure-t minden render-passnál kiértékeli. A `TimelineView` 1 Hz-en tickel,
+  tehát másodpercenként az összes sor `CountdownDetailView`-ja létrejött és azonnal
+  megsemmisült — még ha a user nem navigált sehova.
+  Fix:
+  1. `CountdownItem`: `Hashable` conformance hozzáadva (`NavigationLink(value:)` feltétele).
+  2. `CountdownView`: Mindkét `ForEach`-ben (active + free sorok) a
+     `NavigationLink { destination } label:` szintaxis lecserélve
+     `NavigationLink(value: item) { label }` alakra.
+  3. `CountdownView`: `.navigationDestination(for: CountdownItem.self)` modifier hozzáadva
+     a `NavigationStack`-re — `CountdownDetailView` mostantól csak navigáláskor konstruálódik.
+     Delete callback egységesítve: mindkét esetben törli a `freeOrder`-ből is
+     (active sornál no-op, free sornál szükséges).
+  Eredmény: nincs per-tick `CountdownDetailView` allokáció, nincs felesleges
+  Swift runtime demangling másodpercenként.
+- Files changed: `CountdownItem.swift`, `CountdownView.swift`
+
+### Open tasks
+- None.
+
+---
+
+## Session 18 — 2026-08-08
+
+### Diagnosed (not yet fixed)
+
+- **PERF — NavigationLink destination allokálódik minden TimelineView ticknél** — `CountdownView.swift`.
+  Root cause: a `ForEach`-en belüli `NavigationLink { CountdownDetailView(...) }` szintaxis
+  a destination closure-t minden render-passnál kiértékeli. A `TimelineView` 1 Hz-en
+  tickel, tehát másodpercenként az összes aktív és free sor `CountdownDetailView`-ja
+  létrejön és azonnal megsemmisül — még ha a user nem navigál sehova.
+  Az `sample` trace-ből bizonyítható:
+    assignWithCopy for CountdownDetailView   <- allokáció minden ticknél
+    LocationBox.__deallocating_deinit        <- azonnal deallokál
+    swift_getTypeByMangledName               <- generic típusmetadata re-resolve
+      Demangler::demangleType
+        NavigationLink.body.getter
+  Ez önmagában nem okoz beachballt (a trace 98%-a idle mach_msg), de felesleges
+  folyamatos allokáció/deallokáció + Swift runtime demangling minden ticknél.
+
+  Fix terv: NavigationLink<Label, Destination> destination closure lecserélése
+  .navigationDestination(isPresented:) + @State var selectedItem: CountdownItem?
+  kombinációra — CountdownDetailView csak navigáláskor konstruálódik.
+  Alternatíva: NavigationLink(value:) + .navigationDestination(for:);
+  ehhez CountdownItem-nek Hashable conformance kell.
+
+### Open tasks
+- [ ] BUG-18: NavigationLink destination eager construction fix (CountdownView.swift)
+
+---
+
 ## Session 17 — 2026-08-08
 
 ### Completed

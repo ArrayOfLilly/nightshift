@@ -9,6 +9,9 @@
 //  Free (expired) rows: manually reorderable via drag-to-reorder;
 //    freeOrder [UUID] drives render order, persisted to UserDefaults "freeSlotOrder".
 //
+//  BUG-18 fix: NavigationLink(value:) + .navigationDestination(for:) pattern.
+//  CountdownDetailView is only constructed on navigation, not on every TimelineView tick.
+//
 
 import SwiftUI
 import UniformTypeIdentifiers
@@ -36,6 +39,16 @@ struct CountdownView: View {
             .sheet(isPresented: $showAddSheet) {
                 AddCountdownSheet { newItem in
                     items.append(newItem)
+                }
+            }
+            .navigationDestination(for: CountdownItem.self) { item in
+                if let idx = items.firstIndex(where: { $0.id == item.id }) {
+                    CountdownDetailView(item: $items[idx]) {
+                        let id = items[idx].id
+                        items.removeAll { $0.id == id }
+                        freeOrder.removeAll { $0 == id }
+                        save()
+                    }
                 }
             }
         }
@@ -104,49 +117,32 @@ struct CountdownView: View {
                         .padding(.bottom, 4)
 
                     ForEach(active, id: \.id) { item in
-                        if let idx = items.firstIndex(where: { $0.id == item.id }) {
-                            NavigationLink {
-                                CountdownDetailView(item: $items[idx]) {
-                                    let id = items[idx].id
-                                    items.removeAll { $0.id == id }
-                                    save()
-                                }
-                            } label: {
-                                CountdownRowView(item: binding(for: item), now: now)
-                            }
-                            .buttonStyle(.plain)
-                            .focusable(false)
+                        NavigationLink(value: item) {
+                            CountdownRowView(item: binding(for: item), now: now)
                         }
+                        .buttonStyle(.plain)
+                        .focusable(false)
                     }
 
                     ForEach(free, id: \.id) { item in
-                        if let idx = items.firstIndex(where: { $0.id == item.id }) {
-                            NavigationLink {
-                                CountdownDetailView(item: $items[idx]) {
-                                    let id = items[idx].id
-                                    items.removeAll { $0.id == id }
-                                    freeOrder.removeAll { $0 == id }
-                                    save()
-                                }
-                            } label: {
-                                CountdownRowView(item: binding(for: item), now: now)
-                            }
-                            .buttonStyle(.plain)
-                            .focusable(false)
-                            .onDrag {
-                                draggingID = item.id
-                                return NSItemProvider(object: item.id.uuidString as NSString)
-                            }
-                            .onDrop(
-                                of: [.plainText],
-                                delegate: FreeSlotDropDelegate(
-                                    targetItem: item,
-                                    freeItems:  free,
-                                    freeOrder:  $freeOrder,
-                                    draggingID: $draggingID
-                                )
-                            )
+                        NavigationLink(value: item) {
+                            CountdownRowView(item: binding(for: item), now: now)
                         }
+                        .buttonStyle(.plain)
+                        .focusable(false)
+                        .onDrag {
+                            draggingID = item.id
+                            return NSItemProvider(object: item.id.uuidString as NSString)
+                        }
+                        .onDrop(
+                            of: [.plainText],
+                            delegate: FreeSlotDropDelegate(
+                                targetItem: item,
+                                freeItems:  free,
+                                freeOrder:  $freeOrder,
+                                draggingID: $draggingID
+                            )
+                        )
                     }
                 }
                 .padding(.horizontal, 16)
