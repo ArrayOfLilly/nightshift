@@ -563,13 +563,32 @@ nem folyamatos 100Hz-es munka.
 
 ---
 
+## Session 25 — 2026-08-09
+
+### Completed
+
+**CALC-1 FIX — Calendar-aware result mode** — `CalculateView.swift`.
+Two result display modes, toggled by `DAYS` / `CAL` buttons placed below the result row.
+- **DAYS** (default, unchanged): fixed `d h m s` breakdown via integer arithmetic on `difference`.
+- **CAL** (new): `Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second],
+  from: earlier, to: later)` — order-aware (always earlier→later, sign handled by existing `isFuture`/`resultLabel`). Leading zero components hidden; at least the last non-zero component always shown (falls back to the last element if all zero).
+- Toggle buttons styled identically to `RESET FROM/TO NOW` (`alienLeague(13)`, `padding 16/8`, `cornerRadius 8`). Active: `Color.white.opacity(0.35)`, inactive: `Color.white.opacity(0.12)`.
+- Persisted via `@AppStorage("calculateDisplayMode")` (`"days"` / `"cal"`).
+- Weeks excluded per plan.
+- `calResultParts` computed var added; `resultRow` switches on `displayMode`; `modeToggle` + `modeButton` helpers added under `// MARK: - Mode toggle`.
+
+### Open tasks
+- [ ] 23-D: `LongPressStepperButton` timer double-add fix (low priority, self-contained).
+- [ ] SUN-1: Sunrise/sunset sheet (backlog).
+- Files changed: `CalculateView.swift`
+
+---
+
 ## Session 24 — 2026-08-08
 
 ### CalculateView bug list (new, not yet planned)
 
-**CALC-1 — No years/months/weeks granularity**
-The result only shows days, hours, minutes, seconds. No years/months/weeks breakdown.
-Not yet planned — future enhancement.
+**CALC-1 — No years/months/weeks granularity** ✅ FIXED Session 25
 
 **CALC-2 — Seconds not settable but always visible in result** ✅ FIXED Session 24
 **CALC-3 — From = To still shows non-zero difference** ✅ FIXED Session 24
@@ -670,9 +689,10 @@ Két forrás, user választ a sheeten egy gombbal:
 Az utoljára használt koordináta megmarad; ha egyszer kézi, nem kell újra.
 
 ### Cache stratégia
-`UserDefaults`-ban tárolt JSON — a lekérdezett napok adatait cache-eli,
-nem kérdez le nálkül semmit. Lazán tölt: csak az aktuális nap szükséges
-elsősorban; a cache-be mentés után napokért már nem hív API-t.
+Egyet…len API hívás az egész évre: `date_start=YYYY-01-01&date_end=YYYY-12-31`.
+`UserDefaults`-ban tárolt JSON — app első indításakor (vagy ha nincs cache, vagy
+évváltáskor) tölt egyet, utána teljesen offline. Következő évre való előretoltés
+opcionális (december végén, ha van hálózat).
 
 ### Sheet UI (kezdeti)
 - Háttér: a holdak látszanak mögötte (blur vagy opacity).

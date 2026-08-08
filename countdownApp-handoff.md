@@ -8,7 +8,7 @@
   Swift forrás: `countdownApp/countdownApp/countdownApp/` alatt.
 - Olvasd el először a `progress.md`-t.
 
-## Jelenlegi állapot (Session 24 végén)
+## Jelenlegi állapot (Session 25 végén)
 
 **Beachball fix — LEZÁRVA, commitolva (`07861a9`)**
 - 23-A: `dropEntered` guard (`if ids != freeOrder`)
@@ -21,24 +21,21 @@
 - CALC-2/3: `snapToMinute()` — minden Date-write percre kerekít
 - CALC-4: `RESET FROM NOW` + `RESET TO NOW` gombok a stepperek alatt, eredeti stílusban
 
+**CALC-1 — Calendar-aware result mode — kész (Session 25)**
+- `DAYS` / `CAL` toggle a result row alatt; `@AppStorage("calculateDisplayMode")` menti.
+- `calResultParts`: `Calendar.dateComponents` earlier→later, vezető nullák elrejtve.
+- `modeToggle` + `modeButton` helpers hozzáadva `CalculateView.swift`-hez.
+
 **23-D — még nyitva (LongPressStepperButton timer double-add)**
 `LongPressStepperButton.swift` — `Timer.scheduledTimer` + `RunLoop.main.add(..., .common)`
 kettős regisztráció. Nem beachball-forrás, önálló bug.
 
-## Következő session: CALC-1 implementáció
+## Következő session: 23-D vagy SUN-1
 
-Részletes terv a `progress.md` Session 24 „CALC-1 implementation plan" szekciójában.
+- **23-D** (közepes): `LongPressStepperButton.swift` — `Timer.scheduledTimer` + `RunLoop.main.add`
+  kettős regisztráció kijavítása.
+- **SUN-1** (backlog): sunrise/sunset sheet a CalculateView holdjai fölé.
 
-**Röviden:**
-- Két eredmény mód, toggle-lal váltható, a result row alá helyezve.
-- `DAYS` gomb (alapértelmezett): jelenlegi `d h m s` számolás, változatlan.
-- `CAL` gomb: `cal.dateComponents([.year, .month, .day, .hour, .minute, .second], from:, to:)`,
-  vezető nullás komponensek elrejtve.
-- Toggle gombok stílusa: mint a RESET FROM/TO NOW gombok (spacing 6, 12pt ikon,
-  padding 16/8, cornerRadius 8). Aktív gomb: `Color.white.opacity(0.35)` háttér.
-- Mentés: `@AppStorage("calculateDisplayMode")` (`"days"` / `"cal"`).
-- Hetek kizárva.
-
-## Érintett fájlok
-- `CalculateView.swift` — CALC-1 célfájl
+## Érintett fájlok (commit pending)
+- `CalculateView.swift` — CALC-1 (Session 25)
 - `LongPressStepperButton.swift` — 23-D (alacsony prioritás)

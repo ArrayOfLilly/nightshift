@@ -13,8 +13,9 @@ import SwiftUI
 
 struct CalculateView: View {
 
-    @AppStorage("calculateFromDate") private var fromInterval: Double = Date().timeIntervalSince1970
-    @AppStorage("calculateToDate")   private var toInterval:   Double = Date().timeIntervalSince1970
+    @AppStorage("calculateFromDate")    private var fromInterval: Double = Date().timeIntervalSince1970
+    @AppStorage("calculateToDate")      private var toInterval:   Double = Date().timeIntervalSince1970
+    @AppStorage("calculateDisplayMode") private var displayMode: String = "days"
 
     private var fromDate: Date {
         get { Date(timeIntervalSince1970: fromInterval) }
@@ -73,6 +74,7 @@ struct CalculateView: View {
                         .foregroundStyle(Color.white.opacity(0.9))
 
                     resultRow
+                    modeToggle
 
                     // ── Illustration — moon phases in a U-arc ─────────────
                     GeometryReader { geo in
@@ -202,7 +204,7 @@ struct CalculateView: View {
 
     @ViewBuilder
     private var resultRow: some View {
-        let parts = resultParts
+        let parts = displayMode == "cal" ? calResultParts : resultParts
         HStack(alignment: .firstTextBaseline, spacing: 4) {
             ForEach(parts.indices, id: \.self) { i in
                 Text(parts[i].quantity)
@@ -219,6 +221,33 @@ struct CalculateView: View {
         .lineLimit(1)
     }
 
+    // MARK: - Mode toggle
+
+    @ViewBuilder
+    private var modeToggle: some View {
+        HStack(spacing: 8) {
+            modeButton(label: "DAYS", mode: "days")
+            modeButton(label: "CAL",  mode: "cal")
+        }
+    }
+
+    @ViewBuilder
+    private func modeButton(label: String, mode: String) -> some View {
+        Button { displayMode = mode } label: {
+            Text(label)
+                .font(AppTheme.alienLeague(13))
+                .foregroundStyle(AppTheme.background)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(displayMode == mode
+                    ? Color.white.opacity(0.35)
+                    : Color.white.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .buttonStyle(.plain)
+        .focusable(false)
+    }
+
     // MARK: - Computed
 
     private var isFuture:    Bool         { toDate > fromDate }
@@ -226,6 +255,26 @@ struct CalculateView: View {
     private var resultLabel: String       { isFuture ? "Remaining time:" : "Elapsed time:" }
 
     private struct TimePart { let quantity: String; let unit: String }
+
+    private var calResultParts: [TimePart] {
+        // Calendar-aware breakdown; always compute from earlier → later date.
+        let (earlier, later) = fromDate <= toDate ? (fromDate, toDate) : (toDate, fromDate)
+        let comps = cal.dateComponents(
+            [.year, .month, .day, .hour, .minute, .second],
+            from: earlier, to: later
+        )
+        let all: [(Int, String)] = [
+            (comps.year   ?? 0, "y"),
+            (comps.month  ?? 0, "mo"),
+            (comps.day    ?? 0, "d"),
+            (comps.hour   ?? 0, "h"),
+            (comps.minute ?? 0, "m"),
+            (comps.second ?? 0, "s"),
+        ]
+        // Drop leading zero components; always keep at least the last one.
+        let firstNonZero = all.firstIndex(where: { $0.0 != 0 }) ?? (all.count - 1)
+        return Array(all[firstNonZero...]).map { TimePart(quantity: "\($0.0)", unit: $0.1) }
+    }
 
     private var resultParts: [TimePart] {
         let total   = Int(difference)
