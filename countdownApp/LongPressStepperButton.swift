@@ -47,10 +47,9 @@ struct LongPressStepperButton: View {
                         // Fire immediately on touch-down (single step).
                         action()
                         // After initialDelay, start repeating.
-                        let t = Timer.scheduledTimer(
-                            withTimeInterval: initialDelay,
-                            repeats: false
-                        ) { [self] _ in
+                        // Use unscheduled Timer + manual RunLoop.add to avoid
+                        // double-registration (.default + .common) that Timer.scheduledTimer causes.
+                        let t = Timer(timeInterval: initialDelay, repeats: false) { [self] _ in
                             startRepeating()
                         }
                         RunLoop.main.add(t, forMode: .common)
@@ -66,10 +65,8 @@ struct LongPressStepperButton: View {
     private func startRepeating() {
         // Cancel the initial-delay timer (it already fired), start repeat timer.
         timer?.invalidate()
-        let t = Timer.scheduledTimer(
-            withTimeInterval: repeatInterval,
-            repeats: true
-        ) { _ in
+        // Use unscheduled Timer + manual RunLoop.add — see initialDelay timer above.
+        let t = Timer(timeInterval: repeatInterval, repeats: true) { _ in
             action()
         }
         RunLoop.main.add(t, forMode: .common)
