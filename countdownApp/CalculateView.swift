@@ -225,23 +225,15 @@ struct CalculateView: View {
 
     @ViewBuilder
     private var modeToggle: some View {
-        HStack(spacing: 8) {
-            modeButton(label: "DAYS", mode: "days")
-            modeButton(label: "CAL",  mode: "cal")
-        }
-    }
-
-    @ViewBuilder
-    private func modeButton(label: String, mode: String) -> some View {
-        Button { displayMode = mode } label: {
-            Text(label)
+        Button {
+            displayMode = displayMode == "days" ? "cal" : "days"
+        } label: {
+            Text(displayMode == "days" ? "CAL" : "DAYS")
                 .font(AppTheme.alienLeague(13))
                 .foregroundStyle(AppTheme.background)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(displayMode == mode
-                    ? Color.white.opacity(0.35)
-                    : Color.white.opacity(0.12))
+                .background(Color.white.opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
