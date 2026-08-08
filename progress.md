@@ -642,7 +642,45 @@ Commit ready: minden TEMP flag eltávolítva, kód production állapotban.
 
 ---
 
-## Session 23 — végleges terv (2026-08-08)
+## SUN-1 — Sunrise/sunset sheet (tervezett, nem implementált)
+
+### Koncepció
+A CalculateView hold-képei fölött hover („onHover‟) egy sheetet nyit,
+amely a mai nap napfelkeltét és naplementejét mutatja, a te időzítési
+use case-edhez igazítva (mikor lehet csendben fejleszteni, mikor kezd zavarni
+a kötelező munka).
+
+### API
+`https://sunrisesunset.io/api/` — ingyenes, évente előre letölthető.
+Paraméterek: `lat`, `lng`, `date`, `timezone`.
+Releváns mezők a response-ból:
+- `astronomical_twilight_begin` — legkorábbi csend+sötét pont
+- `nautical_twilight_begin`
+- `civil_twilight_begin` — innen kezd zavarni a világosodás
+- `sunrise`
+- `solar_noon`
+- `sunset`
+- `civil_twilight_end`
+- `astronomical_twilight_end`
+
+### Lokáció
+Két forrás, user választ a sheeten egy gombbal:
+- **Automatikus**: CoreLocation (`CLLocationManager`), engedély kéréssel.
+- **Kézi**: koordináta mező a sheeten (lat/lng), `@AppStorage`-ban mentve.
+Az utoljára használt koordináta megmarad; ha egyszer kézi, nem kell újra.
+
+### Cache stratégia
+`UserDefaults`-ban tárolt JSON — a lekérdezett napok adatait cache-eli,
+nem kérdez le nálkül semmit. Lazán tölt: csak az aktuális nap szükséges
+elsősorban; a cache-be mentés után napokért már nem hív API-t.
+
+### Sheet UI (kezdeti)
+- Háttér: a holdak látszanak mögötte (blur vagy opacity).
+- Tartalom: időpontok listája, app-stílusban (Alien League font, amber/dark színek).
+- Trigger: `.onHover` a holdak területén.
+
+### Későbbi bővítés (backlog)
+- Vizuális idővonal/ív ahol látszik hol tart most a nap a nap folyamán.
 
 ### Konszenzus (Gemini + ChatGPT, teljes kód alapján)
 
