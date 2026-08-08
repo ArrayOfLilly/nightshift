@@ -563,6 +563,78 @@ nem folyamatos 100Hz-es munka.
 
 ---
 
+## Session 24 — 2026-08-08
+
+### CalculateView bug list (new, not yet planned)
+
+**CALC-1 — No years/months/weeks granularity**
+The result only shows days, hours, minutes, seconds. No years/months/weeks breakdown.
+Not yet planned — future enhancement.
+
+**CALC-2 — Seconds not settable but always visible in result**
+The steppers only expose year/month/day/hour/minute components; seconds cannot be set.
+However the result display includes seconds — sourced from the hidden sub-minute
+precision of the stored `Date` values.
+
+**CALC-3 — From = To still shows non-zero difference**
+Root cause: CALC-2. Even after matching all stepper values, the underlying `Date`
+retains a seconds (and sub-second) component that was never zeroed out.
+Result: "From" and "To" appear identical in the UI but difference ≠ 0.
+
+**CALC-4 — No "NOW" reset for From; "NOW" reset for To behaves incorrectly**
+Only "To" has a NOW reset button. Pressing it sets `toInterval = Date().timeIntervalSince1970`,
+which includes live seconds → increases (or unpredictably changes) the gap instead of
+reducing it. A "From" NOW button is missing entirely.
+
+### Fix sketch (not yet assigned to a session)
+- CALC-2/3 fix: when writing a stepper value back to storage, snap seconds to 0
+  (floor the Date to the minute boundary). One-liner in `adjust()` or `fromDate`/`toDate` setter.
+- CALC-4 fix: add a NOW button for From (mirroring To); fix NOW reset to snap to
+  minute boundary (same floor logic) so seconds don't bleed in.
+- CALC-1: backlog, no ETA.
+
+---
+
+### Completed
+
+**23-A FIX — dropEntered guard** — `CountdownView.swift`, `FreeSlotDropDelegate.dropEntered`.
+Egysoros fix: `freeOrder = ids` → `if ids != freeOrder { freeOrder = ids }`.
+Hatás: drag hover minden egyes pointer-mozgásánál NEM mutálja `freeOrder`-t, ha az order
+ténylegesen nem változott → nincs felesleges ForEach diff + LazyVStack reconciliation.
+
+**23-B DIAG — LazyVStack → VStack csere** — `CountdownView.swift`, `itemList`.
+`LazyVStack(spacing: 10)` → `VStack(spacing: 10)` (TEMP DIAG kommenttel ellátva).
+Cél: ha a beachball eltűnik → `LazyLayoutViewCache.updateItemPhases()` igazolt tettes
+→ 23-C (cachedEntries refaktor) indokolt. Ha nem tűnik el → más az ok.
+
+⚠️ TEMP DEBUG (TimelineView 0.01s tick) még aktív — ne állítsd vissza!
+⚠️ TEMP DIAG (VStack) még aktív — visszaállítás LazyVStack-re 23-C után.
+
+### 23-B EREDMÉNY — IGAZOLVA
+4 perc valós futás (0.01s tick) = ~6.7 óra szimulált idő. Korábbi Severe Hang határ: "több óra".
+Eredmény: **NEM volt Severe Hang.** 39 db "Potential Interaction Delay" (38–204ms) — normális.
+Konklúzió: `LazyLayoutViewCache.updateItemPhases()` volt a fő tettes.
+→ **23-C (cachedEntries refaktor) indokolt és soron következő.**
+
+### Open tasks
+- [x] 23-A: dropEntered guard — KÉSZ
+- [x] 23-B: LazyVStack → VStack diag — KÉSZ, IGAZOLT
+- [x] 23-C: cachedEntries szétválasztás — KÉSZ
+- [ ] 23-D: LongPressStepperButton timer double-add fix (önálló)
+- [x] TimelineView tick visszaállítása 1.0-ra — KÉSZ
+- [x] VStack véglegesítve (LazyVStack visszaállítás visszavonva) — KÉSZ, igazolva
+- Files changed: `CountdownView.swift` (23-A guard + 23-B VStack permanent + 23-C cachedEntries + 1.0s tick)
+
+### 23-B VÉGLEGES KONKLÚZIÓ (Session 23 zárása)
+A LazyVStack visszaállítása Severe Hangot okozott azonnal a tesztelés során (Instruments
+képernyőképekkel igazolva). A VStack nem temp diagnosztika, hanem a végleges fix.
+Root cause megerősítve: `LazyLayoutViewCache.updateItemPhases()` scroll-trigger →
+`AG::Subgraph::foreach_ancestor` walk → Severe Hang, active↔free reclassification
+ciklusok után. VStack-nél ez a mechanizmus nem létezik.
+Commit ready: minden TEMP flag eltávolítva, kód production állapotban.
+
+---
+
 ## Session 23 — végleges terv (2026-08-08)
 
 ### Konszenzus (Gemini + ChatGPT, teljes kód alapján)

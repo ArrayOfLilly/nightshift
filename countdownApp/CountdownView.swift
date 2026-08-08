@@ -43,6 +43,12 @@ struct CountdownView: View {
     @State private var freeOrder:    [UUID] = []
     @State private var draggingID:   UUID?  = nil
 
+    // 23-C: stable ForEach data — rebuilt only on structural changes, not every tick.
+    @State private var cachedEntries:   [RowEntry]           = []
+    @State private var cachedFreeItems: [CountdownItem]      = []
+    @State private var nextDeadline:    Date?                = nil
+    @State private var crossingTask:    Task<Void, Never>?   = nil
+
     private let storageKey   = "countdownItems"
     private let freeOrderKey = "freeSlotOrder"
 
@@ -74,8 +80,10 @@ struct CountdownView: View {
         .onAppear {
             load()
             loadFreeOrder()
+            rebuildCache()
         }
-        .onChange(of: items) { save() }
+        .onChange(of: items)     { save(); rebuildCache() }
+        .onChange(of: freeOrder) { rebuildCache() }
     }
 
     // MARK: - Sorted item lists
@@ -121,21 +129,46 @@ struct CountdownView: View {
         )
     }
 
+    // MARK: - Cache rebuild
+
+    // 23-C fix: decouples ForEach identity from the TimelineView tick.
+    // Called only on structural changes: items/freeOrder mutation, or deadline crossing.
+    // Sets nextDeadline = earliest active deadline, then arms a Task that fires exactly
+    // when the first active item expires (active→free reclassification needed).
+    private func rebuildCache(now: Date = Date()) {
+        cachedEntries   = rowEntries(at: now)
+        cachedFreeItems = orderedFreeItems(at: now)
+        nextDeadline    = items
+            .filter { !$0.isExpired(at: now) }
+            .map    { $0.deadline }
+            .min()
+        crossingTask?.cancel()
+        if let nd = nextDeadline {
+            crossingTask = Task {
+                let delay = nd.timeIntervalSinceNow
+                if delay > 0 {
+                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                }
+                guard !Task.isCancelled else { return }
+                await MainActor.run { rebuildCache() }
+            }
+        }
+    }
+
     // MARK: - Subviews
 
-    // ⚠️ TEMP DEBUG (Session 22, 2026-08-08) — tick interval sped up 100× to
-    // compress hours of real-time TimelineView ticks into minutes, to test
-    // whether the beachball is caused by tick COUNT accumulating over long
-    // background runtime rather than by user interaction. REVERT to 1.0
-    // before normal use — search "TEMP DEBUG" to find this.
+    // 23-B fix (confirmed Session 23, 2026-08-08): LazyVStack replaced with VStack.
+    // LazyLayoutViewCache.updateItemPhases() triggered by scroll caused
+    // AG::Subgraph::foreach_ancestor walk → Severe Hang after active↔free
+    // reclassification cycles. VStack has no lazy phase tracking; no ancestor walk.
+    // 23-C: TimelineView tick at 1.0s; cachedEntries decouples ForEach from tick.
     private var itemList: some View {
-        TimelineView(.periodic(from: .now, by: 0.01)) { ctx in
-            let now     = ctx.date
-            let entries = rowEntries(at: now)
-            let free    = orderedFreeItems(at: now)
-
+        TimelineView(.periodic(from: .now, by: 1.0)) { ctx in
+            let now = ctx.date
+            // 23-C: cachedEntries is stable between structural changes.
+            // ForEach diff is O(0) per tick; LazyLayoutViewCache sees no identity churn.
             ScrollView {
-                LazyVStack(spacing: 10) {
+                VStack(spacing: 10) { // 23-B fix: LazyVStack causes LazyLayoutViewCache.updateItemPhases() scroll-triggered ancestor walk → Severe Hang. VStack is permanent fix.
 
                     Text("ACCOUNT COOLDOWN")
                         .font(AppTheme.alienLeagueBold(32))
@@ -145,7 +178,7 @@ struct CountdownView: View {
                         .padding(.top, 20)
                         .padding(.bottom, 4)
 
-                    ForEach(entries) { entry in
+                    ForEach(cachedEntries) { entry in
                         let item = entry.item
                         let isFree = entry.slotKind == "f"
 
@@ -163,7 +196,7 @@ struct CountdownView: View {
                                 of: [.plainText],
                                 delegate: FreeSlotDropDelegate(
                                     targetItem: item,
-                                    freeItems:  free,
+                                    freeItems:  cachedFreeItems,
                                     freeOrder:  $freeOrder,
                                     draggingID: $draggingID,
                                     onCommit:   saveFreeOrder
@@ -254,7 +287,8 @@ private struct FreeSlotDropDelegate: DropDelegate {
         else { return }
         var ids = freeItems.map { $0.id }
         ids.move(fromOffsets: IndexSet(integer: fi), toOffset: ti > fi ? ti + 1 : ti)
-        freeOrder = ids
+        // 23-A fix: skip mutation if order unchanged (avoids ForEach diff on every hover event)
+        if ids != freeOrder { freeOrder = ids }
     }
 }
 
