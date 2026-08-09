@@ -23,6 +23,39 @@ struct CountdownItem: Identifiable, Codable, Equatable, Hashable {
     /// Default false — backward-compatible: missing key in JSON decodes as false.
     var soundEnabled: Bool = false
 
+    // MARK: - Codable
+    //
+    // Swift synthesized Decodable does NOT fall back to a property's default value
+    // when the key is absent — it throws keyNotFound, which `try?` silently turns
+    // into nil, leaving `items = []`. Custom init(from:) is required so that
+    // optional/defaulted fields (accentColorIndex, soundEnabled, showRemaining)
+    // gracefully decode to their defaults when loading JSON written by older builds.
+
+    enum CodingKeys: String, CodingKey {
+        case id, label, deadline, showRemaining, accentColorIndex, soundEnabled
+    }
+
+    init(id: UUID = UUID(), label: String, deadline: Date,
+         showRemaining: Bool = true, accentColorIndex: Int? = nil,
+         soundEnabled: Bool = false) {
+        self.id               = id
+        self.label            = label
+        self.deadline         = deadline
+        self.showRemaining    = showRemaining
+        self.accentColorIndex = accentColorIndex
+        self.soundEnabled     = soundEnabled
+    }
+
+    init(from decoder: Decoder) throws {
+        let c             = try decoder.container(keyedBy: CodingKeys.self)
+        id               = try c.decode(UUID.self,   forKey: .id)
+        label            = try c.decode(String.self, forKey: .label)
+        deadline         = try c.decode(Date.self,   forKey: .deadline)
+        showRemaining    = try c.decodeIfPresent(Bool.self, forKey: .showRemaining)    ?? true
+        accentColorIndex = try c.decodeIfPresent(Int.self,  forKey: .accentColorIndex) ?? nil
+        soundEnabled     = try c.decodeIfPresent(Bool.self, forKey: .soundEnabled)     ?? false
+    }
+
     // MARK: - Helpers called from the view with a live Date reference
     // (views pass Date() from a TimelineView so the display updates every second)
 
