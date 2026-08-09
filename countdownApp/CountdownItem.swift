@@ -19,6 +19,9 @@ struct CountdownItem: Identifiable, Codable, Equatable, Hashable {
     /// Manually selected color index into AppTheme.freeColors.
     /// nil = auto (hash-based fallback). Only meaningful for free (expired) slots.
     var accentColorIndex: Int? = nil
+    /// Play a system sound when this slot expires (active → free transition).
+    /// Default false — backward-compatible: missing key in JSON decodes as false.
+    var soundEnabled: Bool = false
 
     // MARK: - Helpers called from the view with a live Date reference
     // (views pass Date() from a TimelineView so the display updates every second)

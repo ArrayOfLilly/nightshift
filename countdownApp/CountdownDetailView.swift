@@ -14,6 +14,11 @@
 //  render pass (toggle, TimelineView tick, etc.). NSTextField manages its own
 //  first-responder lifecycle through AppKit and does not go through FocusBridge.
 //
+//  SOUND-1: Sound toggle button added to the bottom button row (all slot types).
+//  speaker.wave.2.fill when enabled, speaker.slash.fill when disabled.
+//  Writes directly to item.soundEnabled via @Binding, propagated to CountdownView
+//  and persisted automatically via the existing .onChange(of: items) → save() chain.
+//
 
 import SwiftUI
 import AppKit
@@ -231,6 +236,27 @@ struct CountdownDetailView: View {
                             ColorPickerSheet(selectedIndex: $item.accentColorIndex)
                         }
                     }
+
+                    // ── Sound toggle — all slot types ──────────────────────
+                    // SOUND-1: toggles item.soundEnabled; persists via @Binding →
+                    // CountdownView.items → .onChange(of: items) → save().
+                    Button {
+                        item.soundEnabled.toggle()
+                    } label: {
+                        Image(systemName: item.soundEnabled
+                              ? "speaker.wave.2.fill"
+                              : "speaker.slash.fill")
+                            .font(.system(size: 16))
+                            .foregroundStyle(item.soundEnabled
+                                            ? AppTheme.background
+                                            : AppTheme.background.opacity(0.4))
+                            .frame(width: 44, height: 44)
+                            .background(item.soundEnabled
+                                        ? AppTheme.dark
+                                        : AppTheme.dark.opacity(0.45))
+                            .clipShape(RoundedRectangle(cornerRadius: 9))
+                    }
+                    .focusable(false)
 
                     Button(action: onDelete) {
                         Image(systemName: "trash")

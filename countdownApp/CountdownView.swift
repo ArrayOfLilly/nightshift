@@ -24,8 +24,15 @@
 //  CountdownRowView keeps the stale free appearance. The prefix forces a new view
 //  identity on reclassification.
 //
+//  SOUND-1: Per-slot expiry sound.
+//  rebuildCache tracks previousActiveIDs (Set<UUID>). The crossingTask calls
+//  rebuildCache(playExpirySounds: true) exactly when nextDeadline passes —
+//  items that just left the active set and have soundEnabled=true trigger
+//  NSSound(named: "Funk")?.play().
+//
 
 import SwiftUI
+import AppKit
 import UniformTypeIdentifiers
 
 // MARK: - RowEntry
@@ -48,6 +55,10 @@ struct CountdownView: View {
     @State private var cachedFreeItems: [CountdownItem]      = []
     @State private var nextDeadline:    Date?                = nil
     @State private var crossingTask:    Task<Void, Never>?   = nil
+
+    // SOUND-1: snapshot of active item IDs from the previous rebuildCache call.
+    // Used to detect which items just expired when crossingTask fires.
+    @State private var previousActiveIDs: Set<UUID> = []
 
     private let storageKey   = "countdownItems"
     private let freeOrderKey = "freeSlotOrder"
@@ -135,7 +146,24 @@ struct CountdownView: View {
     // Called only on structural changes: items/freeOrder mutation, or deadline crossing.
     // Sets nextDeadline = earliest active deadline, then arms a Task that fires exactly
     // when the first active item expires (active→free reclassification needed).
-    private func rebuildCache(now: Date = Date()) {
+    //
+    // SOUND-1: playExpirySounds=true is passed only from the crossingTask (deadline crossing).
+    // At that point, items that were in previousActiveIDs but are now expired AND have
+    // soundEnabled=true will trigger NSSound(named: "Funk")?.play().
+    // previousActiveIDs is always updated to the current active set at the end.
+    private func rebuildCache(now: Date = Date(), playExpirySounds: Bool = false) {
+        let newActiveIDs = Set(items.filter { !$0.isExpired(at: now) }.map { $0.id })
+
+        if playExpirySounds {
+            let justExpired = items.filter {
+                previousActiveIDs.contains($0.id) && !newActiveIDs.contains($0.id)
+            }
+            for item in justExpired where item.soundEnabled {
+                NSSound(named: "Funk")?.play()
+            }
+        }
+        previousActiveIDs = newActiveIDs
+
         cachedEntries   = rowEntries(at: now)
         cachedFreeItems = orderedFreeItems(at: now)
         nextDeadline    = items
@@ -150,7 +178,7 @@ struct CountdownView: View {
                     try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                 }
                 guard !Task.isCancelled else { return }
-                await MainActor.run { rebuildCache() }
+                await MainActor.run { rebuildCache(now: Date(), playExpirySounds: true) }
             }
         }
     }
