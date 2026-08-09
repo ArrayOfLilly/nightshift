@@ -29,7 +29,7 @@ struct SunPanel: View {
                 noDataState
             }
         }
-        .padding(20)
+        .padding(.vertical, 20)
         .background(
             LinearGradient(
                 stops: [
