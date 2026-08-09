@@ -41,11 +41,26 @@ JSON `Data` tárolva (újradecode-olható). URL: `https://api.sunrisesunset.io/j
 korrigált/élő teszthez igazodva, ld. Session 26 korrekció: HH:MM:SS, nem ISO8601).
 CoreLocation még nincs bekötve.
 
-### SUN-1-A — hátralévő lépés
-- [ ] Git commit (entitlements + SunTimes.swift + SunTimesService.swift) — következő
-  lépés, MacOS-MCP:Shell-lel (Desktop Commander nem elérhető ehhez a könyvtárhoz).
-- [ ] Xcode build-teszt a userrel (fordul-e a projekt, entitlements rendben van-e) —
-  ez a chat nem tud Xcode build-et futtatni, a usernek kell ellenőriznie.
+**Xcode build-teszt eredmény (user)**: 4 hiba — `SunTimesService` nem felel meg
+`ObservableObject`-nek, `@Published` init nem elérhető hiányzó `Combine` import
+miatt. Ok: a `SwiftUI` import magában NEM elég a `@Published`-hez, expliciten
+kell `import Combine`. **JAVÍTVA**: `import Combine` hozzáadva
+`SunTimesService.swift` tetejére.
+
+### SUN-1-A — LEZÁRVA (commit `86d0846`)
+- [x] Entitlements létrehozva + pbxproj bekötve
+- [x] SunTimes.swift
+- [x] SunTimesService.swift
+- [x] Git commit — `86d0846` (MacOS-MCP:Shell-lel, mert Desktop Commander nem
+  elérhető ehhez a könyvtárhoz; ugyanabba a commitba bekerült két korábbi,
+  még nem commitolt változás is: `countdownApp-handoff.md` Session 26
+  frissítése és egy apró `CalculateView.swift` szín-finomhangolás, 0.18→0.12
+  opacity — ezek nem ebben a sessionben készültek, de még nem voltak commitolva).
+- [ ] Xcode build-teszt a userrel (fordul-e a projekt, entitlements rendben
+  van-e) — ez a chat nem tud Xcode build-et futtatni, a usernek kell
+  ellenőriznie kézzel.
+
+**Következő feladat**: SUN-1-B — CalculateView integráció + hover trigger + popover.
 
 
 ## Session 26 — 2026-08-09

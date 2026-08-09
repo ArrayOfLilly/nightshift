@@ -9,7 +9,32 @@
   Swift forrás: `countdownApp/countdownApp/countdownApp/` alatt.
 - Olvasd el először a `progress.md`-t.
 
-## Jelenlegi állapot (Session 26 végén)
+## Jelenlegi állapot (Session 27 végén)
+
+**SUN-1-A — LEZÁRVA, commitolva (`86d0846`)**
+- `countdownApp.entitlements` létrehozva (app-sandbox + network.client +
+  files.user-selected.read-only) — korábban NEM volt entitlements fájl a
+  projektben, Xcode auto-generálta a sandbox beállításokból, hálózati
+  engedély nélkül. `project.pbxproj`: `CODE_SIGN_ENTITLEMENTS` hozzáadva
+  a fő target Debug+Release configjához.
+- `SunTimes.swift` — `TimeWindow` + `SunTimes` modell, végleges mezőlista,
+  `RawDay`/`RawWindow` decode + `Date`-építés date+time+timezone mezőkből.
+- `SunTimesService.swift` — `@MainActor ObservableObject`, `@AppStorage`
+  koordináták (Budapest default), évenkénti UserDefaults cache, cache-first
+  betöltés + hálózati fallback. CoreLocation még NEM bekötve.
+- **Nincs még Xcode build-teszt** — a chat nem tud fordítani, a usernek
+  kell ellenőriznie, hogy a projekt fordul-e és az entitlements rendben
+  van-e (App Sandbox + hálózati hívás ne bukjon el runtime-ban).
+
+### Következő feladat: SUN-1-B
+CalculateView integráció + hover trigger + popover — `.onHover` a meglévő
+hold-strip területe felett, 0.2s delay, popover (nem sheet). A `SunTimesService`
+példányosítása/bekötése a `CalculateView`-ba, `sunTimes(for: Date())` hívás
+az aktuális napra. Még nincs saját UI (`SunPanel.swift` — az SUN-1-C).
+
+---
+
+## Korábbi állapot (Session 26 végén)
 
 **Beachball fix — LEZÁRVA, commitolva (`07861a9`)**
 - 23-A: `dropEntered` guard (`if ids != freeOrder`)
