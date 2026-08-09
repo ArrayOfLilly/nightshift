@@ -71,13 +71,20 @@ final class SunTimesService: ObservableObject {
         }
 
         do {
-            let (data, _) = try await session.data(from: url)
+            print("[SunTimesService] fetching: \(url)")
+            let (data, response) = try await session.data(from: url)
+            if let http = response as? HTTPURLResponse {
+                print("[SunTimesService] HTTP \(http.statusCode)")
+            }
+            print("[SunTimesService] raw JSON: \(String(data: data, encoding: .utf8)?.prefix(300) ?? "<nil>")")
             let decoder = JSONDecoder()
-            let response = try decoder.decode(SunTimesYearResponse.self, from: data)
-            yearData = response.results
+            let parsed = try decoder.decode(SunTimesYearResponse.self, from: data)
+            print("[SunTimesService] parsed \(parsed.results.count) days, status: \(parsed.status ?? "nil")")
+            yearData = parsed.results
             currentYearInMemory = year
             saveToCache(rawData: data, year: year)
         } catch {
+            print("[SunTimesService] ERROR: \(error)")
             lastError = error.localizedDescription
         }
     }

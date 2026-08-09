@@ -25,7 +25,7 @@ struct SunTimes: Codable, Equatable {
     let sunset: Date
     let dusk: Date               // civil twilight end
     let lastLight: Date         // astronomical twilight end
-    let dayLength: Int          // seconds
+    let dayLength: Int          // seconds (parsed from "HH:MM:SS" string)
 
     // Golden / blue hour
     let goldenHourMorning: TimeWindow
@@ -60,7 +60,7 @@ extension SunTimes {
         let sunset: String
         let dusk: String
         let last_light: String
-        let day_length: Int
+        let day_length: String
 
         let golden_hour_morning: RawWindow
         let blue_hour_morning: RawWindow
@@ -78,14 +78,26 @@ extension SunTimes {
         let end: String
     }
 
-    /// Combines a "HH:MM:SS" time string with a "yyyy-MM-dd" date string and an
-    /// IANA timezone identifier into a concrete `Date`.
+    /// Parses "H:MM:SS" or "HH:MM:SS" day-length string into total seconds.
+    private static func parseDayLength(_ s: String) -> Int? {
+        let parts = s.split(separator: ":").compactMap { Int($0) }
+        guard parts.count == 3 else { return nil }
+        return parts[0] * 3600 + parts[1] * 60 + parts[2]
+    }
+
+    /// Combines a time string ("7:28:47 AM" 12-hour or "07:28:47" 24-hour) with a
+    /// "yyyy-MM-dd" date string and an IANA timezone into a concrete `Date`.
+    /// Tries 12-hour (h:mm:ss a) first, falls back to 24-hour (HH:mm:ss).
     private static func combine(dateString: String, timeString: String, timeZone: TimeZone) -> Date? {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        formatter.timeZone = timeZone
-        return formatter.date(from: "\(dateString) \(timeString)")
+        let combined = "\(dateString) \(timeString)"
+        let fmt = DateFormatter()
+        fmt.locale = Locale(identifier: "en_US_POSIX")
+        fmt.timeZone = timeZone
+        for format in ["yyyy-MM-dd h:mm:ss a", "yyyy-MM-dd HH:mm:ss"] {
+            fmt.dateFormat = format
+            if let date = fmt.date(from: combined) { return date }
+        }
+        return nil
     }
 
     /// Builds a `SunTimes` value from one raw API day entry.
@@ -110,6 +122,7 @@ extension SunTimes {
             let sunset = d(raw.sunset),
             let dusk = d(raw.dusk),
             let lastLight = d(raw.last_light),
+            let dayLengthSeconds = Self.parseDayLength(raw.day_length),
             let goldenHourMorning = window(raw.golden_hour_morning),
             let blueHourMorning = window(raw.blue_hour_morning),
             let goldenHourEvening = window(raw.golden_hour_evening),
@@ -126,7 +139,7 @@ extension SunTimes {
             sunset: sunset,
             dusk: dusk,
             lastLight: lastLight,
-            dayLength: raw.day_length,
+            dayLength: dayLengthSeconds,
             goldenHourMorning: goldenHourMorning,
             blueHourMorning: blueHourMorning,
             goldenHourEvening: goldenHourEvening,
