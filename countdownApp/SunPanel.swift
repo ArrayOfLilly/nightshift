@@ -29,7 +29,7 @@ struct SunPanel: View {
                 noDataState
             }
         }
-        .padding(.bottom, 20)
+        .padding(20)
         .background(AppTheme.calculateBackground)
     }
 
@@ -114,8 +114,16 @@ struct SunPanel: View {
     private func moonSection(_ st: SunTimes) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             sectionHeader("🌙  MOON")
-            timeRow(label: "Moonrise", date: st.moonrise)
-            timeRow(label: "Moonset",  date: st.moonset)
+            if let mr = st.moonrise {
+                timeRow(label: "Moonrise", date: mr)
+            } else {
+                labelRow(label: "Moonrise", value: "—")
+            }
+            if let ms = st.moonset {
+                timeRow(label: "Moonset", date: ms)
+            } else {
+                labelRow(label: "Moonset", value: "—")
+            }
             labelRow(label: "Phase", value: st.moonPhase)
             labelRow(
                 label: "Illumination",
