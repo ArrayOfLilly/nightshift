@@ -19,6 +19,12 @@
 //  Writes directly to item.soundEnabled via @Binding, propagated to CountdownView
 //  and persisted automatically via the existing .onChange(of: items) → save() chain.
 //
+//  TIME DISPLAY SIZING: The remaining/deadline text is overlaid on the tomato image
+//  via .overlay { GeometryReader } so its maxWidth always tracks the actual rendered
+//  image width. The text can never overflow the tomato body regardless of window size.
+//  The tomato body fills ~62 % of the image width; minimumScaleFactor allows further
+//  shrinking before layout gives up.
+//
 
 import SwiftUI
 import AppKit
@@ -184,16 +190,30 @@ struct CountdownDetailView: View {
                 Spacer()
 
                 // ── Tomato + overlaid time ────────────────────────────────
+                // The time text is placed via .overlay { GeometryReader } so it
+                // always receives the actual rendered image size and can constrain
+                // its maxWidth proportionally. This prevents the text from ever
+                // overflowing the tomato body regardless of window size.
                 TimelineView(.periodic(from: .now, by: 1.0)) { ctx in
-                    ZStack(alignment: .center) {
-                        Image("spooky_tomato")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxWidth: 500, maxHeight: 500)
-
-                        timeDisplay(at: ctx.date)
-                            .offset(y: 42)
-                    }
+                    Image("spooky_tomato")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: 500, maxHeight: 500)
+                        .overlay {
+                            GeometryReader { geo in
+                                // The tomato body occupies ~62 % of the image width.
+                                // Use the shorter side (image is not always square at
+                                // smaller window sizes) so the text never overflows.
+                                let bodyWidth = min(geo.size.width, geo.size.height) * 0.62
+                                timeDisplay(at: ctx.date, maxWidth: bodyWidth)
+                                    // position() places the view's CENTER at (x, y)
+                                    // within the GeometryReader frame.
+                                    .position(
+                                        x: geo.size.width  / 2,
+                                        y: geo.size.height / 2 + 42
+                                    )
+                            }
+                        }
                 }
 
                 Spacer()
@@ -363,28 +383,31 @@ struct CountdownDetailView: View {
 
     // MARK: - Time display
 
+    /// Renders the remaining time or deadline string.
+    /// `maxWidth` is supplied by the GeometryReader overlay on the tomato image so
+    /// the text frame always matches the actual rendered image width — it never
+    /// overflows the tomato body regardless of window size.
     @ViewBuilder
-    private func timeDisplay(at now: Date) -> some View {
+    private func timeDisplay(at now: Date, maxWidth: CGFloat) -> some View {
+        let w = maxWidth > 0 ? maxWidth : 280
         if showRemaining {
             let expired = item.isExpired(at: now)
             Text(expired ? "EXPIRED" : item.remainingFormatted(at: now))
                 .font(AppTheme.alienLeagueBold(56))
                 .foregroundStyle(expired ? Color.red : AppTheme.timerText)
                 .monospacedDigit()
-                .minimumScaleFactor(0.45)
+                .minimumScaleFactor(0.3)
                 .lineLimit(1)
-                .frame(maxWidth: 300)
+                .frame(maxWidth: w)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 16)
         } else {
             Text(item.deadlineFormatted)
                 .font(AppTheme.alienLeague(44))
                 .foregroundStyle(AppTheme.timerText)
-                .minimumScaleFactor(0.6)
+                .minimumScaleFactor(0.3)
                 .lineLimit(1)
-                .frame(maxWidth: 300)
+                .frame(maxWidth: w)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 16)
         }
     }
 
