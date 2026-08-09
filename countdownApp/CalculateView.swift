@@ -271,7 +271,6 @@ struct CalculateView: View {
     private struct TimePart { let quantity: String; let unit: String }
 
     private var calResultParts: [TimePart] {
-        // Calendar-aware breakdown; always compute from earlier → later date.
         let (earlier, later) = fromDate <= toDate ? (fromDate, toDate) : (toDate, fromDate)
         let comps = cal.dateComponents(
             [.year, .month, .day, .hour, .minute, .second],
@@ -285,7 +284,6 @@ struct CalculateView: View {
             (comps.minute ?? 0, "m"),
             (comps.second ?? 0, "s"),
         ]
-        // Drop leading zero components; always keep at least the last one.
         let firstNonZero = all.firstIndex(where: { $0.0 != 0 }) ?? (all.count - 1)
         return Array(all[firstNonZero...]).map { TimePart(quantity: "\($0.0)", unit: $0.1) }
     }
@@ -304,44 +302,15 @@ struct CalculateView: View {
         ]
     }
 
-    // MARK: - Sun popover (SUN-1-B)
+    // MARK: - Sun popover (SUN-1-C)
 
-    /// Placeholder popover content — full UI comes in SUN-1-C (SunPanel.swift).
-    /// Already loads today's sun times from SunTimesService on appear.
+    /// Full sun/moon panel — delegates to SunPanel.
     @ViewBuilder
     private var sunPopoverContent: some View {
-        VStack(spacing: 12) {
-            if let st = todaySunTimes {
-                Text("SUNRISE")
-                    .font(AppTheme.alienLeague(11))
-                    .foregroundStyle(Color.white.opacity(0.6))
-                Text(timeString(st.sunrise))
-                    .font(AppTheme.alienLeagueBold(22))
-                    .foregroundStyle(AppTheme.background)
-                Text("SUNSET")
-                    .font(AppTheme.alienLeague(11))
-                    .foregroundStyle(Color.white.opacity(0.6))
-                    .padding(.top, 4)
-                Text(timeString(st.sunset))
-                    .font(AppTheme.alienLeagueBold(22))
-                    .foregroundStyle(AppTheme.background)
-            } else if sunService.isLoading {
-                ProgressView()
-                    .tint(AppTheme.background)
-            } else {
-                Text("SUN DATA")
-                    .font(AppTheme.alienLeagueBold(16))
-                    .foregroundStyle(AppTheme.background)
-                Text("Full panel in SUN-1-C")
-                    .font(AppTheme.alienLeague(12))
-                    .foregroundStyle(Color.white.opacity(0.5))
+        SunPanel(sunTimes: todaySunTimes, isLoading: sunService.isLoading)
+            .onAppear {
+                fetchTodaySunTimes()
             }
-        }
-        .padding(20)
-        .background(AppTheme.calculateBackground)
-        .onAppear {
-            fetchTodaySunTimes()
-        }
     }
 
     private func fetchTodaySunTimes() {
@@ -349,13 +318,6 @@ struct CalculateView: View {
         Task {
             todaySunTimes = await sunService.sunTimes(for: Date())
         }
-    }
-
-    private func timeString(_ date: Date) -> String {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "HH:mm"
-        fmt.locale = Locale(identifier: "en_US_POSIX")
-        return fmt.string(from: date)
     }
 
     // MARK: - Helpers
@@ -379,4 +341,4 @@ struct CalculateView: View {
     }
 }
 
-#Preview { CalculateView() }
+#Preview { CalculateView().environmentObject(SunTimesService()) }

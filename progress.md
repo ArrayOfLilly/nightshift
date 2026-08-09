@@ -1,5 +1,44 @@
 # countdownApp — Progress
 
+## Session 29 — 2026-08-09 (SUN-1-C)
+
+### Completed
+
+**SUN-1-C — SunPanel.swift UI**
+
+`SunPanel.swift` (új fájl) — teljes popover UI, `SunTimes?` + `isLoading: Bool`
+paraméterekkel, `CalculateView`-ból hívva.
+
+Elrendezés:
+- Tetején `sun.svg` ikon, centrált, 100pt magas (duotone SUN-1-D-ben).
+- 2x2 grid: bal: MORNING (First light / Dawn / Sunrise), jobb: EVENING
+  (Sunset / Dusk / Last light) — `sectionDivider` (1pt, 8% feher) valasztja el.
+- `fullDivider` utan: bal: DAY (Solar noon + Day length `Xh Ym`), jobb: MOON
+  (Moonrise / Moonset / Phase / Illumination %).
+- `fullDivider` utan: teljes szelessegu GOLDEN / BLUE HOUR szekcio
+  (Morning golden / Morning blue / Evening golden / Evening blue, `HH:mm-HH:mm`).
+- Nil state: NO DATA + Sun times unavailable (amber + white 40% opacity).
+- Loading state: `ProgressView` + LOADING label.
+- Hatter: `AppTheme.calculateBackground`; feliratok: `alienLeague(12)` white 50%;
+  ertekek: `alienLeagueBold(15/13)` amber; szekciofejek: `alienLeague(11)` white 50%.
+- `dayLengthString(_ seconds: Int)` helper: `Xh Ym` formatum.
+- `timeString(_ date: Date)`: `HH:mm`, `en_US_POSIX` locale — sajat peldany.
+
+`CalculateView.swift`:
+- `sunPopoverContent` placeholder VStack lecserelve
+  `SunPanel(sunTimes: todaySunTimes, isLoading: sunService.isLoading)` hivasra.
+- `#Preview` javitva: `CalculateView().environmentObject(SunTimesService())`.
+
+- Files changed: `SunPanel.swift` (uj), `CalculateView.swift`
+- Kovetkezo: **SUN-1-D** — sun.svg duotone Python script (opcionalis).
+
+### Session 29 — LEZARVA
+- [x] `SunPanel.swift` — letrehozva, teljes UI
+- [x] `CalculateView.swift` — placeholder lecserelve SunPanel-re + Preview fix
+- [ ] Xcode build-teszt (user manualisan ellenorzi)
+
+---
+
 ## Session 28 — 2026-08-09 (SUN-1-B)
 
 ### Completed
