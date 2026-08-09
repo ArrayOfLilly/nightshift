@@ -44,8 +44,13 @@ CoreLocation még nincs bekötve.
 **Xcode build-teszt eredmény (user)**: 4 hiba — `SunTimesService` nem felel meg
 `ObservableObject`-nek, `@Published` init nem elérhető hiányzó `Combine` import
 miatt. Ok: a `SwiftUI` import magában NEM elég a `@Published`-hez, expliciten
-kell `import Combine`. **JAVÍTVA**: `import Combine` hozzáadva
-`SunTimesService.swift` tetejére.
+kell `import Combine`. **JAVÍTVA** és commitolva (`fef76d5`).
+User megerősítette: **most már fordül.**
+
+### Session 27 — LEZÁRVA
+SUN-1-A teljes egészében kész, mindkét commit (`86d0846`, `fef76d5`) rendben.
+Következő feladat: **SUN-1-B** (CalculateView integráció + hover trigger +
+popover, ld. handoff.md).
 
 ### SUN-1-A — LEZÁRVA (commit `86d0846`)
 - [x] Entitlements létrehozva + pbxproj bekötve

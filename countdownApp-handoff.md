@@ -11,7 +11,7 @@
 
 ## Jelenlegi állapot (Session 27 végén)
 
-**SUN-1-A — LEZÁRVA, commitolva (`86d0846`)**
+**SUN-1-A — LEZÁRVA, commitolva (`86d0846`, build-fix `fef76d5`)**
 - `countdownApp.entitlements` létrehozva (app-sandbox + network.client +
   files.user-selected.read-only) — korábban NEM volt entitlements fájl a
   projektben, Xcode auto-generálta a sandbox beállításokból, hálózati
@@ -22,9 +22,10 @@
 - `SunTimesService.swift` — `@MainActor ObservableObject`, `@AppStorage`
   koordináták (Budapest default), évenkénti UserDefaults cache, cache-first
   betöltés + hálózati fallback. CoreLocation még NEM bekötve.
-- **Nincs még Xcode build-teszt** — a chat nem tud fordítani, a usernek
-  kell ellenőriznie, hogy a projekt fordul-e és az entitlements rendben
-  van-e (App Sandbox + hálózati hívás ne bukjon el runtime-ban).
+- **Build-teszt (user, Xcode)**: elsőre 4 hiba — hiányzó `import Combine`
+  `SunTimesService.swift`-ben (`@Published` ehhez expliciten kell, a `SwiftUI`
+  import magában nem elég). **JAVÍTVA és COMMITOLVA** (`fef76d5`).
+  User megerősítette: **most már fordül.**
 
 ### Következő feladat: SUN-1-B
 CalculateView integráció + hover trigger + popover — `.onHover` a meglévő
