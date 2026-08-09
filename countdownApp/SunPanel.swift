@@ -30,7 +30,16 @@ struct SunPanel: View {
             }
         }
         .padding(20)
-        .background(AppTheme.calculateBackground)
+        .background(
+            LinearGradient(
+                stops: [
+                    .init(color: Color(red: 0x59/255, green: 0x3C/255, blue: 0x73/255).opacity(0.35), location: 0),
+                    .init(color: AppTheme.calculateBackground, location: 0.25),
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
     }
 
     // MARK: - Sun icon
