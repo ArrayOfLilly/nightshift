@@ -1,5 +1,86 @@
 # countdownApp — Progress
 
+## Session 27 — 2026-08-09 (SUN-1-A, in progress)
+
+### Entitlements — FONTOS FELFEDEZÉS
+Nincs `.entitlements` fájl a projektben (sem a forrás-, sem a projekt-gyökérben).
+`project.pbxproj`: `ENABLE_APP_SANDBOX = YES`, `ENABLE_HARDENED_RUNTIME = YES`,
+`ENABLE_USER_SELECTED_FILES = readonly`, de nincs `CODE_SIGN_ENTITLEMENTS` build
+setting — Xcode auto-generálja az entitlements fájlt ezekből a build settingekből,
+NINCS benne hálózati engedély. Hálózati hívás App Sandbox alatt enélkül elbukna.
+**Terv**: saját `countdownApp/countdownApp/countdownApp.entitlements` létrehozása
+(`app-sandbox` + `network.client` + `files.user-selected.read-only` a meglévő
+viselkedés megőrzésére), majd `CODE_SIGN_ENTITLEMENTS` build setting hozzáadása
+a fő target Debug+Release configjához (pbxproj). Test targetek nem érintettek.
+CoreLocation entitlement (`personal-information.location`) NEM kerül be — SUN-1-A-ban
+még nincs rá szükség, csak SUN-1-B/C-ben esetleg.
+
+**KÉSZ**: `countdownApp/countdownApp/countdownApp.entitlements` létrehozva
+(app-sandbox + network.client + files.user-selected.read-only).
+`project.pbxproj`: `CODE_SIGN_ENTITLEMENTS = countdownApp/countdownApp.entitlements`
+hozzáadva a fő target Debug és Release configjához (AB699A2E.../AB699A2F...).
+Test targetek érintetlenek.
+
+**KÉSZ**: `SunTimes.swift` létrehozva (`countdownApp/countdownApp/countdownApp/SunTimes.swift`).
+`TimeWindow` (begin/end Date) + `SunTimes` struct a végleges mezőlistával (nap 8,
+golden/blue hour 4×TimeWindow, hold 4 + `date` string). Belső `RawDay`/`RawWindow`
+Decodable structok tükrözik az API snake_case mezőneveit; `SunTimes.build(from:)`
+kombinálja a `"HH:mm:ss"` időt a `date` + `timezone` mezőkkel egy `DateFormatter`-rel
+(`en_US_POSIX` locale, expliciten beállított `TimeZone(identifier:)`) valódi `Date`-té.
+`SunTimesYearResponse` a top-level `{results: [...]}` wrapper egy évre; a decode-olás
+során a hibás/hiányzó mezőjű napokat csendben kihagyja (`compactMap`).
+
+**KÉSZ**: `SunTimesService.swift` létrehozva (`countdownApp/countdownApp/countdownApp/SunTimesService.swift`).
+`@MainActor final class SunTimesService: ObservableObject`. `@AppStorage("sunLatitude"/"sunLongitude")`
+koordináták, default Budapest (47.4979, 19.0402). `@Published yearData/isLoading/lastError`.
+`sunTimes(for:)` — async, év alapján betölti a cache-ből vagy hálózatról ha még nincs
+memoriában, majd napi string-match. `loadYear(_:)` cache-first, `fetchYear(_:)` mindig
+hálózatot hív és felülcs. UserDefaults cache kulcs `sunTimesCache_YYYY`, teljes nyers
+JSON `Data` tárolva (újradecode-olható). URL: `https://api.sunrisesunset.io/json`
+`lat/lng/date_start/date_end/timezone=auto` param-okkal, NINCS `formatted=0` (a
+korrigált/élő teszthez igazodva, ld. Session 26 korrekció: HH:MM:SS, nem ISO8601).
+CoreLocation még nincs bekötve.
+
+### SUN-1-A — hátralévő lépés
+- [ ] Git commit (entitlements + SunTimes.swift + SunTimesService.swift) — következő
+  lépés, MacOS-MCP:Shell-lel (Desktop Commander nem elérhető ehhez a könyvtárhoz).
+- [ ] Xcode build-teszt a userrel (fordul-e a projekt, entitlements rendben van-e) —
+  ez a chat nem tud Xcode build-et futtatni, a usernek kell ellenőriznie.
+
+
+## Session 26 — 2026-08-09
+
+### SUN-1 — tervezési megbeszélés lezárva
+**Végleges döntések:**
+- Golden/Blue hour szekció: IGEN (user fia hajnalokat fotóz)
+- Reggeli pontok: 3 db (\`first\_light\`, \`dawn\`, \`sunrise\`) — szimmetria az esti 3-mal
+- Esti pontok: 3 db (\`sunset\`, \`dusk\`, \`last\_light\`)
+- UI mechanizmus: popover (alapterv, kipróbálással dől el SUN-1-B-ben)
+- Hover-delay: 0.2s
+- Panel háttér: sötétbarna → purple gradiens kísérletezés implementáció közben
+- sun.svg duotone: SUN-1-D-ben (opcionális, később)
+
+**Végleges mezőlista:** lásd handoff.md és SUN-1 implementációs terv lent. 
+
+**Session bontás (megbeszélve, jóváhagyva):**
+- SUN-1-A: Entitlements + \`SunTimes.swift\` + \`SunTimesService.swift\`
+- SUN-1-B: CalculateView integráció + hover trigger + popover
+- SUN-1-C: \`SunPanel.swift\` UI
+- SUN-1-D: sun.svg duotone Python script (opcionális)
+
+## SOUND-1 — Per-slot sound notification on expiry
+
+- System sound plays when a countdown slot expires (slot becomes free).
+- Per-slot toggle in DetailView, default OFF.
+- Implementation: `CountdownItem` gets `soundEnabled: Bool` field (default `false`, backward-compatible Codable). On expiry detection in `CountdownView` (deadline crossing), if `soundEnabled`: play a system sound (`NSSound(named:)` or `NSSound.beep()`).
+- Backlog: TTS — speak the slot name on expiry instead of (or in addition to) the sound.
+
+### Open tasks 
+- [ ] SUN-1-A: következő session.
+
+- Files changed: nincs, csak tervezési megbeszélés + handoff.md frissítve.
+
+- ---
 ## Session 22 — 2026-08-08
 
 ### In progress
@@ -578,9 +659,15 @@ Two result display modes, toggled by `DAYS` / `CAL` buttons placed below the res
 - `calResultParts` computed var added; `resultRow` switches on `displayMode`; `modeToggle` + `modeButton` helpers added under `// MARK: - Mode toggle`.
 
 ### Open tasks
-- [ ] 23-D: `LongPressStepperButton` timer double-add fix (low priority, self-contained).
+- [x] 23-D: `LongPressStepperButton` timer double-add fix — KÉSZ Session 25.
 - [ ] SUN-1: Sunrise/sunset sheet (backlog).
-- Files changed: `CalculateView.swift`
+**23-D FIX — LongPressStepperButton timer double-registration** — `LongPressStepperButton.swift`.
+`Timer.scheduledTimer` automatically adds the timer to RunLoop in `.default` mode;
+the subsequent `RunLoop.main.add(t, forMode: .common)` added it again, causing the timer
+to fire twice per tick. Fix: replaced both `Timer.scheduledTimer` calls with
+`Timer(timeInterval:repeats:block:)` (unscheduled) + single `RunLoop.main.add(..., .common)`.
+
+- Files changed: `CalculateView.swift`, `LongPressStepperButton.swift`
 
 ---
 
@@ -732,3 +819,67 @@ Részletes terv: lásd "Session 23-A terv" bejegyzés feljebb.
 Timer.scheduledTimer + RunLoop.main.add(..., .common) kettős regisztráció fix.
 
 **Minden session végén:** TimelineView tick visszaállítása 1.0-ra + commit.
+
+---
+
+## Session 26 — 2026-08-09
+
+### SUN-1 — tervezési megbeszélés (kód még nem íródott)
+
+**API-terv ellenőrizve (websearch, sunrisesunset.io hivatalos dokumentáció):**
+- Megerősítve: `date_start` + `date_end` paraméterekkel (max 365 nap) EGY hívásban visszaadja a teljes évet, `results` mező tömbként a napi objektumokkal — az eredeti cache-terv (egy API hívás/év) helyes.
+- `formatted=0` paraméterrel ISO 8601 formátumban jönnek az időpontok (nem "6:48:29 AM" string) — könnyebben parse-olható `ISO8601DateFormatter`-rel, mint a 12 órás alapértelmezett formátum.
+- Nincs kemény rate limit dokumentálva ("None enforced. Be reasonable."), de kérik a cache-elést és egy visszalink elhelyezését (attribution).
+
+**Nyitott tervezési kérdések a következő (implementáló) session előtt:**
+1. UI mechanizmus: `.sheet` (eredeti terv) vs `.popover` — popover jobban illeszkedik hover-triggerhez macOS-en (anchor-hoz köthető, automatikusan eltűnik ha a kurzor elhagyja a területet).
+2. Hover-delay kell-e (pl. 0.2-0.3s), hogy egy átfutó egérmozdulat ne nyissa fel véletlenül a panelt.
+3. Melyik mező legyen a "csendes fejlesztési ablak" kiemelése: astronomical twilight (teljes sötétség) vagy civil twilight (amikor a világosodás zavarni kezd), vagy mindkettő jelölve.
+4. macOS sandbox entitlementek: hálózati hívás (`com.apple.security.network.client`) és CoreLocation (`com.apple.security.personal-information.location`) — ellenőrizni kell az `.entitlements` fájlban implementáció előtt. Location engedélykéréshez `NSLocationWhenInUseUsageDescription` is kell — a projekt `GENERATE_INFOPLIST_FILE=YES`-t használ (ld. Session 21 font-saga), tehát build setting-ként (`INFOPLIST_KEY_...`) kell hozzáadni, nem fizikai Info.plist-be.
+
+### Open tasks
+- [ ] Eldönteni: sheet vs popover, hover-delay, csendes-ablak mező kiemelés.
+- [ ] Implementáció előtt: `.entitlements` fájl ellenőrzése (network client + location).
+
+**Frissítés — háttérszín ötlet a sheethez/popoverhez:** a user szerint nem feltétlen a sun.svg duotone végpontjai legyenek sima sötét-purple → világos-purple, hanem a panel **háttérszíne** menjen sötétbarnából világosabb purple-be (mint egy alkonyi/hajnali égbolt-gradiens a nap illusztráció mögött). Nincs lezárva — a user explicit mondta, hogy ezt implementáció közben, kipróbálással fogják eldönteni (sun.svg duotone-anchor színe vs. külön panel-háttér-gradiens — mindkettő nyitva, nem kell most eldönteni).
+- [ ] Új adatmodell + service fájl(ok) megtervezése (pl. `SunTimes.swift`, `SunTimesService.swift`).
+- Files changed: nincs, csak tervezési megbeszélés.
+
+### KORREKCIÓ — mezőnevek pontosítása (a fenti “API-terv ellenőrizve” szakasz részben téves)
+
+A fent említett `astronomical_twilight_begin`/`civil_twilight_begin` név más szolgáltatástól (sunrise-sunset.org) származott, websearch közben összekeveredett két hasonló nevű API. A user élő teszthívása (2026-08-08, America/New_York, sunrisesunset.io) alapján a TÉNYLEGES mezőnevek:
+
+- `first_light` / `last_light` = csillagászati szürkület kezdete/vége (Nap -18°), a legelső/legutolsó fénynyom.
+- `dawn` / `dusk` = polgári szürkület kezdete/vége (Nap -6°), amikor már/még elég fény van kültéri tevékenységhez mesterséges fény nélkül.
+- `nautical_twilight_begin` / `_end` = hajózási szürkület (Nap -12°) — nem terveztük használni.
+- `sunrise` / `sunset`, `solar_noon`.
+- `golden_hour_morning` / `golden_hour_evening` = {begin, end}; `blue_hour_morning` / `blue_hour_evening` = {begin, end}.
+- `day_length` (másodperc, Int), `timezone` (IANA), `utc_offset` (perc).
+- Hold/nap pozíció mezők is jönnek (`moonrise`, `moonset`, `moon_phase`, `sun_altitude`, stb.) — nincs tervezett felhasználás rájuk egyelőre.
+- **Formátum**: a user példájában `"HH:MM:SS"` (24 órás, dátum/időzóna nélkül), NEM teljes ISO 8601 dátum-idő. A `date` mező adja a napot, `timezone`/`utc_offset` a zónát — parse-oláskor ezeket össze kell rakni egy `Date`-té.
+
+**Használati eset → mező mapping (megbeszélés alapján, user: kelet felé néző tetőablak, legkisebb fényt is észreveszi):**
+
+Reggel (2 pont, korábbi “mindkettő” döntés alapján):
+- `first_light` — legelső, leghalványabb fény (ezt ő ténylegesen érzékeli).
+- `dawn` — amikor már egyértelműen világos.
+
+Este (3 pont, user kérése alapján):
+- `sunset` — mikor kezd sötétedni (a nap lemegy).
+- `dusk` — mikor veszi észre (polgári szürkület vége, átlagos “észrevehető sötétedés” pont).
+- `last_light` — mikor lesz teljesen sötét (csillagászati szürkület vége).
+
+Nyitott kérdés: kell-e a reggeli oldalra is egy 3. pont (`sunrise`) a szimmetriáért.
+
+### sun.svg — illusztráció technikai vizsgálat
+
+`/Users/ArrayOfLilly/tools/countdownApp/images/sun.svg` létezik, 206 db `.cls-N` CSS-osztállyal, mindegyik sajat `fill` hex-színnel, lightness tartomány ~18–253, enyhén hűvös tónusban (r<g≈b) — ez egy fotó-vektorizált, sok-árnyalatú illusztráció, NEM egyetlen síkszínű ikon. `sun_orig.svg` is létezik ugyanabban a mappában — valószínűleg az eredeti színes verzió, amiből a grayscale `sun.svg` készült.
+
+**Döntés implementáció előtt**: 206 különböző árnyalat miatt egy “mindent egy szín” fill csere ELVESZÍTENÉ a shading-et/mélységet. A user kérése (“olyan sötét purple, mint a default freecolor”) valószínűleg **duotone tónusozást** jelent: minden `.cls-N` lightness-értékét arányosan átképezni egy sötét-purple → világos-purple skálára (`#593C73` mint sötét vég), megőrizve a relatív világosság-sorrendet. Ez script-esítendő (Python, 206 hex beolvasás + lightness szerinti interpoláció + visszaírás), nem kézzel szerkesztendő.
+
+### Open tasks (frissítve)
+- [ ] Eldönteni: duotone tónusozás (ajánlott) vs. flat egyszín fill.
+- [ ] Ha duotone: script megirása a 206 `.cls-N` fill érték átszínezésére `#593C73` bázissal.
+- [ ] Reggeli 3. pont (`sunrise`) kell-e a szimmetriához — user döntése.
+- [ ] Eldönteni: sheet vs popover, hover-delay, csendes-ablak mező kiemelés (korábbról, még nyitott).
+- [ ] Implementáció előtt: `.entitlements` fájl ellenőrzése (network client + location).

@@ -119,7 +119,7 @@ struct CalculateView: View {
             .foregroundStyle(AppTheme.background)
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
-            .background(Color.white.opacity(0.18))
+            .background(Color.white.opacity(0.12))
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)

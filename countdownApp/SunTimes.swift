@@ -1,0 +1,159 @@
+//
+//  SunTimes.swift
+//  countdownApp
+//
+//  Data model for sunrisesunset.io daily results.
+//  Parses "HH:MM:SS" (24-hour, no date/timezone) time strings combined with
+//  the separate "date" and "timezone" fields into concrete Date values.
+//
+
+import Foundation
+
+/// A begin/end time pair, used for golden hour and blue hour windows.
+struct TimeWindow: Codable, Equatable {
+    let begin: Date
+    let end: Date
+}
+
+/// Sun and moon timing data for a single calendar day, at a specific location.
+struct SunTimes: Codable, Equatable {
+    // Sun
+    let firstLight: Date       // astronomical twilight begin
+    let dawn: Date              // civil twilight begin
+    let sunrise: Date
+    let solarNoon: Date
+    let sunset: Date
+    let dusk: Date               // civil twilight end
+    let lastLight: Date         // astronomical twilight end
+    let dayLength: Int          // seconds
+
+    // Golden / blue hour
+    let goldenHourMorning: TimeWindow
+    let blueHourMorning: TimeWindow
+    let goldenHourEvening: TimeWindow
+    let blueHourEvening: TimeWindow
+
+    // Moon
+    let moonrise: Date
+    let moonset: Date
+    let moonPhase: String
+    let moonIllumination: Double // 0-100 (%)
+
+    /// The calendar day this record represents (yyyy-MM-dd, as returned by the API).
+    let date: String
+}
+
+// MARK: - Decoding from the raw API response
+
+extension SunTimes {
+
+    /// Raw shape of one entry in the sunrisesunset.io `results` array.
+    /// Field names match the API's snake_case JSON keys exactly.
+    struct RawDay: Decodable {
+        let date: String
+        let timezone: String
+
+        let first_light: String
+        let dawn: String
+        let sunrise: String
+        let solar_noon: String
+        let sunset: String
+        let dusk: String
+        let last_light: String
+        let day_length: Int
+
+        let golden_hour_morning: RawWindow
+        let blue_hour_morning: RawWindow
+        let golden_hour_evening: RawWindow
+        let blue_hour_evening: RawWindow
+
+        let moonrise: String
+        let moonset: String
+        let moon_phase: String
+        let moon_illumination: Double
+    }
+
+    struct RawWindow: Decodable {
+        let begin: String
+        let end: String
+    }
+
+    /// Combines a "HH:MM:SS" time string with a "yyyy-MM-dd" date string and an
+    /// IANA timezone identifier into a concrete `Date`.
+    private static func combine(dateString: String, timeString: String, timeZone: TimeZone) -> Date? {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.timeZone = timeZone
+        return formatter.date(from: "\(dateString) \(timeString)")
+    }
+
+    /// Builds a `SunTimes` value from one raw API day entry.
+    /// Returns nil if any required time field fails to parse (malformed API response).
+    static func build(from raw: RawDay) -> SunTimes? {
+        guard let tz = TimeZone(identifier: raw.timezone) else { return nil }
+
+        func d(_ time: String) -> Date? {
+            combine(dateString: raw.date, timeString: time, timeZone: tz)
+        }
+
+        func window(_ w: RawWindow) -> TimeWindow? {
+            guard let b = d(w.begin), let e = d(w.end) else { return nil }
+            return TimeWindow(begin: b, end: e)
+        }
+
+        guard
+            let firstLight = d(raw.first_light),
+            let dawn = d(raw.dawn),
+            let sunrise = d(raw.sunrise),
+            let solarNoon = d(raw.solar_noon),
+            let sunset = d(raw.sunset),
+            let dusk = d(raw.dusk),
+            let lastLight = d(raw.last_light),
+            let goldenHourMorning = window(raw.golden_hour_morning),
+            let blueHourMorning = window(raw.blue_hour_morning),
+            let goldenHourEvening = window(raw.golden_hour_evening),
+            let blueHourEvening = window(raw.blue_hour_evening),
+            let moonrise = d(raw.moonrise),
+            let moonset = d(raw.moonset)
+        else { return nil }
+
+        return SunTimes(
+            firstLight: firstLight,
+            dawn: dawn,
+            sunrise: sunrise,
+            solarNoon: solarNoon,
+            sunset: sunset,
+            dusk: dusk,
+            lastLight: lastLight,
+            dayLength: raw.day_length,
+            goldenHourMorning: goldenHourMorning,
+            blueHourMorning: blueHourMorning,
+            goldenHourEvening: goldenHourEvening,
+            blueHourEvening: blueHourEvening,
+            moonrise: moonrise,
+            moonset: moonset,
+            moonPhase: raw.moon_phase,
+            moonIllumination: raw.moon_illumination,
+            date: raw.date
+        )
+    }
+}
+
+/// Top-level response wrapper for a full-year sunrisesunset.io request
+/// (`date_start`...`date_end` range query, one call per year).
+struct SunTimesYearResponse: Decodable {
+    let results: [SunTimes]
+    let status: String?
+
+    private struct RawResults: Decodable {
+        let results: [SunTimes.RawDay]
+        let status: String?
+    }
+
+    init(from decoder: Decoder) throws {
+        let raw = try RawResults(from: decoder)
+        self.results = raw.results.compactMap { SunTimes.build(from: $0) }
+        self.status = raw.status
+    }
+}
