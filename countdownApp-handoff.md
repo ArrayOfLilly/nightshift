@@ -9,7 +9,95 @@
   Swift forrás: `countdownApp/countdownApp/countdownApp/` alatt.
 - Olvasd el először a `progress.md`-t.
 
-## Jelenlegi állapot (Session 28 végén)
+## Jelenlegi állapot (Session 30 végén)
+
+**SOUND-1 — LEZÁRVA, commitolva (`c04d4a6`)**
+- `CountdownItem.swift`: `soundEnabled: Bool = false` (backward-compatible Codable)
+- `CountdownView.swift`: `@State previousActiveIDs: Set<UUID>` snapshot; `rebuildCache`
+  kap `playExpirySounds: Bool = false` paramétert; `crossingTask` hívja `true`-val;
+  diff-alapú detektálás: `previousActiveIDs` vs `newActiveIDs` → `NSSound(named: "Funk")?.play()`;
+  `import AppKit` hozzáadva.
+- `CountdownDetailView.swift`: `speaker.wave.2.fill` / `speaker.slash.fill` toggle gomb
+  a bottom buttons HStack-ben (a trash előtt), minden slot típuson látható,
+  `.focusable(false)` megvan, írás `@Binding`-on át → automatikus persist.
+
+**SUN-1-C — LEZÁRVA, commitolva (`bf41007`, bugfix-ek `528cc19`, `6a5fc08`, `90b649f`, `345a96a`, `cb0af2b`, `ffcad38`)**
+- `SunPanel.swift` (új): teljes popover UI, 4 szekció
+- `CalculateView.swift`: placeholder lecserélve `SunPanel`-re
+- `SunTimes.swift`: API format fix (12 órás AM/PM, day_length string, moonrise/moonset optional)
+- `SunTimesService.swift`: print diagnosztika (maradhat, nem zavaró)
+- Popover: `minWidth: 360`, vertical-only padding, purple gradient a tetején
+- SUN-1-D (duotone script) — kihagyva, user döntése alapján nem kell
+
+## Következő feladat: (nyílt, user dönt)
+
+Backlog lehetőségek:
+- TTS: a slot nevét felolvassa lejáratkor (SOUND-1 bővítés)
+- CoreLocation: automatikus koordináta a SunTimesService-be (SUN-1-E)
+- Egyéb új feature
+
+---
+
+## SOUND-1 — archívum (kész, Session 30)
+
+### Mit csinált SOUND-1
+Egy countdown slot lejáratakor (active → free átsorolás pillanatában) rendszerhang
+szólal meg, ha az adott sloton be van kapcsolva. Per-slot toggle a DetailView-ban,
+default OFF.
+
+### Érintett fájlok
+- `CountdownItem.swift` — új mező
+- `CountdownView.swift` — lejárat detektálás + hang lejátszás
+- `CountdownDetailView.swift` — toggle UI
+
+### 1. CountdownItem.swift — új mező
+```swift
+var soundEnabled: Bool = false
+```
+A meglévő `Codable` decode backward-compatible marad: ha a JSON-ban nincs
+`soundEnabled` kulcs, a Swift decoder a default értéket (`false`) használja.
+
+### 2. Lejárat detektálás — CountdownView.swift
+
+`@State private var previousActiveIDs: Set<UUID> = []` snapshot az aktív item
+ID-kről. `rebuildCache(now:playExpirySounds:)` — ha `playExpirySounds: true`:
+```swift
+let newActiveIDs = Set(items.filter { !$0.isExpired(at: now) }.map { $0.id })
+let justExpired = items.filter {
+    previousActiveIDs.contains($0.id) && !newActiveIDs.contains($0.id)
+}
+for item in justExpired where item.soundEnabled {
+    NSSound(named: "Funk")?.play()
+}
+previousActiveIDs = newActiveIDs
+```
+`crossingTask` hívja `rebuildCache(now: Date(), playExpirySounds: true)`-val.
+Egyéb hívások (`onAppear`, `.onChange`) maradnak `playExpirySounds: false`-sal.
+
+**Hang**: `NSSound(named: "Funk")?.play()` — beépített macOS rendszerhang,
+sandbox-biztos, nem kell entitlement. Alternatívák: `"Ping"`, `"Glass"`, `"Pop"`.
+
+**Import**: `import AppKit` a `CountdownView.swift` tetején.
+
+### 3. CountdownDetailView.swift — toggle UI
+
+```swift
+Button {
+    item.soundEnabled.toggle()
+} label: {
+    Image(systemName: item.soundEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
+        .font(.system(size: 16))
+        .foregroundStyle(item.soundEnabled ? AppTheme.background : AppTheme.background.opacity(0.4))
+        .frame(width: 44, height: 44)
+        .background(item.soundEnabled ? AppTheme.dark : AppTheme.dark.opacity(0.45))
+        .clipShape(RoundedRectangle(cornerRadius: 9))
+}
+.focusable(false)
+```
+
+---
+
+## Korábbi állapot (Session 29 végén)
 
 **SUN-1-B — LEZÁRVA** (commit függőben, user buildeli)
 - `countdownAppApp.swift`: `@StateObject private var sunService = SunTimesService()` +
@@ -25,32 +113,6 @@
 
 **SUN-1-A — LEZÁRVA, commitolva (`86d0846`, build-fix `fef76d5`)**
 - `countdownApp.entitlements`, `SunTimes.swift`, `SunTimesService.swift` — ld. Session 27.
-
-### Következő feladat: SUN-1-C
-`SunPanel.swift` — a teljes popover UI. Cserére kerül a jelenlegi placeholder
-`sunPopoverContent` a `CalculateView`-ban (vagy `SunPanel` saját View-ként
-illeszt a popoverbe). Tartalom: 4 szekció az alábbi elrendezésben:
-```
-☀️  MORNING              🌆  EVENING
-   First light               Sunset
-   Dawn                      Dusk
-   Sunrise                   Last light
-
-⚖️  DAY                  🌙  MOON
-   Solar noon                Moonrise
-   Day length                Moonset
-                             Phase + illumination
-📷  GOLDEN / BLUE HOUR
-   Morning golden  HH:mm–HH:mm
-   Morning blue    HH:mm–HH:mm
-   Evening golden  HH:mm–HH:mm
-   Evening blue    HH:mm–HH:mm
-```
-Stílus: `AppTheme.calculateBackground` háttér, `AppTheme.background` (amber)
-fontos időpontok, Alien League Bold számok, Alien League feliratok, `Color.white.opacity(0.5)`
-másodlagos szöveg. Popover tetején `sun.svg` illusztráció (duotone SUN-1-D, egyelőre
-színező nélkül, szürke változat is rendben). `todaySunTimes: SunTimes?` binding
-vagy paraméterként jön le a `CalculateView`-ból.
 
 ---
 
@@ -71,83 +133,12 @@ vagy paraméterként jön le a `CalculateView`-ból.
 **23-D — LEZÁRVA (`8b2035b`)**
 `LongPressStepperButton.swift` — timer double-registration fix.
 
-## Következő session: SUN-1-A
-
-### Mit csinál SUN-1-A (egy session)
-1. **Entitlements ellenőrzése** — megkeresni az `.entitlements` fájlt, ellenőrizni hogy benne van-e `com.apple.security.network.client`. Ha nincs, hozzáadni. (`com.apple.security.personal-information.location` — CoreLocation — SUN-1-A-ban még NEM kell, csak ellenőrzés.)
-2. **`SunTimes.swift`** — adatmodell:
-   - `TimeWindow: Codable { let begin: Date; let end: Date }`
-   - `SunTimes: Codable` — lásd mezőlista lent
-   - JSON decode logika: az API `"HH:MM:SS"` 24 órás formátumban adja az időpontokat (nem ISO 8601), a `date` mező adja a napot (`"YYYY-MM-DD"`), a `timezone` IANA zónát — parse-oláskor ezeket össze kell rakni egy `Date`-té. Stratégia: `DateFormatter` locale-független, `"HH:mm:ss"` format, `timeZone = TimeZone(identifier: timezone)`.
-3. **`SunTimesService.swift`** — hálózati service:
-   - API: `https://api.sunrisesunset.io/json?lat=XX&lng=YY&date_start=YYYY-01-01&date_end=YYYY-12-31&timezone=auto`
-   - Egy hívás az egész évre, response: `{ "results": [ { "date": "...", "sunrise": "...", ... }, ... ] }`
-   - `UserDefaults` cache: kulcs `"sunTimesCache_YYYY"` — a teljes éves JSON string; évváltáskor (cache kulcs évszáma != aktuális év) újratölti
-   - Koordináta: `@AppStorage("sunLatitude")` Double + `@AppStorage("sunLongitude")` Double, default Budapest: `47.4979, 19.0402`
-   - CoreLocation még NEM — kézi koordináta először
-4. **progress.md frissítése + git commit**
-
-### Végleges mezőlista (SunTimes.swift)
-
-**Nap:**
-- `firstLight: Date` ← `"first_light"` (csillagászati szürkület kezdete)
-- `dawn: Date` ← `"dawn"` (polgári szürkület)
-- `sunrise: Date` ← `"sunrise"`
-- `solarNoon: Date` ← `"solar_noon"`
-- `sunset: Date` ← `"sunset"`
-- `dusk: Date` ← `"dusk"` (polgári szürkület vége)
-- `lastLight: Date` ← `"last_light"` (csillagászati szürkület vége)
-- `dayLength: Int` ← `"day_length"` (másodpercben)
-
-**Golden/Blue hour (user fia hajnalokat fotóz — fontos szekció):**
-- `goldenHourMorning: TimeWindow` ← `"golden_hour_morning"` `{begin, end}`
-- `blueHourMorning: TimeWindow` ← `"blue_hour_morning"` `{begin, end}`
-- `goldenHourEvening: TimeWindow` ← `"golden_hour_evening"` `{begin, end}`
-- `blueHourEvening: TimeWindow` ← `"blue_hour_evening"` `{begin, end}`
-
-**Hold:**
-- `moonrise: Date` ← `"moonrise"`
-- `moonset: Date` ← `"moonset"`
-- `moonPhase: String` ← `"moon_phase"` (pl. "Waning Crescent")
-- `moonIllumination: Double` ← `"moon_illumination"` (0–100, %-ban jelenik meg)
-
-**Kihagyott mezők:** `nautical_twilight_begin/end`, `golden_hour` (top-level redundáns),
-`moon_phase_value`, `sun_altitude/azimuth`, `utc_offset`, `timezone`, `date`,
-`moon_always_up/down`, `elevation`, `sun_status`.
-
-### Tervezett UI szekciók (SUN-1-C-ben implementálandó, most csak referencia)
-```
-☀️  MORNING              🌆  EVENING
-   First light               Sunset
-   Dawn                      Dusk
-   Sunrise                   Last light
-
-⚖️  DAY                  🌙  MOON
-   Solar noon                Moonrise
-   Day length                Moonset
-                             Phase: Waning Crescent
-📷  GOLDEN / BLUE HOUR       19.5% illuminated
-   Morning golden  05:56–06:51
-   Morning blue    05:45–05:56
-   Evening golden  19:35–20:30
-   Evening blue    20:30–20:41
-```
-
-### Session bontás (SUN-1-A után)
-- **SUN-1-B**: CalculateView integráció + hover trigger (`.onHover` a meglévő hold-strip területén, 0.2s delay, popover)
-- **SUN-1-C**: `SunPanel.swift` UI — 4 szekció, Alien League font, amber/dark stílus; popover tetején `sun.svg` illusztráció; stílus: spooky tomato képernyő vizuális nyelve (mély sötét háttér, amber/sárga kontrasz, Alien League betűk)
-- **SUN-1-D**: sun.svg duotone Python script
-
-### Popover + sun.svg koncepció (végleges)
-- **Trigger**: `.onHover` a meglévő hold-strip felett (NEM új nap-grafika a CalculateView-ban)
-- **Popover felépítése**: tetején `sun.svg` illusztráció, alatta a sunrise/sunset adatok
-- **Stílus**: spooky tomato képernyő vizuális nyelve — mély sötét háttér, amber/sárga kontrasztos elemek, Alien League betűk
-- **sun.svg duotone**: a jelenlegi szürke (~206 `.cls-N` fill) → amber/sárga skálára; célszín: `AppTheme.amber`
-  - Sötét vég = sötét amber, világos vég = világos sárga
-  - **Fehér háttér probléma**: a sun.svg-nek fehér háttere van, ceruzával rajzolt vonalak. Ha mindent amber skálára interpolálunk, a fehér háttér sárga lesz — nem jó. Megoldás: lightness küszöb (pl. > 240) felett `fill="transparent"` — de ez kipróbálással dől el, a küszöb hangolható. Alternatíva: küszöb felett a popover háttérszínét kapja (`#060503`).
-- **Popover háttér**: sötét — `#060503` (AppTheme.calculateBackground) vagy mélyebb fekete
-
-## Érintett fájlok (minden commitolva Session 25-ig)
+## Érintett fájlok (minden commitolva Session 30-ig)
+- `CountdownItem.swift` — SOUND-1 (`c04d4a6`)
+- `CountdownView.swift` — SOUND-1 (`c04d4a6`), beachball fixek (`07861a9`)
+- `CountdownDetailView.swift` — SOUND-1 (`c04d4a6`)
 - `CalculateView.swift` — CALC-1 (`525ed86`), toggle refactor (`2f99646`)
 - `LongPressStepperButton.swift` — 23-D (`8b2035b`)
-- `CountdownView.swift` — beachball fixek (`07861a9`)
+- `SunPanel.swift` — SUN-1-C (`bf41007`)
+- `SunTimes.swift` — SUN-1-A (`86d0846`)
+- `SunTimesService.swift` — SUN-1-A (`86d0846`)

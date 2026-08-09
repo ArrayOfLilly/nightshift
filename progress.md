@@ -1,5 +1,48 @@
 # countdownApp — Progress
 
+## Session 30 — 2026-08-09 (SOUND-1)
+
+### Completed
+
+**SOUND-1 — Per-slot expiry sound notification** (commit `c04d4a6`)
+
+`CountdownItem.swift`:
+- `soundEnabled: Bool = false` mező hozzáadva (backward-compatible Codable: ha
+  a JSON-ban nincs kulcs, Swift decoder a default `false`-t használja).
+
+`CountdownView.swift`:
+- `import AppKit` hozzáadva (NSSound-hoz szükséges).
+- `@State private var previousActiveIDs: Set<UUID> = []` — snapshot az aktív
+  item ID-kről az előző `rebuildCache` hívásból.
+- `rebuildCache(now:playExpirySounds:)` — új `playExpirySounds: Bool = false`
+  paraméter. Ha `true`: kiszámolja `newActiveIDs`-t, diff-el
+  `previousActiveIDs`-szel, és minden `justExpired` itemre ahol `soundEnabled==true`
+  meghívja `NSSound(named: "Funk")?.play()`-t. Ezután `previousActiveIDs`
+  mindig frissül a jelenlegi aktív setre.
+- `crossingTask` → `rebuildCache(now: Date(), playExpirySounds: true)`-val hívja
+  (csak a deadline-crossing pillanatában, nem minden ticknél).
+- Egyéb `rebuildCache()` hívások (`onAppear`, `.onChange`) maradnak
+  `playExpirySounds: false`-sal — startup-kor nem szól a hang.
+
+`CountdownDetailView.swift`:
+- Sound toggle gomb hozzáadva a bottom buttons HStack-be (a trash elé),
+  minden slot típuson látható (aktív és expired egyaránt).
+- `speaker.wave.2.fill` (bekapcsolt) / `speaker.slash.fill` (kikapcsolt) ikon.
+- Bekapcsolt állapot: `AppTheme.dark` háttér, `AppTheme.background` fg.
+- Kikapcsolt állapot: `AppTheme.dark.opacity(0.45)` háttér, `AppTheme.background.opacity(0.4)` fg.
+- `.focusable(false)` — FocusBridge crash megelőzés.
+- `item.soundEnabled.toggle()` → `@Binding` → `CountdownView.items` →
+  `.onChange(of: items)` → `save()` — automatikus perzisztálás.
+
+### Session 30 — LEZÁRVA
+- [x] `CountdownItem.swift` — `soundEnabled` mező
+- [x] `CountdownView.swift` — `previousActiveIDs` + `playExpirySounds` logika + `import AppKit`
+- [x] `CountdownDetailView.swift` — speaker toggle gomb
+- [x] Git commit — `c04d4a6`
+- [ ] Xcode build-teszt (user manuálisan ellenőrzi)
+
+---
+
 ## Session 29 — 2026-08-09 (SUN-1-C)
 
 ### Completed
@@ -32,9 +75,22 @@ Elrendezés:
 - Files changed: `SunPanel.swift` (uj), `CalculateView.swift`
 - Kovetkezo: **SUN-1-D** — sun.svg duotone Python script (opcionalis).
 
+**BUG-SUN-1 — API formatum mismatch javitva** (commit `528cc19`)
+
+`SunTimes.swift`:
+- `RawDay.day_length`: `Int` -> `String` (API `"8:37:22"`-t ad, nem masodpercet)
+- `parseDayLength()`: uj helper, `"H:MM:SS"` -> osszesitett masodpercek
+- `combine()`: 12 oras AM/PM (`h:mm:ss a`) elsonek probaltja, fallback 24 oras
+  (`HH:mm:ss`) — API `"7:28:47 AM"`-t ad, nem `"07:28:47"`-t
+
+`SunTimesService.swift`:
+- `fetchYear()`: print diagnosztika hozzaadva (HTTP status, raw JSON prefix,
+  parse eredmeny darabszam, error)
+
 ### Session 29 — LEZARVA
 - [x] `SunPanel.swift` — letrehozva, teljes UI
 - [x] `CalculateView.swift` — placeholder lecserelve SunPanel-re + Preview fix
+- [x] BUG-SUN-1: API formatum javitas (day_length string + 12-oras AM/PM)
 - [ ] Xcode build-teszt (user manualisan ellenorzi)
 
 ---
