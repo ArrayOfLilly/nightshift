@@ -30,6 +30,7 @@ struct SunPanel: View {
             }
         }
         .padding(.vertical, 20)
+        .frame(minWidth: 320)
         .background(
             LinearGradient(
                 stops: [
