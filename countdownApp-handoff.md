@@ -9,7 +9,46 @@
   Swift forrás: `countdownApp/countdownApp/countdownApp/` alatt.
 - Olvasd el először a `progress.md`-t.
 
-## Jelenlegi állapot (Session 30 végén)
+## Jelenlegi állapot (Session 31 végén)
+
+**BUG-SOUND-1 — LEZÁRVA, commitolva (`892f1ed`)**
+- Root cause: Swift synthesized `Decodable` nem használja a property default értékét
+  ha a kulcs hiányzik a JSON-ból — `keyNotFound`-ot dob, `try?` csendes `nil` → `items = []`.
+- `CountdownItem.swift`: explicit `CodingKeys` + `init(from decoder:)` hozzáadva;
+  `decodeIfPresent` + `?? default` fallback minden opcionális mezőre
+  (`showRemaining ?? true`, `accentColorIndex ?? nil`, `soundEnabled ?? false`).
+- Ez a minta véd jövőbeli mezők hozzáadásakor is — mindig `decodeIfPresent`-et használj
+  új opcionális/defaultos mezőkhöz.
+
+**TIME DISPLAY SIZING — LEZÁRVA, commitolva (`db5f054`)**
+- `CountdownDetailView.swift`: `ZStack` + fix `frame(maxWidth: 300)` →
+  `Image.overlay { GeometryReader }` — a szöveg maxWidth mindig a paradicsom
+  tényleges renderelt szélességének 62%-a, soha nem lóg ki.
+
+**SOUND-1 — LEZÁRVA, commitolva (`c04d4a6`)**
+- `CountdownItem.swift`: `soundEnabled: Bool = false`
+- `CountdownView.swift`: `previousActiveIDs` snapshot + `rebuildCache(playExpirySounds:)`
+  + `crossingTask` diff-alapú detekálás → `NSSound(named: "Funk")?.play()`
+- `CountdownDetailView.swift`: speaker toggle gomb, minden slot típuson látható
+
+**SUN-1-C — LEZÁRVA** (commit `bf41007` + bugfix-ek)
+- `SunPanel.swift`: teljes popover UI, 4 szekció
+- `SunTimes.swift`, `SunTimesService.swift`, `CalculateView.swift` — ld. Session 29–30
+
+## Következő feladat: (nyílt, user dönt)
+
+Backlog lehetőségek:
+- TTS: a slot nevét felolvassa lejáratkor (SOUND-1 bővítés)
+- CoreLocation: automatikus koordináta a SunTimesService-be (SUN-1-E)
+- Egyéb új feature
+
+---
+
+## FONTOS: CountdownItem Codable szabály
+
+Soha ne adj hozzá új mezőt a `CountdownItem`-hez anélkül, hogy az `init(from decoder:)`-be
+is felveszed `decodeIfPresent` + `?? default` fallback-kel. A synthesized Decodable
+nem használja a Swift default property értékeket — hiányzó kulcs = decode fail = üres lista.
 
 **SOUND-1 — LEZÁRVA, commitolva (`c04d4a6`)**
 - `CountdownItem.swift`: `soundEnabled: Bool = false` (backward-compatible Codable)
