@@ -17,6 +17,8 @@ import CoreText
 @main
 struct countdownAppApp: App {
 
+    @StateObject private var sunService = SunTimesService()
+
     init() {
         Self.registerBundledFonts()
     }
@@ -24,6 +26,7 @@ struct countdownAppApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(sunService)
         }
     }
 

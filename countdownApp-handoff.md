@@ -9,29 +9,48 @@
   Swift forrás: `countdownApp/countdownApp/countdownApp/` alatt.
 - Olvasd el először a `progress.md`-t.
 
-## Jelenlegi állapot (Session 27 végén)
+## Jelenlegi állapot (Session 28 végén)
+
+**SUN-1-B — LEZÁRVA** (commit függőben, user buildeli)
+- `countdownAppApp.swift`: `@StateObject private var sunService = SunTimesService()` +
+  `.environmentObject(sunService)` — service az app élettartamára él.
+- `CalculateView.swift`: `@EnvironmentObject var sunService`, hover state-ek
+  (`showSunPopover`, `hoverTask: DispatchWorkItem?`, `todaySunTimes: SunTimes?`);
+  `.onHover` → 0.2s `DispatchWorkItem` delay → `showSunPopover = true`; kilépéskor
+  cancel + false. `.popover(isPresented: $showSunPopover)` → `sunPopoverContent`
+  placeholder (sunrise/sunset időpontok ha adat megvan, ProgressView ha tölt,
+  egyébként statikus szöveg). `fetchTodaySunTimes()` a `.onAppear`-ből.
+- `#Preview { CalculateView() }` — ha Xcode Canvas hibát mutat (missing
+  EnvironmentObject), javítás: `CalculateView().environmentObject(SunTimesService())`.
 
 **SUN-1-A — LEZÁRVA, commitolva (`86d0846`, build-fix `fef76d5`)**
-- `countdownApp.entitlements` létrehozva (app-sandbox + network.client +
-  files.user-selected.read-only) — korábban NEM volt entitlements fájl a
-  projektben, Xcode auto-generálta a sandbox beállításokból, hálózati
-  engedély nélkül. `project.pbxproj`: `CODE_SIGN_ENTITLEMENTS` hozzáadva
-  a fő target Debug+Release configjához.
-- `SunTimes.swift` — `TimeWindow` + `SunTimes` modell, végleges mezőlista,
-  `RawDay`/`RawWindow` decode + `Date`-építés date+time+timezone mezőkből.
-- `SunTimesService.swift` — `@MainActor ObservableObject`, `@AppStorage`
-  koordináták (Budapest default), évenkénti UserDefaults cache, cache-first
-  betöltés + hálózati fallback. CoreLocation még NEM bekötve.
-- **Build-teszt (user, Xcode)**: elsőre 4 hiba — hiányzó `import Combine`
-  `SunTimesService.swift`-ben (`@Published` ehhez expliciten kell, a `SwiftUI`
-  import magában nem elég). **JAVÍTVA és COMMITOLVA** (`fef76d5`).
-  User megerősítette: **most már fordül.**
+- `countdownApp.entitlements`, `SunTimes.swift`, `SunTimesService.swift` — ld. Session 27.
 
-### Következő feladat: SUN-1-B
-CalculateView integráció + hover trigger + popover — `.onHover` a meglévő
-hold-strip területe felett, 0.2s delay, popover (nem sheet). A `SunTimesService`
-példányosítása/bekötése a `CalculateView`-ba, `sunTimes(for: Date())` hívás
-az aktuális napra. Még nincs saját UI (`SunPanel.swift` — az SUN-1-C).
+### Következő feladat: SUN-1-C
+`SunPanel.swift` — a teljes popover UI. Cserére kerül a jelenlegi placeholder
+`sunPopoverContent` a `CalculateView`-ban (vagy `SunPanel` saját View-ként
+illeszt a popoverbe). Tartalom: 4 szekció az alábbi elrendezésben:
+```
+☀️  MORNING              🌆  EVENING
+   First light               Sunset
+   Dawn                      Dusk
+   Sunrise                   Last light
+
+⚖️  DAY                  🌙  MOON
+   Solar noon                Moonrise
+   Day length                Moonset
+                             Phase + illumination
+📷  GOLDEN / BLUE HOUR
+   Morning golden  HH:mm–HH:mm
+   Morning blue    HH:mm–HH:mm
+   Evening golden  HH:mm–HH:mm
+   Evening blue    HH:mm–HH:mm
+```
+Stílus: `AppTheme.calculateBackground` háttér, `AppTheme.background` (amber)
+fontos időpontok, Alien League Bold számok, Alien League feliratok, `Color.white.opacity(0.5)`
+másodlagos szöveg. Popover tetején `sun.svg` illusztráció (duotone SUN-1-D, egyelőre
+színező nélkül, szürke változat is rendben). `todaySunTimes: SunTimes?` binding
+vagy paraméterként jön le a `CalculateView`-ból.
 
 ---
 

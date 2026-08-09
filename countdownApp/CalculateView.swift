@@ -13,9 +13,16 @@ import SwiftUI
 
 struct CalculateView: View {
 
+    @EnvironmentObject private var sunService: SunTimesService
+
     @AppStorage("calculateFromDate")    private var fromInterval: Double = Date().timeIntervalSince1970
     @AppStorage("calculateToDate")      private var toInterval:   Double = Date().timeIntervalSince1970
     @AppStorage("calculateDisplayMode") private var displayMode: String = "days"
+
+    // SUN-1-B: hover trigger state for sun popover
+    @State private var showSunPopover = false
+    @State private var hoverTask: DispatchWorkItem?
+    @State private var todaySunTimes: SunTimes? = nil
 
     private var fromDate: Date {
         get { Date(timeIntervalSince1970: fromInterval) }
@@ -94,6 +101,21 @@ struct CalculateView: View {
                                     .opacity(0.85)
                                     .offset(y: -arcOffset)
                             }
+                        }
+                        .onHover { inside in
+                            hoverTask?.cancel()
+                            if inside {
+                                let task = DispatchWorkItem {
+                                    showSunPopover = true
+                                }
+                                hoverTask = task
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: task)
+                            } else {
+                                showSunPopover = false
+                            }
+                        }
+                        .popover(isPresented: $showSunPopover) {
+                            sunPopoverContent
                         }
                     }
                     .frame(height: 80)
@@ -280,6 +302,60 @@ struct CalculateView: View {
             TimePart(quantity: "\(minutes)", unit: "m"),
             TimePart(quantity: "\(seconds)", unit: "s"),
         ]
+    }
+
+    // MARK: - Sun popover (SUN-1-B)
+
+    /// Placeholder popover content — full UI comes in SUN-1-C (SunPanel.swift).
+    /// Already loads today's sun times from SunTimesService on appear.
+    @ViewBuilder
+    private var sunPopoverContent: some View {
+        VStack(spacing: 12) {
+            if let st = todaySunTimes {
+                Text("SUNRISE")
+                    .font(AppTheme.alienLeague(11))
+                    .foregroundStyle(Color.white.opacity(0.6))
+                Text(timeString(st.sunrise))
+                    .font(AppTheme.alienLeagueBold(22))
+                    .foregroundStyle(AppTheme.background)
+                Text("SUNSET")
+                    .font(AppTheme.alienLeague(11))
+                    .foregroundStyle(Color.white.opacity(0.6))
+                    .padding(.top, 4)
+                Text(timeString(st.sunset))
+                    .font(AppTheme.alienLeagueBold(22))
+                    .foregroundStyle(AppTheme.background)
+            } else if sunService.isLoading {
+                ProgressView()
+                    .tint(AppTheme.background)
+            } else {
+                Text("SUN DATA")
+                    .font(AppTheme.alienLeagueBold(16))
+                    .foregroundStyle(AppTheme.background)
+                Text("Full panel in SUN-1-C")
+                    .font(AppTheme.alienLeague(12))
+                    .foregroundStyle(Color.white.opacity(0.5))
+            }
+        }
+        .padding(20)
+        .background(AppTheme.calculateBackground)
+        .onAppear {
+            fetchTodaySunTimes()
+        }
+    }
+
+    private func fetchTodaySunTimes() {
+        guard todaySunTimes == nil else { return }
+        Task {
+            todaySunTimes = await sunService.sunTimes(for: Date())
+        }
+    }
+
+    private func timeString(_ date: Date) -> String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "HH:mm"
+        fmt.locale = Locale(identifier: "en_US_POSIX")
+        return fmt.string(from: date)
     }
 
     // MARK: - Helpers

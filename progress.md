@@ -1,5 +1,47 @@
 # countdownApp — Progress
 
+## Session 28 — 2026-08-09 (SUN-1-B)
+
+### Completed
+
+**SUN-1-B — CalculateView integráció + hover trigger + popover**
+
+`countdownAppApp.swift`: `@StateObject private var sunService = SunTimesService()` +
+`.environmentObject(sunService)` a `ContentView()`-ra — a service az app teljes
+élettartamára él, tab-váltás után is megőrzi a cache-t és a betöltött éves adatot.
+
+`CalculateView.swift`:
+- `@EnvironmentObject private var sunService: SunTimesService` hozzáadva
+- `@State private var showSunPopover = false` + `@State private var hoverTask: DispatchWorkItem?`
+  + `@State private var todaySunTimes: SunTimes? = nil`
+- `.onHover` a hold-strip `HStack`-re kötve: hover belépéskor 0.2s `DispatchWorkItem`
+  indul (`hoverTask`), kilépéskor cancel + `showSunPopover = false`.
+- `.popover(isPresented: $showSunPopover)` a hold-strip `HStack`-re kötve.
+- `sunPopoverContent`: placeholder popover — 3 ág: (1) ha `todaySunTimes` megvan:
+  SUNRISE + SUNSET időpontok `timeString()` formázással; (2) ha `sunService.isLoading`:
+  `ProgressView`; (3) egyébként: statikus "SUN DATA / Full panel in SUN-1-C" szöveg.
+- `fetchTodaySunTimes()`: `guard todaySunTimes == nil` guard + `Task { await
+  sunService.sunTimes(for: Date()) }` — a popover `.onAppear`-jéből hívódik.
+- `timeString(_ date: Date)`: `"HH:mm"` `DateFormatter`, `en_US_POSIX` locale.
+
+**Megjegyzés a #Preview-hoz**: `#Preview { CalculateView() }` most `@EnvironmentObject`-t
+igényel — a Preview-t érintő kód nem változott, de Xcode-ban a Preview panelje
+hiba lesz (missing EnvironmentObject). Ez nem akadályozza a build-et, csak a
+Canvas-t. Ha kell: `CalculateView().environmentObject(SunTimesService())` a Preview-ba.
+
+- Files changed: `countdownAppApp.swift`, `CalculateView.swift`
+- Következő: **SUN-1-C** — `SunPanel.swift` UI (4 szekció: Morning / Evening / Day / Moon +
+  Golden/Blue hour; Alien League font, amber/dark stílus; popover tetején `sun.svg`
+  illusztráció — duotone SUN-1-D-ben).
+
+### Session 28 — LEZÁRVA
+- [x] `countdownAppApp.swift` — SunTimesService @StateObject + environmentObject
+- [x] `CalculateView.swift` — onHover + 0.2s delay + popover + fetchTodaySunTimes
+- [ ] Xcode build-teszt (user manuálisan ellenőrzi — build-et a chat nem tud futtatni)
+- [ ] Ha Preview hiba: `#Preview { CalculateView().environmentObject(SunTimesService()) }`
+
+---
+
 ## Session 27 — 2026-08-09 (SUN-1-A, in progress)
 
 ### Entitlements — FONTOS FELFEDEZÉS
