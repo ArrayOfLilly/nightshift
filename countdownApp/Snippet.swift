@@ -28,7 +28,20 @@ extension Snippet {
         guard let data = UserDefaults.standard.data(forKey: storageKey),
               let list = try? JSONDecoder().decode([Snippet].self, from: data)
         else { return [] }
-        return list
+        // Trim leading/trailing whitespace from project and title.
+        // Repairs any previously saved snippets with accidental whitespace.
+        let cleaned = list.map { s -> Snippet in
+            var c = s
+            c.project = s.project.trimmingCharacters(in: .whitespaces)
+            c.title   = s.title.trimmingCharacters(in: .whitespaces)
+            return c
+        }
+        // Persist the cleaned data so UserDefaults is also repaired.
+        if cleaned.map({ $0.project }) != list.map({ $0.project }) ||
+           cleaned.map({ $0.title })   != list.map({ $0.title }) {
+            save(cleaned)
+        }
+        return cleaned
     }
 
     static func save(_ snippets: [Snippet]) {

@@ -9,6 +9,62 @@
   Swift forrás: `countdownApp/countdownApp/countdownApp/` alatt.
 - Olvasd el először a `progress.md`-t.
 
+## Jelenlegi állapot (Session H után — 2026-08-11)
+
+### Session H elvégzett fixek
+
+**NotesSheet.swift — fix magasság:**
+- `webHeight` state és `clampedWebHeight` eltávolítva (JS-driven resize ejtve)
+- Sheet frame: EDIT / üres: 360pt; VIEW + tartalom: 520pt fix (mint SnippetEditSheet)
+- VIEW mód MarkdownWebView: `.frame(maxWidth: .infinity, maxHeight: .infinity)`, belül scrollol
+
+**SnippetEditSheet.swift — QoS + title kijelölés:**
+- `DispatchQueue.main.async` → `asyncAfter(deadline: .now() + 0.05)` az `.onAppear`-ben
+- Megoldja: QoS priority inversion warning + title TextField nem jelölődik ki megnyitáskor
+
+**Snippet sor szín — nem implementálva, vár a döntésre:**
+- Implementáció helye: `SnippetsView.swift` `snippetRow()` HStack `.background()`
+- Opciók: `#51422E` (freeColors[1], barna), `#403873` (freeColors[5], lila), `#3D3222` (közbülső barna)
+
+### Következő teendők
+- [ ] Build ellenőrzés
+- [ ] Git commit (Session E + F + G + H összes változás)
+- [ ] Snippet sor szín döntés és implementáció
+
+---
+
+## Jelenlegi állapot (Session F után — 2026-08-11)
+
+### Session F elvégzett fixek
+
+**ColorPickerSheet.swift:**
+- Active stroke: `lineWidth: 3` → `2` (túl vastag volt)
+- Auto swatch: `Color.white` → `Color.white.opacity(0.70)` (amber háttéren nem vakít)
+
+**SharedEditorComponents.swift — MarkdownWebView auto-height:**
+- `var onHeightChange: ((CGFloat) -> Void)? = nil` paraméter hozzáadva
+- `Coordinator: NSObject, WKNavigationDelegate` + `makeCoordinator()` hozzáadva
+- `didFinish`: JS `document.body.scrollHeight` evaluation → `onHeightChange` callback
+- Opcionális paraméter: backward-compatible, régi hívók változatlanul fordulnak
+
+**NotesSheet.swift + SnippetEditSheet.swift — VIEW mód dinamikus magasság:**
+- `@State private var webHeight: CGFloat = 280` mindkettőben
+- `clampedWebHeight` computed property: `min(max(webHeight, 160), screenH - 54)`
+  (54pt ≈ 1.5 cm a képernyő aljától)
+- Frame feltétel: EDIT mód / üres → fix minHeight (360 ill. 520); VIEW + tartalom → `minHeight: nil`
+- VIEW ág MarkdownWebView: `onHeightChange: { h in webHeight = h }` + `.frame(height: clampedWebHeight)`
+
+**Snippet szín — nem változtatva:**
+- Javaslatok: `#403873` (lila), `#3D3222` (sötétebb barna), `#30271B` (legsötétebb barna)
+- User dönt, majd következő sessionben implementálható
+
+### Következő teendők
+- [ ] Build ellenőrzés (VIEW mód auto-height tesztelése rövid és hosszú tartalommal)
+- [ ] Git commit (Session E + Session F összes változás)
+- [ ] Snippet sor háttérszín döntés és implementáció (ha user úgy dönt)
+
+---
+
 ## Jelenlegi állapot (Session 37 után)
 
 ### KÖVETKEZŐ SESSION ELSŐ LÉPÉSE: marked.min.js berakása

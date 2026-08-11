@@ -33,7 +33,8 @@ struct ColorPickerSheet: View {
             LazyVGrid(columns: columns, spacing: 16) {
 
                 // "Auto" swatch — resets to hash-based color
-                swatchButton(color: Color.white,
+                // opacity(0.70): avoids glare on the amber background
+                swatchButton(color: Color.white.opacity(0.70),
                              index: nil,
                              label: "AUTO")
 
@@ -67,7 +68,7 @@ struct ColorPickerSheet: View {
                         Circle()
                             .strokeBorder(
                                 Color.white.opacity(isSelected ? 0.85 : 0.18),
-                                lineWidth: isSelected ? 3 : 1.5
+                                lineWidth: isSelected ? 2 : 1.5
                             )
                     )
 

@@ -132,9 +132,9 @@ struct SnippetsView: View {
                         ForEach(rows(for: project)) { snippet in
                             snippetRow(snippet)
                             Rectangle()
-                                .fill(Color.white.opacity(0.05))
+                                .fill(Color.white.opacity(0.15))
                                 .frame(height: 1)
-                                .padding(.leading, 20)
+                                .padding(.horizontal, 20)
                         }
                     }
                 }
@@ -206,10 +206,10 @@ struct SnippetsView: View {
                         .foregroundStyle(Color.white.opacity(0.9))
                         .lineLimit(1)
                     if !snippet.body.isEmpty {
-                        Text(String(snippet.body.prefix(72)).replacingOccurrences(of: "\n", with: " "))
+                        Text(String(snippet.body.prefix(140)).replacingOccurrences(of: "\n", with: " "))
                             .font(.system(size: 11, design: .monospaced))
                             .foregroundStyle(Color.white.opacity(0.35))
-                            .lineLimit(1)
+                            .lineLimit(2)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -239,6 +239,6 @@ struct SnippetsView: View {
             .focusable(false)
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, 11)
+        .padding(.vertical, 14)
     }
 }

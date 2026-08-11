@@ -12,6 +12,10 @@
 //  Copy button: copies raw markdown to NSPasteboard, 1 s checkmark feedback.
 //  Trash button: clears notes string after confirmation alert.
 //
+//  DESIGN (Session H): Sheet is fixed height, no JS-driven resize.
+//  Empty / EDIT mode: 360pt. VIEW mode with content: 520pt.
+//  MarkdownWebView fills available area and scrolls internally.
+//
 
 import SwiftUI
 import AppKit
@@ -22,8 +26,8 @@ struct NotesSheet: View {
     @Binding var notes: String
     @Environment(\.dismiss) private var dismiss
 
-    @State private var isEditing      = false
-    @State private var copyFeedback   = false
+    @State private var isEditing         = false
+    @State private var copyFeedback      = false
     @State private var showDeleteConfirm = false
 
     var body: some View {
@@ -35,7 +39,8 @@ struct NotesSheet: View {
                 contentArea
             }
         }
-        .frame(minWidth: 480, minHeight: 360)
+        // Always 520pt — does not change on VIEW/EDIT toggle.
+        .frame(minWidth: 480, minHeight: 520)
         .alert("Delete all notes?", isPresented: $showDeleteConfirm) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) { notes = "" }
@@ -100,7 +105,7 @@ struct NotesSheet: View {
                 inset: NSSize(width: 24, height: 20)
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(AppTheme.dark)
+            .background(AppTheme.calculateBackground)
         } else if notes.isEmpty {
             Button { isEditing = true } label: {
                 VStack(spacing: 12) {

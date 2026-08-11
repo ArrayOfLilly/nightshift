@@ -12,6 +12,18 @@
 //  Snippet is nil for new entries; non-nil for editing an existing one.
 //  onSave is called with the final Snippet; onDelete (if provided) with its id.
 //
+//  FIX (Session G): VIEW mode MarkdownWebView wrapped in VStack to resolve
+//  NSViewRepresentable .frame() overload ambiguity.
+//
+//  FIX (Session G-2): Title TextField auto-focus suppressed via FocusState (never activated).
+//  FIX (Session H-2): onAppear makeFirstResponder removed — it caused a QoS priority inversion
+//  warning (AppKit internals block User-Interactive main thread on Default-QoS work).
+//  Using .focused($titleFocused) with titleFocused always false suppresses auto-focus cleanly.
+//
+//  DESIGN (Session G-3): Sheet is fixed height, no JS-driven resize.
+//  Empty / EDIT mode: 520pt. VIEW mode with content: 680pt.
+//  MarkdownWebView fills available area and scrolls internally.
+//
 
 import SwiftUI
 import AppKit
@@ -95,6 +107,7 @@ struct SnippetEditSheet: View {
     @State private var isEditing       = true
     @State private var copyFeedback    = false
     @State private var showDeleteAlert = false
+    @FocusState private var titleFocused: Bool
 
     init(snippet: Snippet?,
          existingProjects: [String],
@@ -110,6 +123,9 @@ struct SnippetEditSheet: View {
         _isEditing   = State(initialValue: snippet == nil || (snippet?.body ?? "").isEmpty)
     }
 
+    /// Sheet height: always 680 — does not change on VIEW/EDIT toggle.
+    private var sheetMinHeight: CGFloat { 680 }
+
     var body: some View {
         ZStack {
             AppTheme.background.ignoresSafeArea()
@@ -119,7 +135,7 @@ struct SnippetEditSheet: View {
                 contentArea
             }
         }
-        .frame(minWidth: 480, minHeight: 520)
+        .frame(minWidth: 480, minHeight: sheetMinHeight)
         .alert("Delete snippet?", isPresented: $showDeleteAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
@@ -140,6 +156,7 @@ struct SnippetEditSheet: View {
                     .font(AppTheme.alienLeagueBold(22))
                     .foregroundStyle(AppTheme.dark)
                     .textFieldStyle(.plain)
+                    .focused($titleFocused)
                 Spacer()
                 HStack(spacing: 8) {
                     headerButton(icon: copyFeedback ? "checkmark" : "doc.on.doc",
@@ -199,7 +216,7 @@ struct SnippetEditSheet: View {
                 inset: NSSize(width: 24, height: 20)
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(AppTheme.dark)
+            .background(AppTheme.calculateBackground)
         } else if snippetBody.isEmpty {
             Button { isEditing = true } label: {
                 VStack(spacing: 12) {
@@ -216,8 +233,10 @@ struct SnippetEditSheet: View {
             .buttonStyle(.plain)
             .focusable(false)
         } else {
-            MarkdownWebView(markdown: snippetBody)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            VStack(spacing: 0) {
+                MarkdownWebView(markdown: snippetBody)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 

@@ -21,16 +21,33 @@ import AppKit
 struct MarkdownWebView: NSViewRepresentable {
 
     let markdown: String
+    /// Called after each page load with the rendered content height (pts).
+    /// Used by NotesSheet and SnippetEditSheet to size the VIEW-mode frame.
+    var onHeightChange: ((CGFloat) -> Void)? = nil
 
     func makeNSView(context: Context) -> WKWebView {
         let wv = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
         wv.setValue(false, forKey: "drawsBackground")
+        wv.navigationDelegate = context.coordinator
         reload(markdown, into: wv)
         return wv
     }
 
     func updateNSView(_ wv: WKWebView, context: Context) {
         reload(markdown, into: wv)
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    final class Coordinator: NSObject, WKNavigationDelegate {
+        var parent: MarkdownWebView
+        init(_ p: MarkdownWebView) { parent = p }
+        func webView(_ wv: WKWebView, didFinish navigation: WKNavigation!) {
+            wv.evaluateJavaScript("document.body.scrollHeight") { val, _ in
+                guard let raw = val, let h = (raw as? NSNumber)?.doubleValue else { return }
+                DispatchQueue.main.async { self.parent.onHeightChange?(CGFloat(h)) }
+            }
+        }
     }
 
     private func reload(_ raw: String, into wv: WKWebView) {
@@ -76,7 +93,7 @@ struct MarkdownWebView: NSViewRepresentable {
 let markdownCSS = """
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    background: #2A2015;
+    background: #060503;
     color: rgba(255,255,255,0.85);
     font-family: 'Roboto Flex', 'Menlo', monospace;
     font-size: 13px;
@@ -93,7 +110,7 @@ p { margin-bottom: 0.8em; }
 ul, ol { padding-left: 1.4em; margin-bottom: 0.8em; }
 li { margin-bottom: 0.2em; }
 code { background: rgba(255,255,255,0.08); border-radius: 4px; padding: 1px 5px; font-size: 12px; color: #F5A623; }
-pre { background: rgba(0,0,0,0.45); border-left: 3px solid #F5A623; border-radius: 6px;
+pre { background: rgba(255,255,255,0.07); border-left: 3px solid #F5A623; border-radius: 6px;
       padding: 12px 14px; overflow-x: auto; margin-bottom: 0.9em; }
 pre code { background: none; padding: 0; color: #F5A623; }
 mark { background: rgba(245,166,35,0.35); color: #fff; border-radius: 3px; padding: 0 3px; }
