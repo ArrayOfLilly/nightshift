@@ -25,6 +25,12 @@
 //  The tomato body fills ~62 % of the image width; minimumScaleFactor allows further
 //  shrinking before layout gives up.
 //
+//  SLOT-NOTES: Notes button opens NotesSheet as a sheet.
+//  Icon-only state indicator (no opacity dimming — user preference):
+//  note.text.badge.plus when notes are empty (signals "additive/add mode"),
+//  note.text when notes are non-empty. Both states full AppTheme.background/
+//  AppTheme.dark opacity. Writes item.notes via @Binding → auto-persisted.
+//
 
 import SwiftUI
 import AppKit
@@ -53,11 +59,9 @@ private struct FocusedNSTextField: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSTextField, context: Context) {
-        // Only push text when the field is not being edited to avoid caret jumping.
         if !context.coordinator.isEditing {
             nsView.stringValue = text
         }
-        // Apply style every update (font objects are cheap to recreate).
         if let font = NSFont(name: "AlienLeagueBold", size: 36)
             ?? NSFont(name: "Alien League Bold", size: 36) {
             nsView.font = font
@@ -65,12 +69,6 @@ private struct FocusedNSTextField: NSViewRepresentable {
             nsView.font = NSFont.boldSystemFont(ofSize: 36)
         }
         nsView.textColor = NSColor(AppTheme.dark).withAlphaComponent(0.8)
-        // NOTE: Do NOT call makeFirstResponder here.
-        // Calling it — even async — causes AppKit to notify SwiftUI's hosting
-        // infrastructure, which triggers FocusBridge.moveFocus on a KeyViewProxy
-        // that is not yet attached to a window, producing the
-        // "different window (null)" crash. The user clicked the label to enter
-        // edit mode, so clicking into the NSTextField to type is acceptable UX.
     }
 
     func makeCoordinator() -> Coordinator {
@@ -120,16 +118,15 @@ struct CountdownDetailView: View {
     @Binding var item: CountdownItem
     let onDelete: () -> Void
 
-    @State private var copyFeedback:   Bool = false
-    @State private var isEditing:      Bool = false
+    @State private var copyFeedback: Bool = false
+    @State private var isEditing: Bool = false
     @State private var showColorPicker: Bool = false
+    @State private var showNotes: Bool = false
     /// Local to this view (not item.showRemaining, which is the row's own toggle) —
     /// the detail screen always opens showing remaining time, regardless of what the
     /// row list was last toggled to.
-    @State private var showRemaining:  Bool = true
+    @State private var showRemaining: Bool = true
     /// Local mirror of item.deadline — drives immediate stepper visual feedback.
-    /// @Binding writes propagate to CountdownView but don't guarantee an immediate
-    /// re-render of this destination view on macOS NavigationStack.
     @State private var localDeadline: Date = Date()
 
     private var cal: Calendar { Calendar.current }
@@ -146,23 +143,23 @@ struct CountdownDetailView: View {
                         FocusedNSTextField(text: $item.label) {
                             isEditing = false
                         }
-                        .frame(height: 44)
-                        .padding(.bottom, 2)
-                        .overlay(alignment: .bottom) {
+                            .frame(height: 36)
+                            .padding(.bottom, 2)
+                            .overlay(alignment: .bottom) {
                             Rectangle()
                                 .frame(height: 1.5)
                                 .foregroundStyle(AppTheme.dark.opacity(0.35))
                         }
                     } else {
                         Text(item.label.isEmpty ? "Countdown" : item.label.uppercased())
-                            .font(AppTheme.alienLeagueBold(36))
+                            .font(AppTheme.alienLeagueBold(24))
                             .foregroundStyle(AppTheme.dark.opacity(0.8))
                             .kerning(4)
                             .lineLimit(1)
                             .truncationMode(.tail)
                             .onTapGesture {
-                                isEditing = true
-                            }
+                            isEditing = true
+                        }
                     }
 
                     Button {
@@ -175,55 +172,46 @@ struct CountdownDetailView: View {
                         }
                     } label: {
                         Image(systemName: copyFeedback ? "checkmark" : "doc.on.doc")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(AppTheme.dark.opacity(0.85))
-                            .frame(width: 36, height: 36)
+                            .frame(width: 32, height: 32)
                             .background(AppTheme.dark.opacity(0.18))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .clipShape(RoundedRectangle(cornerRadius: 7))
                     }
-                    .buttonStyle(.plain)
-                    .focusable(false)
+                        .buttonStyle(.plain)
+                        .focusable(false)
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 28)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 28)
 
                 Spacer()
 
                 // ── Tomato + overlaid time ────────────────────────────────
-                // The time text is placed via .overlay { GeometryReader } so it
-                // always receives the actual rendered image size and can constrain
-                // its maxWidth proportionally. This prevents the text from ever
-                // overflowing the tomato body regardless of window size.
                 TimelineView(.periodic(from: .now, by: 1.0)) { ctx in
                     Image("spooky_tomato")
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: 500, maxHeight: 500)
                         .overlay {
-                            GeometryReader { geo in
-                                // The tomato body occupies ~62 % of the image width.
-                                // Use the shorter side (image is not always square at
-                                // smaller window sizes) so the text never overflows.
-                                let bodyWidth = min(geo.size.width, geo.size.height) * 0.62
-                                timeDisplay(at: ctx.date, maxWidth: bodyWidth)
-                                    // position() places the view's CENTER at (x, y)
-                                    // within the GeometryReader frame.
-                                    .position(
-                                        x: geo.size.width  / 2,
-                                        y: geo.size.height / 2 + 42
-                                    )
-                            }
+                        GeometryReader { geo in
+                            let bodyWidth = min(geo.size.width, geo.size.height) * 0.62
+                            timeDisplay(at: ctx.date, maxWidth: bodyWidth)
+                                .position(
+                                x: geo.size.width / 2,
+                                y: geo.size.height / 2 + 42
+                            )
                         }
+                    }
                 }
 
                 Spacer()
 
-                // ── Deadline stepper (always visible) ────────────────────────
+                // ── Deadline stepper ──────────────────────────────────────
                 deadlineStepper
                     .padding(.bottom, 16)
 
                 // ── Bottom buttons ────────────────────────────────────────
-                HStack(spacing: 12) {
+                HStack(spacing: 20) {
                     Button {
                         showRemaining.toggle()
                     } label: {
@@ -232,72 +220,93 @@ struct CountdownDetailView: View {
                             Text(showRemaining ? "Show Deadline" : "Show Remaining")
                                 .font(AppTheme.alienLeague(15))
                         }
-                        .foregroundStyle(AppTheme.background)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 13)
-                        .background(AppTheme.dark)
-                        .clipShape(RoundedRectangle(cornerRadius: 9))
-                    }
-                    .focusable(false)
 
-                    // ── Color picker — only for free (expired) slots ──
-                    if item.isExpired(at: Date()) {
-                        Button {
-                            showColorPicker = true
-                        } label: {
-                            Image(systemName: "paintbrush")
-                                .foregroundStyle(AppTheme.background)
-                                .frame(width: 44, height: 44)
-                                .background(AppTheme.dark)
-                                .clipShape(RoundedRectangle(cornerRadius: 9))
-                        }
+                            .foregroundStyle(AppTheme.background)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 9)
+                            .background(AppTheme.dark)
+                            .clipShape(RoundedRectangle(cornerRadius: 7))
+                    }
+                        .buttonStyle(.plain)
                         .focusable(false)
-                        .sheet(isPresented: $showColorPicker) {
-                            ColorPickerSheet(selectedIndex: $item.accentColorIndex)
+
+                    HStack(spacing: 8) {
+                        // ── Color picker — only for free (expired) slots ──
+                        if item.isExpired(at: Date()) {
+                            Button {
+                                showColorPicker = true
+                            } label: {
+                                Image(systemName: "paintbrush")
+                                    .foregroundStyle(AppTheme.background)
+                                    .frame(width: 32, height: 32)
+                                    .background(AppTheme.dark)
+                                    .clipShape(RoundedRectangle(cornerRadius: 7))
+                            }
+                                .buttonStyle(.plain)
+                                .focusable(false)
+                                .sheet(isPresented: $showColorPicker) {
+                                ColorPickerSheet(selectedIndex: $item.accentColorIndex)
+                            }
+                        }
+
+                        // ── Sound toggle — all slot types ──────────────────────
+                        Button {
+                            item.soundEnabled.toggle()
+                        } label: {
+                            Image(systemName: item.soundEnabled
+                                ? "speaker.wave.2.fill"
+                            : "speaker.slash.fill")
+                                .font(.system(size: 16))
+                                .foregroundStyle(item.soundEnabled
+                                ? AppTheme.background : AppTheme.background.opacity(1.0))
+                                .frame(width: 32, height: 32)
+                                .background(item.soundEnabled
+                                ? AppTheme.dark : AppTheme.dark.opacity(1.0))
+                                .clipShape(RoundedRectangle(cornerRadius: 7))
+                        }
+                            .buttonStyle(.plain)
+                            .focusable(false)
+
+                        // ── Notes — all slot types (SLOT-NOTES) ───────────────
+                        // note.text.fill + amber tint when non-empty; dim when empty.
+                        Button {
+                            showNotes = true
+                        } label: {
+                            Image(systemName: item.notes.isEmpty ?  "note.text.badge.plus" : "note.text" )
+                                .font(.system(size: 16))
+                                .foregroundStyle(item.notes.isEmpty
+                            ? AppTheme.background.opacity(1.0) : AppTheme.background)
+                                .frame(width: 32, height: 32)
+                                .background(item.notes.isEmpty
+                                            ? AppTheme.dark.opacity(1.0) : AppTheme.dark)
+                                .clipShape(RoundedRectangle(cornerRadius: 7))
+                        }
+                            .buttonStyle(.plain)
+                            .focusable(false)
+                            .sheet(isPresented: $showNotes) {
+                            NotesSheet(slotLabel: item.label, notes: $item.notes)
                         }
                     }
-
-                    // ── Sound toggle — all slot types ──────────────────────
-                    // SOUND-1: toggles item.soundEnabled; persists via @Binding →
-                    // CountdownView.items → .onChange(of: items) → save().
-                    Button {
-                        item.soundEnabled.toggle()
-                    } label: {
-                        Image(systemName: item.soundEnabled
-                              ? "speaker.wave.2.fill"
-                              : "speaker.slash.fill")
-                            .font(.system(size: 16))
-                            .foregroundStyle(item.soundEnabled
-                                            ? AppTheme.background
-                                            : AppTheme.background.opacity(0.4))
-                            .frame(width: 44, height: 44)
-                            .background(item.soundEnabled
-                                        ? AppTheme.dark
-                                        : AppTheme.dark.opacity(0.45))
-                            .clipShape(RoundedRectangle(cornerRadius: 9))
-                    }
-                    .focusable(false)
 
                     Button(action: onDelete) {
                         Image(systemName: "trash")
                             .foregroundStyle(AppTheme.background)
-                            .frame(width: 44, height: 44)
+                            .frame(width: 32, height: 32)
                             .background(AppTheme.dark)
-                            .clipShape(RoundedRectangle(cornerRadius: 9))
+                            .clipShape(RoundedRectangle(cornerRadius: 7))
                     }
-                    .focusable(false)
+                        .buttonStyle(.plain)
+                        .focusable(false)
                 }
-                .padding(.bottom, 36)
+                    .padding(.bottom, 36)
             }
         }
-        .navigationTitle("")
-        .onAppear {
-            // Free slots have a stale, long-past deadline. Snap it to "now" once on
-            // entry so the stepper starts from a sane base.
+            .navigationTitle("")
+            .onAppear {
             if item.isExpired(at: Date()) {
                 let now = Date()
-                item.deadline  = now
-                localDeadline  = now
+                item.deadline = now
+                localDeadline = now
             } else {
                 localDeadline = item.deadline
             }
@@ -311,39 +320,39 @@ struct CountdownDetailView: View {
             componentStepper(
                 label: "YEAR",
                 value: String(component(.year)),
-                onInc: { adjust(.year,  by:  1) },
-                onDec: { adjust(.year,  by: -1) }
+                onInc: { adjust(.year, by: 1) },
+                onDec: { adjust(.year, by: -1) }
             )
             componentStepper(
                 label: "MON",
                 value: monthAbbrev(),
-                onInc: { adjust(.month, by:  1) },
+                onInc: { adjust(.month, by: 1) },
                 onDec: { adjust(.month, by: -1) }
             )
             componentStepper(
                 label: "DAY",
                 value: String(format: "%02d", component(.day)),
-                onInc: { adjust(.day,   by:  1) },
-                onDec: { adjust(.day,   by: -1) }
+                onInc: { adjust(.day, by: 1) },
+                onDec: { adjust(.day, by: -1) }
             )
             componentStepper(
                 label: "HOUR",
                 value: String(format: "%02d", component(.hour)),
-                onInc: { adjust(.hour,  by:  1) },
-                onDec: { adjust(.hour,  by: -1) }
+                onInc: { adjust(.hour, by: 1) },
+                onDec: { adjust(.hour, by: -1) }
             )
             componentStepper(
                 label: "MIN",
                 value: String(format: "%02d", component(.minute)),
-                onInc: { adjust(.minute, by:  1) },
+                onInc: { adjust(.minute, by: 1) },
                 onDec: { adjust(.minute, by: -1) }
             )
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 14)
-        .background(AppTheme.dark.opacity(0.12))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding(.horizontal, 24)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 14)
+            .background(AppTheme.dark.opacity(0.12))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal, 24)
     }
 
     @ViewBuilder
@@ -378,15 +387,11 @@ struct CountdownDetailView: View {
                 backgroundColor: AppTheme.dark.opacity(0.12)
             )
         }
-        .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity)
     }
 
     // MARK: - Time display
 
-    /// Renders the remaining time or deadline string.
-    /// `maxWidth` is supplied by the GeometryReader overlay on the tomato image so
-    /// the text frame always matches the actual rendered image width — it never
-    /// overflows the tomato body regardless of window size.
     @ViewBuilder
     private func timeDisplay(at now: Date, maxWidth: CGFloat) -> some View {
         let w = maxWidth > 0 ? maxWidth : 280
@@ -418,16 +423,15 @@ struct CountdownDetailView: View {
     }
 
     private func adjust(_ c: Calendar.Component, by value: Int) {
-        // If the item is still expired, snap the base to now before applying the delta.
         var base = localDeadline
         if item.isExpired(at: Date()) {
             base = Date()
             localDeadline = base
-            item.deadline  = base
+            item.deadline = base
         }
         if let newDate = cal.date(byAdding: c, value: value, to: base) {
-            localDeadline = newDate   // immediate @State re-render
-            item.deadline  = newDate  // propagate to CountdownView via @Binding
+            localDeadline = newDate
+            item.deadline = newDate
         }
     }
 

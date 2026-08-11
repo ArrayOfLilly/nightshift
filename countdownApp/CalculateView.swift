@@ -9,6 +9,14 @@
 //  transparent elements use Color.white.opacity(X) — not amber-opacity.
 //  CALC-SAVE: Named deadline persistence — SAVE button stores the current TO date with a name.
 //
+//  CALC-SAVE design language (save sheet + detail sheet + list popover):
+//  - Background: LinearGradient from purple #593C73 @ 35% opacity (top) → AppTheme.calculateBackground (25% down).
+//  - Header: alienLeagueBold title in AppTheme.background (amber); date subtitle in white 55% opacity.
+//  - Dividers: Color.white.opacity(0.08), full width minus horizontal padding.
+//  - Buttons: amber-fill SAVE/LOAD (dark text), grey CANCEL (white 50% text, white 7% bg), trash (white 10% bg).
+//  - Split SAVE button: left = bookmark + "SAVE" (opens save sheet), right = chevron.down (opens list popover).
+//    The chevron half uses .contentShape(Rectangle()) so the full padded zone is tappable, not just the icon.
+//
 
 import SwiftUI
 
@@ -30,7 +38,6 @@ struct CalculateView: View {
     @State private var showSaveSheet:           Bool            = false
     @State private var saveTitleDraft:          String          = ""
     @State private var showDeadlineListPopover: Bool            = false
-    @State private var saveHoverTask:           DispatchWorkItem?
     @State private var selectedDeadline:        NamedDeadline?  = nil
 
     private var fromDate: Date {
@@ -276,185 +283,230 @@ struct CalculateView: View {
         .focusable(false)
     }
 
-    // MARK: - CALC-SAVE: Save button (click = new save sheet, hover = list popover)
+    // MARK: - CALC-SAVE: Save / Edit split button
+    // Left segment: opens save sheet. Right segment (▾): click-triggered popover with deadline list.
+    // The chevron uses .contentShape(Rectangle()) so the full padded zone is tappable, not just the icon.
 
     @ViewBuilder
     private var saveButton: some View {
-        Button {
-            saveTitleDraft = ""
-            showSaveSheet = true
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: "bookmark.fill")
-                    .font(.system(size: 11, weight: .bold))
-                Text("SAVE")
-                    .font(AppTheme.alienLeague(13))
+        HStack(spacing: 0) {
+            Button {
+                saveTitleDraft = ""
+                showSaveSheet = true
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "bookmark.fill")
+                        .font(.system(size: 11, weight: .bold))
+                    Text("SAVE")
+                        .font(AppTheme.alienLeague(13))
+                }
+                .foregroundStyle(AppTheme.background)
+                .padding(.leading, 14)
+                .padding(.trailing, 10)
+                .padding(.vertical, 8)
             }
-            .foregroundStyle(AppTheme.background)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(Color.white.opacity(0.12))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-        }
-        .buttonStyle(.plain)
-        .focusable(false)
-        .onHover { inside in
-            saveHoverTask?.cancel()
-            if inside && !namedDeadlines.isEmpty {
-                let task = DispatchWorkItem { showDeadlineListPopover = true }
-                saveHoverTask = task
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: task)
-            } else {
-                showDeadlineListPopover = false
+            .buttonStyle(.plain)
+            .focusable(false)
+
+            Rectangle()
+                .fill(Color.white.opacity(0.2))
+                .frame(width: 1, height: 20)
+
+            Button {
+                if !namedDeadlines.isEmpty {
+                    showDeadlineListPopover.toggle()
+                }
+            } label: {
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(
+                        namedDeadlines.isEmpty
+                            ? AppTheme.background.opacity(0.3)
+                            : AppTheme.background
+                    )
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .contentShape(Rectangle())   // FIX: full padded area tappable, not just the icon
+            }
+            .buttonStyle(.plain)
+            .focusable(false)
+            .popover(isPresented: $showDeadlineListPopover) {
+                deadlineListPopoverContent
             }
         }
-        .popover(isPresented: $showDeadlineListPopover) {
-            deadlineListPopoverContent
-        }
+        .background(Color.white.opacity(0.12))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    // MARK: - CALC-SAVE: Shared gradient background helper
+    // Purple #593C73 @ 35% opacity fades into calculateBackground by 25% of the view height.
+    // Used by the list popover, save sheet, and detail sheet for visual consistency.
+
+    private var calcSaveGradient: LinearGradient {
+        LinearGradient(
+            stops: [
+                .init(color: Color(red: 0x59/255, green: 0x3C/255, blue: 0x73/255).opacity(0.35), location: 0),
+                .init(color: AppTheme.calculateBackground, location: 0.25),
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 
     // MARK: - CALC-SAVE: Deadline list popover
 
     @ViewBuilder
     private var deadlineListPopoverContent: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: 0) {
             Text("SAVED DEADLINES")
                 .font(AppTheme.alienLeague(11))
                 .foregroundStyle(Color.white.opacity(0.5))
                 .kerning(2)
-                .padding(.horizontal, 16)
-                .padding(.top, 14)
-                .padding(.bottom, 10)
+                .padding(.top, 18)
+                .padding(.bottom, 12)
 
             Rectangle()
-                .fill(Color.white.opacity(0.12))
+                .fill(Color.white.opacity(0.08))
                 .frame(height: 1)
+                .padding(.horizontal, 20)
 
-            ScrollView {
-                VStack(spacing: 0) {
-                    ForEach(namedDeadlines) { deadline in
-                        Button {
-                            showDeadlineListPopover = false
-                            DispatchQueue.main.async {
-                                selectedDeadline = deadline
-                            }
-                        } label: {
-                            HStack(alignment: .center, spacing: 12) {
-                                VStack(alignment: .leading, spacing: 3) {
-                                    Text(deadline.title)
-                                        .font(AppTheme.alienLeagueBold(13))
-                                        .foregroundStyle(AppTheme.background)
-                                        .lineLimit(1)
-                                    Text(deadlineDateString(deadline.date))
-                                        .font(AppTheme.alienLeague(11))
-                                        .foregroundStyle(Color.white.opacity(0.45))
-                                }
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 10, weight: .medium))
-                                    .foregroundStyle(Color.white.opacity(0.3))
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 11)
-                            .contentShape(Rectangle())
+            VStack(spacing: 0) {
+                ForEach(namedDeadlines) { deadline in
+                    Button {
+                        showDeadlineListPopover = false
+                        DispatchQueue.main.async { selectedDeadline = deadline }
+                    } label: {
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Text(deadline.title)
+                                .font(AppTheme.alienLeague(12))
+                                .foregroundStyle(Color.white.opacity(0.5))
+                                .lineLimit(1)
+                            Spacer()
+                            Text(deadlineDateString(deadline.date))
+                                .font(AppTheme.alienLeagueBold(15))
+                                .foregroundStyle(AppTheme.background)
+                                .multilineTextAlignment(.trailing)
                         }
-                        .buttonStyle(.plain)
-                        .focusable(false)
-
-                        Rectangle()
-                            .fill(Color.white.opacity(0.07))
-                            .frame(height: 1)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
+                    .focusable(false)
+
+                    Rectangle()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(height: 1)
+                        .padding(.horizontal, 20)
                 }
             }
-            .frame(maxHeight: 260)
+            .padding(.vertical, 8)
         }
-        .frame(minWidth: 270)
-        .background(AppTheme.calculateBackground)
+        .frame(minWidth: 320)
+        .background(calcSaveGradient)
     }
 
     // MARK: - CALC-SAVE: Save sheet (new deadline name entry)
+    // Design matches the list popover: purple gradient header, white 8% divider, amber SAVE button.
 
     @ViewBuilder
     private var saveSheetContent: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("SAVE DEADLINE")
-                .font(AppTheme.alienLeagueBold(18))
-                .foregroundStyle(AppTheme.background)
-                .frame(maxWidth: .infinity, alignment: .center)
+        VStack(alignment: .leading, spacing: 0) {
+            // Header — purple gradient zone
+            VStack(spacing: 8) {
+                Text("SAVE DEADLINE")
+                    .font(AppTheme.alienLeagueBold(18))
+                    .foregroundStyle(AppTheme.background)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 28)
 
-            Text(deadlineDateString(snapToMinute(toDate)))
-                .font(AppTheme.alienLeague(14))
-                .foregroundStyle(Color.white.opacity(0.55))
-                .frame(maxWidth: .infinity, alignment: .center)
-
-            TextField("Name...", text: $saveTitleDraft)
-                .textFieldStyle(.plain)
-                .font(AppTheme.alienLeague(15))
-                .foregroundStyle(AppTheme.background)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(Color.white.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-
-            HStack(spacing: 12) {
-                Spacer()
-                Button("CANCEL") {
-                    showSaveSheet = false
-                }
-                .buttonStyle(.plain)
-                .focusable(false)
-                .font(AppTheme.alienLeague(13))
-                .foregroundStyle(Color.white.opacity(0.5))
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Color.white.opacity(0.07))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                Button("SAVE") {
-                    let trimmed = saveTitleDraft.trimmingCharacters(in: .whitespaces)
-                    if !trimmed.isEmpty { addNamedDeadline(title: trimmed) }
-                    showSaveSheet = false
-                }
-                .buttonStyle(.plain)
-                .focusable(false)
-                .font(AppTheme.alienLeagueBold(13))
-                .foregroundStyle(AppTheme.calculateBackground)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(AppTheme.background)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .disabled(saveTitleDraft.trimmingCharacters(in: .whitespaces).isEmpty)
+                Text(deadlineDateString(snapToMinute(toDate)))
+                    .font(AppTheme.alienLeague(13))
+                    .foregroundStyle(Color.white.opacity(0.55))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.bottom, 20)
             }
+
+            Rectangle()
+                .fill(Color.white.opacity(0.08))
+                .frame(height: 1)
+
+            // Body — name field + action buttons
+            VStack(spacing: 16) {
+                TextField("Name...", text: $saveTitleDraft)
+                    .textFieldStyle(.plain)
+                    .font(AppTheme.alienLeague(15))
+                    .foregroundStyle(AppTheme.background)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(Color.white.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                HStack(spacing: 12) {
+                    Spacer()
+                    Button("CANCEL") {
+                        showSaveSheet = false
+                    }
+                    .buttonStyle(.plain)
+                    .focusable(false)
+                    .font(AppTheme.alienLeague(13))
+                    .foregroundStyle(Color.white.opacity(0.5))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.white.opacity(0.07))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                    Button("SAVE") {
+                        let trimmed = saveTitleDraft.trimmingCharacters(in: .whitespaces)
+                        if !trimmed.isEmpty { addNamedDeadline(title: trimmed) }
+                        showSaveSheet = false
+                    }
+                    .buttonStyle(.plain)
+                    .focusable(false)
+                    .font(AppTheme.alienLeagueBold(13))
+                    .foregroundStyle(AppTheme.calculateBackground)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(AppTheme.background)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .disabled(saveTitleDraft.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+            .padding(.horizontal, 28)
+            .padding(.top, 20)
+            .padding(.bottom, 28)
         }
-        .padding(28)
         .frame(minWidth: 320)
-        .background(AppTheme.calculateBackground)
+        .background(calcSaveGradient)
     }
 
     // MARK: - CALC-SAVE: Deadline detail sheet (load / delete)
+    // Same design language as save sheet and list popover.
 
     @ViewBuilder
     private func deadlineDetailContent(_ deadline: NamedDeadline) -> some View {
         VStack(spacing: 0) {
-            VStack(spacing: 12) {
+            // Header — purple gradient zone
+            VStack(spacing: 10) {
                 Text(deadline.title)
                     .font(AppTheme.alienLeagueBold(20))
                     .foregroundStyle(AppTheme.background)
                     .multilineTextAlignment(.center)
+                    .padding(.top, 28)
 
                 Text(deadlineDateString(deadline.date))
-                    .font(AppTheme.alienLeague(14))
+                    .font(AppTheme.alienLeague(13))
                     .foregroundStyle(Color.white.opacity(0.55))
+                    .padding(.bottom, 20)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 28)
 
             Rectangle()
-                .fill(Color.white.opacity(0.12))
+                .fill(Color.white.opacity(0.08))
                 .frame(height: 1)
                 .padding(.horizontal, 28)
 
+            // Body — actions
             HStack(spacing: 16) {
                 Button {
                     toInterval = deadline.date.timeIntervalSince1970
@@ -493,7 +545,7 @@ struct CalculateView: View {
             .padding(.vertical, 24)
         }
         .frame(minWidth: 300)
-        .background(AppTheme.calculateBackground)
+        .background(calcSaveGradient)
     }
 
     // MARK: - CALC-SAVE: Persistence

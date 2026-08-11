@@ -33,7 +33,9 @@ struct ColorPickerSheet: View {
             LazyVGrid(columns: columns, spacing: 16) {
 
                 // "Auto" swatch — resets to hash-based color
-                swatchButton(color: AppTheme.background, index: nil, label: "AUTO")
+                swatchButton(color: Color.white,
+                             index: nil,
+                             label: "AUTO")
 
                 // Palette swatches
                 ForEach(Array(AppTheme.freeColors.enumerated()), id: \.offset) { idx, color in
@@ -60,11 +62,11 @@ struct ColorPickerSheet: View {
                 Circle()
                     .fill(color)
                     .frame(width: 52, height: 52)
-                    .shadow(color: color.opacity(0.6), radius: isSelected ? 8 : 0)
+                    .shadow(color: color.opacity(0.4), radius: isSelected ? 5 : 0)
                     .overlay(
                         Circle()
                             .strokeBorder(
-                                AppTheme.dark.opacity(isSelected ? 0.85 : 0.18),
+                                Color.white.opacity(isSelected ? 0.85 : 0.18),
                                 lineWidth: isSelected ? 3 : 1.5
                             )
                     )
@@ -75,8 +77,8 @@ struct ColorPickerSheet: View {
                         .foregroundStyle(AppTheme.dark.opacity(0.75))
                 } else if let label {
                     Text(label)
-                        .font(AppTheme.alienLeague(9))
-                        .foregroundStyle(AppTheme.dark.opacity(0.75))
+                        .font(AppTheme.alienLeague(12))
+                        .foregroundStyle(AppTheme.dark.opacity(0.85))
                         .kerning(1)
                 }
             }

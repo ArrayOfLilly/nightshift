@@ -7,6 +7,10 @@
 //  Equatable → required for SwiftUI onChange(of:) on the items array
 //  Hashable  → required for NavigationLink(value:) pattern (BUG-18 fix)
 //
+//  SLOT-NOTES: Each item carries a free-form `notes` String (default "").
+//  The custom init(from:) uses decodeIfPresent so existing JSON without the
+//  key continues to decode cleanly — the field simply defaults to "".
+//
 
 import Foundation
 
@@ -22,28 +26,32 @@ struct CountdownItem: Identifiable, Codable, Equatable, Hashable {
     /// Play a system sound when this slot expires (active → free transition).
     /// Default false — backward-compatible: missing key in JSON decodes as false.
     var soundEnabled: Bool = false
+    /// Free-form notes/handoff text for this slot. Stored as raw markdown.
+    /// Default "" — backward-compatible: missing key in JSON decodes to empty string.
+    var notes: String = ""
 
     // MARK: - Codable
     //
     // Swift synthesized Decodable does NOT fall back to a property's default value
     // when the key is absent — it throws keyNotFound, which `try?` silently turns
     // into nil, leaving `items = []`. Custom init(from:) is required so that
-    // optional/defaulted fields (accentColorIndex, soundEnabled, showRemaining)
-    // gracefully decode to their defaults when loading JSON written by older builds.
+    // optional/defaulted fields gracefully decode to their defaults when loading
+    // JSON written by older builds.
 
     enum CodingKeys: String, CodingKey {
-        case id, label, deadline, showRemaining, accentColorIndex, soundEnabled
+        case id, label, deadline, showRemaining, accentColorIndex, soundEnabled, notes
     }
 
     init(id: UUID = UUID(), label: String, deadline: Date,
          showRemaining: Bool = true, accentColorIndex: Int? = nil,
-         soundEnabled: Bool = false) {
+         soundEnabled: Bool = false, notes: String = "") {
         self.id               = id
         self.label            = label
         self.deadline         = deadline
         self.showRemaining    = showRemaining
         self.accentColorIndex = accentColorIndex
         self.soundEnabled     = soundEnabled
+        self.notes            = notes
     }
 
     init(from decoder: Decoder) throws {
@@ -51,9 +59,10 @@ struct CountdownItem: Identifiable, Codable, Equatable, Hashable {
         id               = try c.decode(UUID.self,   forKey: .id)
         label            = try c.decode(String.self, forKey: .label)
         deadline         = try c.decode(Date.self,   forKey: .deadline)
-        showRemaining    = try c.decodeIfPresent(Bool.self, forKey: .showRemaining)    ?? true
-        accentColorIndex = try c.decodeIfPresent(Int.self,  forKey: .accentColorIndex) ?? nil
-        soundEnabled     = try c.decodeIfPresent(Bool.self, forKey: .soundEnabled)     ?? false
+        showRemaining    = try c.decodeIfPresent(Bool.self,   forKey: .showRemaining)    ?? true
+        accentColorIndex = try c.decodeIfPresent(Int.self,    forKey: .accentColorIndex) ?? nil
+        soundEnabled     = try c.decodeIfPresent(Bool.self,   forKey: .soundEnabled)     ?? false
+        notes            = try c.decodeIfPresent(String.self, forKey: .notes)            ?? ""
     }
 
     // MARK: - Helpers called from the view with a live Date reference
