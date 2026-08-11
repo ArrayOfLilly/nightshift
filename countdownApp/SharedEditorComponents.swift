@@ -1,0 +1,158 @@
+//
+//  SharedEditorComponents.swift
+//  countdownApp
+//
+//  MarkdownWebView and PlainTextEditor are used by both NotesSheet (slot notes)
+//  and SnippetEditSheet (snippets). Keeping them here avoids duplication.
+//
+//  MarkdownWebView: renders markdown via bundled marked.min.js inside WKWebView.
+//  PlainTextEditor: zero-inset NSTextView wrapper — all spacing from call-site padding.
+//
+
+import SwiftUI
+import WebKit
+import AppKit
+
+// MARK: - MarkdownWebView
+
+/// Renders a markdown string as HTML inside a WKWebView.
+/// Reloads whenever `markdown` changes.
+/// marked.min.js (or marked.umd.js) must be in Copy Bundle Resources.
+struct MarkdownWebView: NSViewRepresentable {
+
+    let markdown: String
+
+    func makeNSView(context: Context) -> WKWebView {
+        let wv = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
+        wv.setValue(false, forKey: "drawsBackground")
+        reload(markdown, into: wv)
+        return wv
+    }
+
+    func updateNSView(_ wv: WKWebView, context: Context) {
+        reload(markdown, into: wv)
+    }
+
+    private func reload(_ raw: String, into wv: WKWebView) {
+        let markedURL = Bundle.main.url(forResource: "marked.min", withExtension: "js")
+                     ?? Bundle.main.url(forResource: "marked.umd", withExtension: "js")
+        guard let markedURL,
+              let markedJS = try? String(contentsOf: markedURL, encoding: .utf8)
+        else {
+            let escaped = raw
+                .replacingOccurrences(of: "&", with: "&amp;")
+                .replacingOccurrences(of: "<", with: "&lt;")
+                .replacingOccurrences(of: "\n", with: "<br>")
+            wv.loadHTMLString(fallbackHTML(escaped), baseURL: nil)
+            return
+        }
+        let highlighted = applyHighlight(raw)
+        let escaped = highlighted
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "`", with: "\\`")
+        let html = """
+        <!DOCTYPE html><html><head><meta charset="utf-8">
+        <style>\(markdownCSS)</style></head><body>
+        <script>\(markedJS)</script>
+        <script>document.body.innerHTML = marked.parse(`\(escaped)`);</script>
+        </body></html>
+        """
+        wv.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
+    }
+
+    private func applyHighlight(_ s: String) -> String {
+        guard let rx = try? NSRegularExpression(pattern: "==(.+?)==") else { return s }
+        return rx.stringByReplacingMatches(in: s, range: NSRange(s.startIndex..., in: s),
+                                           withTemplate: "<mark>$1</mark>")
+    }
+
+    private func fallbackHTML(_ body: String) -> String {
+        "<html><head><style>\(markdownCSS)</style></head><body><p>\(body)</p></body></html>"
+    }
+}
+
+// MARK: - Shared CSS (used by both NotesSheet and SnippetEditSheet)
+
+let markdownCSS = """
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    background: #2A2015;
+    color: rgba(255,255,255,0.85);
+    font-family: 'Roboto Flex', 'Menlo', monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    padding: 20px 24px 40px;
+}
+h1, h2, h3 {
+    color: #F5A623;
+    font-family: 'AlienLeagueBold', 'Alien League Bold', system-ui;
+    margin-top: 1.2em; margin-bottom: 0.4em; letter-spacing: 1px;
+}
+h1 { font-size: 20px; } h2 { font-size: 16px; } h3 { font-size: 14px; }
+p { margin-bottom: 0.8em; }
+ul, ol { padding-left: 1.4em; margin-bottom: 0.8em; }
+li { margin-bottom: 0.2em; }
+code { background: rgba(255,255,255,0.08); border-radius: 4px; padding: 1px 5px; font-size: 12px; color: #F5A623; }
+pre { background: rgba(0,0,0,0.45); border-left: 3px solid #F5A623; border-radius: 6px;
+      padding: 12px 14px; overflow-x: auto; margin-bottom: 0.9em; }
+pre code { background: none; padding: 0; color: #F5A623; }
+mark { background: rgba(245,166,35,0.35); color: #fff; border-radius: 3px; padding: 0 3px; }
+table { border-collapse: collapse; width: 100%; margin-bottom: 0.9em; }
+th, td { border: 1px solid rgba(255,255,255,0.18); padding: 6px 10px; text-align: left; }
+tr:nth-child(even) { background: rgba(255,255,255,0.04); }
+a { color: #F5A623; }
+"""
+
+// MARK: - PlainTextEditor
+
+/// Zero-inset NSTextView wrapper. SwiftUI's TextEditor cannot zero its internal
+/// textContainerInset, causing misalignment vs WKWebView padding.
+/// All spacing must come from SwiftUI .padding() at the call site.
+struct PlainTextEditor: NSViewRepresentable {
+
+    @Binding var text: String
+    var font: NSFont
+    var textColor: NSColor
+    var inset: NSSize = .zero
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let tv = NSTextView()
+        tv.delegate = context.coordinator
+        tv.string = text
+        tv.font = font
+        tv.textColor = textColor
+        tv.backgroundColor = .clear
+        tv.drawsBackground = false
+        tv.isRichText = false
+        tv.allowsUndo = true
+        tv.textContainerInset = inset
+        tv.textContainer?.lineFragmentPadding = 0
+        tv.textContainer?.widthTracksTextView = true
+        tv.isVerticallyResizable = true
+        tv.isHorizontallyResizable = false
+        tv.autoresizingMask = [.width]
+
+        let sv = NSScrollView()
+        sv.documentView = tv
+        sv.hasVerticalScroller = true
+        sv.drawsBackground = false
+        sv.borderType = .noBorder
+        return sv
+    }
+
+    func updateNSView(_ sv: NSScrollView, context: Context) {
+        guard let tv = sv.documentView as? NSTextView, tv.string != text else { return }
+        tv.string = text
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    final class Coordinator: NSObject, NSTextViewDelegate {
+        var parent: PlainTextEditor
+        init(_ p: PlainTextEditor) { self.parent = p }
+        func textDidChange(_ n: Notification) {
+            guard let tv = n.object as? NSTextView else { return }
+            parent.text = tv.string
+        }
+    }
+}

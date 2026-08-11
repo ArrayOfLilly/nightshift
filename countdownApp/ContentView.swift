@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  countdownApp
 //
-//  Root view. Owns the mode switcher (Calculate / Countdown).
+//  Root view. Owns the mode switcher (Calculate / Countdown / Snippets).
 //  All mode-specific logic lives in CalculateView and CountdownView.
 //  Mode switcher is a custom HStack of icon buttons (NOT the native segmented
 //  Picker) so size, padding, and color are fully controllable — the native
@@ -18,6 +18,7 @@ struct ContentView: View {
     enum Mode: String, CaseIterable, Identifiable {
         case calculate = "Calculate"
         case countdown = "Countdown"
+        case snippets  = "Snippets"
         var id: String { rawValue }
 
         /// SF Symbol placeholder — swap for a custom icon asset if desired.
@@ -25,6 +26,7 @@ struct ContentView: View {
             switch self {
             case .calculate: return "clock"
             case .countdown: return "at"
+            case .snippets:  return "doc.plaintext"
             }
         }
     }
@@ -50,6 +52,7 @@ struct ContentView: View {
                 switch selectedMode {
                 case .calculate: CalculateView()
                 case .countdown: CountdownView()
+                case .snippets:  SnippetsView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

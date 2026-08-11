@@ -1,5 +1,111 @@
 # countdownApp — Progress
 
+## Session E — 2026-08-11 (SNIPPETS UI polish)
+
+### Elvégzett változások
+
+**SnippetEditSheet.swift — compile fix**
+- `ProjectComboBox` → `ProjectField` névjavítás (a fájlban dupla header + rossz
+  típusnév maradt bent az újraírásból; compile error volt).
+- Dupla import blokk + dupla fejléckomment eltávolítva.
+- `minHeight: 360` → `minHeight: 520` (tágasabb szövegterület).
+
+**SnippetsView.swift — szekciófejléc cleanup**
+- Volt: minden projektnévnél pencil + xmark gomb (2 ikon, mindig látható) —
+  vizuálisan elnyomta a sorok Copy gombját.
+- Fix: egyetlen chevron (`˅`) közvetlenül a projektnév után, `white.opacity(0.45)`;
+  kattintásra natív macOS `Menu` nyílik: "Rename project…" / "Delete project" (destructive).
+- `.menuIndicator(.hidden)` — megakadályozza, hogy a `.borderlessButton` style
+  saját extra chevront adjon hozzá (dupla nyíl bug fix).
+
+### Session E — LEZÁRT
+- [x] `SnippetEditSheet.swift` — `ProjectComboBox` → `ProjectField` compile fix
+- [x] `SnippetEditSheet.swift` — dupla header cleanup, `minHeight` 360→520
+- [x] `SnippetsView.swift` — pencil+xmark → egyetlen chevron Menu
+- [ ] Git commit
+
+---
+
+## Session D — 2026-08-11 (SNIPPETS sort fix)
+
+### Elvégzett változások
+
+**SnippetsView.swift — `projectKeys` sort fix**
+- Root cause: `Array(Set(...)).sorted()` — a `Set` Swift-ben hash-alapú véletlenszerű
+  sorrendű; a default `.sorted()` case-sensitive (nagybetűs nevek hamarabb jönnek
+  mint kisbetűsek ASCII sorrendben), ezért a megjelenített sorrend nem volt ABC.
+- Fix: `localizedCaseInsensitiveCompare` a sortban + `caseInsensitiveCompare("General")`
+  a General-check-ben (robusztusabb: "general"/"GENERAL" is utolsó lesz).
+- Eredmény: book-identifier → countdown app → fotomuveszet-ocr-test → iconkeeper → General ✅
+
+**Snippet.swift — `load()` whitespace migration**
+- Root cause: a tárolt project (és title) stringekben vezető szóköz volt, ezért
+  a sort az eredeti, nem-ABC sorrendet adta vissza (space ASCII 32 < 'b' ASCII 98).
+- `load()` mostantól minden snippet project + title stringjét `.trimmingCharacters(in: .whitespaces)`-szel
+  tisztítja betöltéskor, ÉS visszamenti a javított adatot UserDefaults-ba —
+  egyszeri indítás után az összes régi rossz adat automatikusan javul.
+
+**SnippetEditSheet.swift — `commitSave()` trim**
+- Jövőbeli mentéseknél is trim, hogy a whitespace hiba ne tudjon visszatérni.
+
+### Session D — LEZÁRT
+- [x] `SnippetsView.swift` — `projectKeys` case-insensitive sort + General-last fix
+- [x] `Snippet.swift` — `load()` whitespace migration (trim + re-save)
+- [x] `SnippetEditSheet.swift` — `commitSave()` trim
+
+**SnippetsView.swift — projekt rename + delete**
+- Szekciófejlécben pencil (rename) + x (delete) gombok, 22×22, white 5% bg, white 35% ikon
+- Rename: `.alert` TextField-del; az összes érintett snippet `project` mezője frissül,
+  trim + üres/azonos név guard; `Snippet.save()` hívódik
+- Delete: `.alert` destructive gombbal; üzenetben snippet-számlálás ("N snippet");
+  `snippets.removeAll` + `Snippet.save()`
+- `renameProject(from:to:)` + `deleteProject(_:)` private helper függvények
+- [ ] Git commit
+
+---
+
+## Session C — 2026-08-11 (SNIPPETS implementáció)
+
+### Elvégzett változások
+
+**Architektúra: editor duplikáció megszüntetve**
+- `MarkdownWebView` és `PlainTextEditor` kiemelve `SharedEditorComponents.swift`-be
+  (internal hozzáférhetőség — mindkét sheet használja)
+- `NotesSheet.swift` újraírva: a private verziók törölve, shared komponenseket használja;
+  logika/viselkedés azonos (live $notes binding, copy/trash/toggle gombok)
+- `markdownCSS` konstans szintén a shared fájlban — egyetlen forrás
+
+**Új fájlok**
+- `SharedEditorComponents.swift` — MarkdownWebView + PlainTextEditor + markdownCSS
+- `Snippet.swift` — data model: id/title/body/project/createdAt/updatedAt;
+  Snippet.load() / Snippet.save() persistence (UserDefaults "snippets" kulcs, JSON)
+- `SnippetEditSheet.swift` — ugyanaz a VIEW/EDIT toggle struktúra mint NotesSheet,
+  plusz editable Title (TextField, alienLeagueBold 22) + Project tag mező (alienLeague 13);
+  onSave + onDelete callback (nil → new snippet, non-nil → edit existing);
+  checkmark toggle: ha isEditing→false, commitSave() hívódik automatikusan;
+  új snipetnél EDIT módban nyílik, meglévő (nem üres) snipetnél VIEW módban
+- `SnippetsView.swift` — 3. tab főnézete: SNIPPETS fejléc (alienLeagueBold 20, amber),
+  projekt szerint csoportosított lista (alphabetically sorted project keys),
+  szekciófej: uppercase projekt név, amber; sor: title + 72 char body preview + Copy gomb;
+  per-row copy feedback (1s checkmark); + gomb → SnippetEditSheet (új)
+
+**Módosított fájlok**
+- `ContentView.swift` — 3. mode: `case snippets = "Snippets"`, SF Symbol `doc.plaintext`,
+  switch branch `SnippetsView()`
+- `NotesSheet.swift` — private MarkdownWebView + PlainTextEditor törölve (shared-ből jön);
+  header refaktorálva `headerButton()` helper-rel (DRY); funkcionalitás változatlan
+
+### Session C — NYITOTT
+- [ ] Xcode: mind az 5 fájl hozzáadása a projekthez (drag-and-drop navigátorba)
+  (SharedEditorComponents.swift, Snippet.swift, SnippetEditSheet.swift, SnippetsView.swift
+   — ContentView.swift és NotesSheet.swift már a projektben van, csak felülírtuk)
+- [ ] Build ellenőrzés — compile hibák lehetnek ha a shared komponensek névütköznek
+  (pl. ha Xcode-ban volt már MarkdownWebView a NotesSheet scope-ján kívül)
+- [ ] Git commit
+- [ ] Roboto Flex Light / marked.min.js (előző sessionből áthúzódó nyitott pontok)
+
+---
+
 ## Session B — 2026-08-11 (SLOT-NOTES: EDIT mód padding fix)
 
 ### Diagnózis (screenshotokkal igazolva)
@@ -29,7 +135,7 @@ zero-inset szélén marad — a belső tér hiányzik.
 ### Session B — LEZÁRT
 - [x] NotesSheet.swift — PlainTextEditor inset paraméter + hívói oldal fix
 - [ ] Build + EDIT mód ellenőrzés (szöveg 24px balra, 20px fentről beljebb)
-- [ ] Git commit (Session 36 + 37 + B összes változás)
+- [x] Git commit — `7f47511`
 
 ---
 
