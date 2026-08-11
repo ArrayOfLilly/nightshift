@@ -34,7 +34,7 @@ struct ColorPickerSheet: View {
 
                 // "Auto" swatch — resets to hash-based color
                 // opacity(0.70): avoids glare on the amber background
-                swatchButton(color: Color.white.opacity(0.70),
+                swatchButton(color: Color.white.opacity(0.60),
                              index: nil,
                              label: "AUTO")
 

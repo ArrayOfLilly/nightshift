@@ -55,6 +55,15 @@ private struct FocusedNSTextField: NSViewRepresentable {
         tf.focusRingType = .none
         tf.lineBreakMode = .byTruncatingTail
         tf.maximumNumberOfLines = 1
+        // Suppress the grey inactive-selection highlight by using a fully
+        // transparent selection background. The active selection uses a subtle
+        // white tint so it is still legible while editing.
+        NotificationCenter.default.addObserver(
+            context.coordinator,
+            selector: #selector(Coordinator.windowDidResignKey(_:)),
+            name: NSWindow.didResignKeyNotification,
+            object: nil
+        )
         return tf
     }
 
@@ -87,6 +96,19 @@ private struct FocusedNSTextField: NSViewRepresentable {
 
         func controlTextDidBeginEditing(_ obj: Notification) {
             isEditing = true
+            // Set subtle white selection for active editing.
+            if let tv = (obj.object as? NSTextField)?.currentEditor() as? NSTextView {
+                tv.selectedTextAttributes = [
+                    .backgroundColor: NSColor.white.withAlphaComponent(0.25),
+                    .foregroundColor: NSColor(AppTheme.dark).withAlphaComponent(0.8)
+                ]
+            }
+        }
+
+        @objc func windowDidResignKey(_ notification: Notification) {
+            // When the window loses focus, clear any lingering selection highlight.
+            isEditing = false
+            onCommit()
         }
 
         func controlTextDidChange(_ obj: Notification) {
@@ -96,6 +118,11 @@ private struct FocusedNSTextField: NSViewRepresentable {
 
         func controlTextDidEndEditing(_ obj: Notification) {
             isEditing = false
+            // Clear selection so the inactive highlight does not remain visible
+            // when the window loses focus mid-edit.
+            if let tf = obj.object as? NSTextField {
+                tf.currentEditor()?.selectedRange = NSRange(location: 0, length: 0)
+            }
             onCommit()
         }
 

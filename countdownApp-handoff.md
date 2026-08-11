@@ -1,5 +1,69 @@
 # countdownApp — handoff a következő chat-hez
 
+## LEGFRISSEBB (Session N — 2026-08-11)
+
+**SnippetEditSheet.swift + NotesSheet.swift szélesség fix**: mindkét sheet
+régi `.frame(minWidth: X, maxWidth: 900, ...)` beállítása mindig túllógott
+az ablak szélein, ha az ablak keskenyebb volt 900pt-nál. Fix mindkét
+fájlban azonos mintával: `sheetWidth` @State + `windowMargin` konstans +
+`updateSheetWidth()` metódus, ami `.onAppear`-ben a valós
+`NSApp.mainWindow?.frame.width` értékből 24pt-ot levonva számítja ki a
+sheet szélességét (clamp [450, 900]). `.frame(minWidth: sheetWidth,
+maxWidth: sheetWidth, minHeight: ...)` — FONTOS: nem `width:` overload,
+mert az nem vehet fel `minHeight:`-et ugyanabban a hívásban.
+SnippetEditSheet: `minHeight: sheetMinHeight` (680). NotesSheet:
+`minHeight: 520` (változatlan).
+Mindkét sheet garantáltan keskenyebb, mint a tényleges ablak.
+SnippetEditSheet build OK, user visszaigazolta. NotesSheet build
+még NINCS ellenőrizve — ez a **következő lépés**, majd git commit
+(mindkét fájl egy commitban, Session N).
+
+**PlainTextEditor lineSpacing (új, ugyanebben a sessionben)**: user kérésére
+nagyobb sorköz EDIT módban. `SharedEditorComponents.swift`-ben új
+`lineSpacing: CGFloat = 0` param a `PlainTextEditor`-on, `NSParagraphStyle`
+ként ráírva typingAttributes + defaultParagraphStyle + a meglévő szöveg
+teljes range-ére. Mindkét híváspont (NotesSheet, SnippetEditSheet)
+`lineSpacing: 5`. FONTOS korlát: plain-text NSTextView-ban minden sor
+külön "paragraph", tehát nem lehet csak a markdown-bekezdések (üres
+sorral elválasztott blokkok) közé célozni — minden sor között egyenletesen
+nő a tér. Ezt a userrel tisztáztuk, elfogadta.
+**Még hátra**: build ellenőrzés mindhárom érintett fájlra + git commit.
+
+**VIEW mód betűméret (új, ugyanebben a sessionben)**: user szerint a nem
+monospace (Roboto Flex) test szöveg túl kicsi volt VIEW nézetben. Közös
+`markdownCSS` (SharedEditorComponents.swift) `body { font-size }` `13px→14px`
+— egy hely, mindkét sheet (Notes + Snippet) VIEW nézetére automatikusan
+érvényes. `code`/`pre` monospace 12px változatlan.
+
+**VIEW mód font-csere próbálgatásra (új, ugyanebben a sessionben)**: user
+JetBrainsMono-Regular.ttf-et akar kipróbálni a Roboto Flex helyett a VIEW
+nézet test szövegében, és még eggyel nagyobb betűméretet. `markdownCSS`
+`body { font-family: 'Roboto Flex', ... }` → `'JetBrains Mono', 'Menlo',
+monospace`, `font-size` `14px→15px`. A font NINCS bepakolva a bundle-be
+(user már installálta rendszerszinten, csak családnév szerint hivatkozunk
+rá CSS-ben) — összhangban a korábbi "ne tegyük be, csak próbálgatás"
+kéréssel. Ha nem találja a családnevet a WKWebView, Menlóra esik vissza.
+Ha a user véglegesíti a JetBrains Mono használatát, akkor kell majd a
+fontfájlt és a robotoFlexFontFaceCSS()-hez hasonló @font-face bloklot
+beemelni a bundle-be, hogy más gépen is működjön.
+
+**Méret finomhangolás**: user visszaszólt, hogy 15px túl nagy volt a
+többihez képest — vissza `14px`-re állítva. User megjegyezte, hogy AZ EGÉSZ
+alkalmazásban általánosságban kicsik a betűk, de EGYELŐRE NEM akarja az
+egészet átírni — ez EGY KÜLÖN, későbbi, még nem indított feladat, NE
+kezdj bele automatikusan egy általános betűméret-felülvizsgálatba, csak
+ha a user külön rákér.
+
+**FONT KÍSÉRLETEZÉS — NE NYÚLJ HOZZÁ** (user megjegyzés, 2026-08-11): a user
+külső (rendszerszintű, telepített) fonts mappába új betűtípusokat rakott,
+hogy kipróbálja őket — EZEK JELENLEG NEM részei az app bundle-nek és NEM
+is kell regisztrálni Info.plist-ben, amíg a user másként nem szól. A
+korábbi "Roboto Flex Light font regisztráció függőben" tétel (régebbi
+Session-ből) továbbra is érvényes marad, de ez egy külön, még el nem
+döntött/kipróbálás alatt álló dolog — ne keverődjön össze vele.
+
+---
+
 ## Working setup
 - Filesystem MCP-n keresztül dolgozunk. Szerializáltan olvasd a fájlokat.
 - Filesystem:write_file teljes fájl felülírással működik, NEM appendál — mindig read-then-write.
@@ -8,6 +72,30 @@
 - **Inner kódrepo**: `/Users/ArrayOfLilly/tools/countdownApp/countdownApp/`
   Swift forrás: `countdownApp/countdownApp/countdownApp/` alatt.
 - Olvasd el először a `progress.md`-t.
+
+## Jelenlegi állapot (Session K után — 2026-08-11)
+
+### Session K elvégzett változások
+
+**SnippetEditSheet.swift — snippet editor UI polish:**
+- Title TextField: `.focused($titleFocused)` → `.focusable(false)` a root ZStack-en (sem title, sem project nem kap auto-focust megnyitáskor)
+- `@FocusState titleFocused` eltávolítva (felesleges volt)
+- Header gombok: `white 0.07` bg → `white 0.12`, ikon default tint `white 0.7` → `white 1.0`
+- Header padding: top 22→18, bottom 20→24
+- ProjectField dropdown háttér: `AppTheme.dark` → `#723F73`
+- ProjectField popover háttér: `#4A2950` (fix sötétebb lila)
+- ProjectField chevron hit area megnövelve: `frame(width:36)` + `.contentShape(Rectangle())`
+- ProjectField külső frame: `height: 20` → `height: 28`
+
+**ContentView.swift:** `.frame(minWidth: 460)` hozzáadva — ablak nem mehet 460pt alá
+
+**countdownAppApp.swift:** `.windowResizability(.contentMinSize)` NEM kell — teljes méretben nyitotta az ablakot, eltávolítva
+
+### Következő teendők
+- [ ] Git commit (Session J + K összes változás)
+- [ ] Folytatás user döntés szerint
+
+---
 
 ## Jelenlegi állapot (Session H után — 2026-08-11)
 

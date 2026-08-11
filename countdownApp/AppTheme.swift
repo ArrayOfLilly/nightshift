@@ -28,18 +28,20 @@ enum AppTheme {
     /// 30271B · 51422E · 778005 · 4D70D8 · 293B72 · 403873
     /// 593C73 · 723F73 · 8A4273 · DD3B72 · DD114A · B70E26
     static let freeColors: [Color] = [
-        Color(red: 0x30/255, green: 0x27/255, blue: 0x1B/255), // 2  #30271B dark brown
+        Color(red: 0x30/255, green: 0x27/255, blue: 0x1B/255), // 0  #30271B dark brown
         Color(red: 0x51/255, green: 0x42/255, blue: 0x2E/255), // 1  #51422E lighter brown
-        Color(red: 0x77/255, green: 0x80/255, blue: 0x05/255), // 0  #778005 olive-yellow
-        Color(red: 0x4D/255, green: 0x70/255, blue: 0xD8/255), // 4  #4D70D8 blue
-        Color(red: 0x29/255, green: 0x3B/255, blue: 0x72/255), // 3  #293B72 navy
+        Color(red: 0x77/255, green: 0x80/255, blue: 0x05/255), // 2  #778005 olive-yellow
+        Color(red: 0x4D/255, green: 0x70/255, blue: 0xD8/255), // 3  #4D70D8 blue
+        Color(red: 0x29/255, green: 0x3B/255, blue: 0x72/255), // 4  #293B72 navy
         Color(red: 0x40/255, green: 0x38/255, blue: 0x73/255), // 5  #403873 dark purple
-        Color(red: 0x59/255, green: 0x3C/255, blue: 0x73/255), // 6  #593C73 purple
+        Color(red: 0x52/255, green: 0x35/255, blue: 0x54/255), // 6  #523554 dark red purple
+        Color(red: 0x59/255, green: 0x3C/255, blue: 0x73/255), // 7  #593C73 purple
         Color(red: 0x72/255, green: 0x3F/255, blue: 0x73/255), // 8  #723F73 mid purple
-        Color(red: 0x8A/255, green: 0x42/255, blue: 0x73/255), // 7  #8A4273 magenta-purple
-        Color(red: 0xDD/255, green: 0x3B/255, blue: 0x72/255), // 9  #DD3B72 pink-red
-        Color(red: 0xDD/255, green: 0x11/255, blue: 0x4A/255), // 10 #DD114A hot red-pink
-        Color(red: 0xB7/255, green: 0x0E/255, blue: 0x26/255), // 11 #B70E26 deep red
+        Color(red: 0x8A/255, green: 0x42/255, blue: 0x73/255), // 9  #8A4273 magenta-purple
+        Color(red: 0x86/255, green: 0x54/255, blue: 0x86/255), // 10 #865486 magenta-purple 2
+        Color(red: 0xDD/255, green: 0x3B/255, blue: 0x72/255), // 11 #DD3B72 pink-red
+        Color(red: 0xDD/255, green: 0x11/255, blue: 0x4A/255), // 12 #DD114A hot red-pink
+        Color(red: 0xB7/255, green: 0x0E/255, blue: 0x26/255), // 13 #B70E26 deep red
     ]
 
     /// Returns the free-slot color for the given index (cycles through freeColors)

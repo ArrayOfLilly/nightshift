@@ -29,6 +29,11 @@ struct NotesSheet: View {
     @State private var isEditing         = false
     @State private var copyFeedback      = false
     @State private var showDeleteConfirm = false
+    // FIX (Session N, ported from SnippetEditSheet): sheet width now tracks
+    // the real window width instead of a static maxWidth: 900, so it can
+    // never overhang the window edges when the window is narrower than 900pt.
+    @State private var sheetWidth: CGFloat = 700
+    private let windowMargin: CGFloat = 24
 
     var body: some View {
         ZStack {
@@ -40,7 +45,14 @@ struct NotesSheet: View {
             }
         }
         // Always 520pt — does not change on VIEW/EDIT toggle.
-        .frame(minWidth: 480, minHeight: 520)
+        // FIX: width now tracks the real window width (computed on appear),
+        // clamped between 450 (usable floor) and 900 (design ceiling), and
+        // always at least `windowMargin` narrower than the window itself.
+        // minWidth/maxWidth set to the same value rather than the `width:`
+        // fixed-size overload, because that overload can't take `minHeight:`
+        // in the same call.
+        .frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: 520)
+        .onAppear { updateSheetWidth() }
         .alert("Delete all notes?", isPresented: $showDeleteConfirm) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) { notes = "" }
@@ -102,7 +114,8 @@ struct NotesSheet: View {
                 text: $notes,
                 font: .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular),
                 textColor: NSColor(AppTheme.background),
-                inset: NSSize(width: 24, height: 20)
+                inset: NSSize(width: 24, height: 20),
+                lineSpacing: 5
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(AppTheme.calculateBackground)
@@ -126,5 +139,19 @@ struct NotesSheet: View {
             MarkdownWebView(markdown: notes)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+    }
+
+    // MARK: - Sizing
+
+    /// Reads the presenting (main) window's current width and derives the
+    /// sheet width from it: window width minus `windowMargin`, clamped to
+    /// [450, 900]. `NSApp.mainWindow` is used rather than `keyWindow`
+    /// because once the sheet is presented, the sheet's own child window
+    /// can become key — the underlying content window stays main.
+    private func updateSheetWidth() {
+        let windowWidth = NSApp.mainWindow?.frame.width
+            ?? NSApp.windows.first(where: { $0.isVisible && $0.title == "countdownApp" })?.frame.width
+            ?? 900
+        sheetWidth = min(900, max(450, windowWidth - windowMargin))
     }
 }

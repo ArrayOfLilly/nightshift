@@ -15,10 +15,9 @@
 //  FIX (Session G): VIEW mode MarkdownWebView wrapped in VStack to resolve
 //  NSViewRepresentable .frame() overload ambiguity.
 //
-//  FIX (Session G-2): Title TextField auto-focus suppressed via FocusState (never activated).
-//  FIX (Session H-2): onAppear makeFirstResponder removed — it caused a QoS priority inversion
-//  warning (AppKit internals block User-Interactive main thread on Default-QoS work).
-//  Using .focused($titleFocused) with titleFocused always false suppresses auto-focus cleanly.
+//  FIX (Session K): Title TextField gets .focusable(false) — AppKit will not make it first
+//  responder on open, so no auto-selection occurs. @FocusState titleFocused removed (was
+//  always false and did nothing). Previous onAppear/asyncAfter workaround also removed.
 //
 //  DESIGN (Session G-3): Sheet is fixed height, no JS-driven resize.
 //  Empty / EDIT mode: 520pt. VIEW mode with content: 680pt.
@@ -49,8 +48,10 @@ private struct ProjectField: View {
                 Image(systemName: "chevron.down")
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(Color.white.opacity(0.45))
-                    .frame(width: 28, height: 28)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
             }
+            .frame(width: 36)
             .buttonStyle(.plain)
             .focusable(false)
             .popover(isPresented: $showSuggestions, arrowEdge: .bottom) {
@@ -58,7 +59,7 @@ private struct ProjectField: View {
             }
         }
         .frame(height: 28)
-        .background(AppTheme.dark)
+        .background(Color(red: 0x86/255, green: 0x54/255, blue: 0x86/255))
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
@@ -84,8 +85,8 @@ private struct ProjectField: View {
                 }
             }
         }
-        .frame(minWidth: 220)
-        .background(AppTheme.calculateBackground)
+        .frame(minWidth: 320)
+        .background(Color(red: 0x52/255, green: 0x35/255, blue: 0x54/255))
     }
 }
 
@@ -107,7 +108,13 @@ struct SnippetEditSheet: View {
     @State private var isEditing       = true
     @State private var copyFeedback    = false
     @State private var showDeleteAlert = false
-    @FocusState private var titleFocused: Bool
+    // FIX: sheet width was a fixed maxWidth: 900, which could exceed the
+    // actual window width when the window is narrower than 900pt (the
+    // sheet then visibly overhangs both edges). Now computed from the
+    // real main window width at presentation time, always kept a small
+    // margin narrower than the window.
+    @State private var sheetWidth: CGFloat = 700
+
 
     init(snippet: Snippet?,
          existingProjects: [String],
@@ -126,6 +133,12 @@ struct SnippetEditSheet: View {
     /// Sheet height: always 680 — does not change on VIEW/EDIT toggle.
     private var sheetMinHeight: CGFloat { 680 }
 
+    /// Margin the sheet stays inside the window edges by, on each side is
+    /// implied (this value is the *total* width subtracted, i.e. applied
+    /// once against the full window width — window is always wider than
+    /// the sheet by at least this much).
+    private let windowMargin: CGFloat = 24
+
     var body: some View {
         ZStack {
             AppTheme.background.ignoresSafeArea()
@@ -135,7 +148,16 @@ struct SnippetEditSheet: View {
                 contentArea
             }
         }
-        .frame(minWidth: 480, minHeight: sheetMinHeight)
+        // FIX: width now tracks the real window width (computed on appear),
+        // clamped between 450 (usable floor) and 900 (design ceiling), and
+        // always at least `windowMargin` narrower than the window itself —
+        // it can never overhang the window edges anymore.
+        // NOTE: minWidth/maxWidth set to the same value (rather than the
+        // `width:` fixed-size overload) because that overload doesn't
+        // accept `minHeight:` in the same call.
+        .frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: sheetMinHeight)
+        .onAppear { updateSheetWidth() }
+        .focusable(false)
         .alert("Delete snippet?", isPresented: $showDeleteAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
@@ -156,7 +178,6 @@ struct SnippetEditSheet: View {
                     .font(AppTheme.alienLeagueBold(22))
                     .foregroundStyle(AppTheme.dark)
                     .textFieldStyle(.plain)
-                    .focused($titleFocused)
                 Spacer()
                 HStack(spacing: 8) {
                     headerButton(icon: copyFeedback ? "checkmark" : "doc.on.doc",
@@ -174,30 +195,31 @@ struct SnippetEditSheet: View {
                 Rectangle().fill(Color.white.opacity(0.12)).frame(width: 1, height: 22).padding(.horizontal, 6)
                 headerButton(icon: "xmark") { commitSave(); dismiss() }
             }
+            .padding(.bottom, 12)
 
             HStack(spacing: 4) {
                 Image(systemName: "tag")
                     .font(.system(size: 10))
                     .foregroundStyle(AppTheme.dark.opacity(0.55))
                 ProjectField(text: $project, suggestions: existingProjects)
-                    .frame(height: 20)
+                    .frame(height: 28)
             }
         }
         .padding(.horizontal, 24)
-        .padding(.top, 22)
-        .padding(.bottom, 14)
+        .padding(.top, 24)
+        .padding(.bottom, 20)
     }
 
     @ViewBuilder
     private func headerButton(icon: String,
-                              tint: Color = Color.white.opacity(0.7),
+                              tint: Color = Color.white,
                               action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: icon)
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(tint)
                 .frame(width: 36, height: 36)
-                .background(Color.white.opacity(0.07))
+                .background(Color.white.opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
@@ -213,7 +235,8 @@ struct SnippetEditSheet: View {
                 text: $snippetBody,
                 font: .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular),
                 textColor: NSColor(AppTheme.background),
-                inset: NSSize(width: 24, height: 20)
+                inset: NSSize(width: 24, height: 20),
+                lineSpacing: 5
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(AppTheme.calculateBackground)
@@ -238,6 +261,20 @@ struct SnippetEditSheet: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+    }
+
+    // MARK: - Sizing
+
+    /// Reads the presenting (main) window's current width and derives the
+    /// sheet width from it: window width minus `windowMargin`, clamped to
+    /// [450, 900]. `NSApp.mainWindow` is used rather than `keyWindow`
+    /// because once the sheet is presented, the sheet's own child window
+    /// can become key — the underlying content window stays main.
+    private func updateSheetWidth() {
+        let windowWidth = NSApp.mainWindow?.frame.width
+            ?? NSApp.windows.first(where: { $0.isVisible && $0.title == "countdownApp" })?.frame.width
+            ?? 900
+        sheetWidth = min(900, max(450, windowWidth - windowMargin))
     }
 
     // MARK: - Persistence

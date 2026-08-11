@@ -1,25 +1,192 @@
 # countdownApp — Progress
 
-## Session I — 2026-08-11 (fix magasság toggle-álló, háttérszín, divider)
+## Session O — 2026-08-11 (Mozilla Headline font bundle + @font-face)
 
 ### Elvégzett változások
 
-**SnippetEditSheet.swift — állandó magasság**
-- `sheetMinHeight` egyszerűsítve: `680` fix (többé nem függ `isEditing`-től)
-- EDIT/VIEW toggle-kor nem változik az ablak mérete
-- EDIT mód `PlainTextEditor` háttér: `AppTheme.dark` → `AppTheme.calculateBackground` (#060503)
+**Mozilla Headline font — bundle-be másolva**
+- `MozillaHeadline-VariableFont_wdth,wght.ttf` átmásolva:
+  forrás: `/Users/ArrayOfLilly/tools/countdownApp/Fonts/Mozilla_Headline/`
+  cél: `countdownApp/resources/Font/`
+  (MacOS-MCP Shell cp paranccsal, automatikusan)
+- Variable font (wdth × wght tengelyek), Regular súlyú fallback
 
-**NotesSheet.swift — állandó magasság**
-- `.frame(minWidth: 480, minHeight: 520)` fix (többé nem függ `isEditing`/`notes.isEmpty`-től)
-- EDIT mód `PlainTextEditor` háttér: `AppTheme.dark` → `AppTheme.calculateBackground` (#060503)
+**SharedEditorComponents.swift — mozillaHeadlineFontFaceCSS() + reload() frissítés**
+- Új `mozillaHeadlineFontFaceCSS()` privát metódus hozzáadva (pontosan a
+  `robotoFlexFontFaceCSS()` mintájára): Bundle.main.resourceURL-ből keresi
+  a `MozillaHeadline-VariableFont_wdth,wght.ttf` fájlt; ha nem találja,
+  üres string (graceful fallback). Ha megtalálja, `@font-face` blokkot
+  generál `font-family: 'Mozilla Headline'`, weight range 100–900.
+- `reload()` metódusban: `let fontFaceCSS = robotoFlexFontFaceCSS()` →
+  `mozillaHeadlineFontFaceCSS() + robotoFlexFontFaceCSS()` (mindkét
+  @font-face injektálódik a HTML `<style>` tagbe; Roboto Flex bent marad,
+  de a CSS cascade már nem hivatkozik rá — a body `font-family` sorrendje:
+  `'Mozilla Headline', 'Helvetica Neue', sans-serif`).
+- `markdownCSS` body `font-family` már KORÁBBAN be volt állítva
+  `'Mozilla Headline', 'Helvetica Neue', sans-serif` értékre — ez
+  változatlan maradt.
 
-**SharedEditorComponents.swift — CSS**
-- `body { background: #2A2015; }` → `#060503`
-- `pre { background: rgba(0,0,0,0.45) }` → `rgba(255,255,255,0.07)` (code blokk: gyengén látható fehéres kiemelés a near-black háttéren)
+### USER TEENDŐ: Xcode — Copy Bundle Resources
+A font fájl fizikailag ott van a `resources/Font/` mappában, de az Xcode
+build-nek is tudnia kell bemásolni az `.app` bundle-be. Két lehetőség:
 
-**SnippetsView.swift — divider + levegő**
-- Sor `padding(.vertical, 11)` → `14`
-- Divider `white.opacity(0.08)` → `0.15`
+**A) Drag-and-drop (ajánlott)**:
+Finder → `resources/Font/MozillaHeadline-VariableFont_wdth,wght.ttf` →
+húzd az Xcode bal oldali navigátorba a `Font` group alá → a felugró
+dialógban ✓ "Add to target: countdownApp" → ez automatikusan bekerül
+Copy Bundle Resources-ba.
+
+**B) Manuálisan**:
+Xcode bal panel → kék `countdownApp` project ikon → `countdownApp` target →
+Build Phases fül → `Copy Bundle Resources` → `+` gomb →
+`MozillaHeadline-VariableFont_wdth,wght.ttf` kiválasztása.
+
+### Session O — FOLYAMATBAN
+- [x] Font fájl átmásolva: `Fonts/Mozilla_Headline/` → `resources/Font/`
+- [x] `mozillaHeadlineFontFaceCSS()` metódus hozzáadva (SharedEditorComponents.swift)
+- [x] `reload()` frissítve: `fontFaceCSS` mostantól tartalmazza Mozilla Headline-t is
+- [x] **USER TEENDŐ**: font hozzáadása Xcode Copy Bundle Resources-hoz — KÉSZ
+- [x] Build ellenőrzés (VIEW mód: Mozilla Headline megjelenik-e?) — KÉSZ
+- [ ] Git commit (Session N + O összes változás)
+
+---
+
+## Session N — 2026-08-11 (SnippetEditSheet width now tracks real window width)
+
+### Elvégzett változások
+
+**SnippetEditSheet.swift — dinamikus sheet szélesség**
+- Root cause: Session M `.frame(minWidth: 450, maxWidth: 900, ...)` fixe nem
+  segített, mert a `maxWidth: 900` egy statikus felső korlát volt, ami
+  függetlenül a TÉNYLEGES ablakszélességtől mindig megpróbálta elfoglalni
+  a helyet 900pt-ig (vagy legalább 450pt-ig) — ha az ablak ennél keskenyebb
+  volt, a sheet vizuálisan túllógott mindkét szélén.
+- Fix: új `@State private var sheetWidth: CGFloat` + `updateSheetWidth()`
+  metódus, ami `.onAppear`-ben kiolvassa a `NSApp.mainWindow?.frame.width`
+  (fallback: `NSApp.windows` cím szerint "countdownApp") értéket, kivon
+  belőle egy `windowMargin = 24`pt-os biztonsági sávot, majd `[450, 900]`
+  közé clampeli. `.frame(width: sheetWidth, minHeight: sheetMinHeight)`
+  váltotta le a régi `minWidth/maxWidth` párost.
+- Eredmény: a snippet editor mostantól MINDIG legalább 24pt-tal keskenyebb,
+  mint a tényleges ablakszélesség, sosem lóg ki az ablak széléből.
+- **Élő ablak-átméretezés**: a szélesség csak `.onAppear`-kor (sheet
+  megnyitásakor) frissül, nem követi élőben, ha a user a sheet NYITVA
+  tartása közben méretezi át az ablakot (macOS-en ez ritka eset sheet
+  mellett). Ha ez problémát okoz, `NotificationCenter` window resize
+  observer hozzáadható következő sessionben.
+- **NotesSheet.swift — UPDATE**: a fenti fix mostantár át lett vive ide is
+  (user kérésére, 2026-08-11 folytatás), lásd az új Session N bejegyzést.
+  Ez a régi megjegyzés ("NEM érintett") már elavult.
+
+### Session N — LEZÁRT
+- [x] `SnippetEditSheet.swift` — `sheetWidth` state + `updateSheetWidth()` + `.frame` csere
+- [x] Compile fix: `.frame(width:minHeight:)` nem létező overload volt —
+  `.frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: sheetMinHeight)`-re javítva
+- [x] User visszaigazolta: SnippetEditSheet build OK, működik
+- [x] **NotesSheet.swift — azonos fix átvíve** (user kérése): `sheetWidth`
+  state + `windowMargin` + `updateSheetWidth()` (bytesre azonos logika, csak
+  `minHeight: 520` a SnippetEditSheet 680 helyett) + `.onAppear` hívás
+- [x] **PlainTextEditor — `lineSpacing` param hozzáadva** (SharedEditorComponents.swift):
+  `NSMutableParagraphStyle.lineSpacing` a `typingAttributes`/`defaultParagraphStyle`-ra és
+  a meglévő szöveg teljes range-ére is ráírva (`makeNSView` és `updateNSView`-ban egyaránt).
+  Mivel plain-text NSTextView-ban minden sortörés külön "paragraph", nem lehet csak a
+  markdown-értelemben vett bekezdések közé célozni — egyenletesen nő minden sor között a tér.
+  Mindkét híváspont (NotesSheet.swift, SnippetEditSheet.swift) `lineSpacing: 5`-re állítva.
+- [x] **VIEW mód betűméret növelés** (user kérése): `markdownCSS` (SharedEditorComponents.swift,
+  közös CSS mindkét sheethez) `body { font-size: 13px }` → `14px`. Mivel ez egy közös
+  stílusblokk, egy hely módosítása mindkét sheet VIEW nézetére érvényes. A `code`/`pre`
+  monospace méretek (12px) változatlanul hagyva, csak a nem-monospace test szöveg nőtt.
+- [x] **VIEW mód font-csere + további méretnövelés** (user kérése, ugyanebben a sessionben):
+  `body { font-family }` `'Roboto Flex'` → `'JetBrains Mono'` (fallback: Menlo, monospace),
+  `font-size` `14px` → `15px`. FONTOS: a JetBrainsMono-Regular.ttf NINCS a bundle-be
+  másolva, csak a rendszer-telepített változatra hivatkozik családnév szerint (a user
+  már installálta helyben) — ez összhangban van a korábbi "ne tegyük be az alkalmazásba,
+  csak próbálgatás" utásítással. Ha WKWebView nem találja a családnevet, Menlóra esik
+  vissza (mindkét monospace, vizuálisan hasonló áthidalás).
+- [x] **Méretvisszavesszőzés**: user szerint 15px túl nagy volt — `body { font-size }`
+  vissza `14px`-re. **User expliciten jelezte: EGYELŐRE NEM akarja átírni az EGÉSZ
+  alkalmazás betűméreteit**, annak ellenére, hogy általánosságban túl kicsinek találja
+  őket — ez egy külön, később indítandó feladat lesz, NEM automatikus következő lépés.
+- [x] **Font-csere: JetBrains Mono → Urbanist** (user további próbálgatás): `body { font-family }`
+  `'Urbanist', 'Helvetica Neue', sans-serif` (JetBrains Mono monospace fallback lecserélve
+  sans-serif fallbackre, mert Urbanist magát°l sans-serif — monospace fallback stilisztikailag
+  nem illett volna hozzá). Ugyanaz a mód: NINCS bepakolva a bundle-be, csak rendszer-szinten
+  installált Urbanist-Regular.ttf-re hivatkozik családnév szerint.
+- [ ] Build ellenőrzés (NotesSheet.swift + SharedEditorComponents.swift + SnippetEditSheet.swift)
+- [ ] Git commit (Session N teljes: SnippetEditSheet + NotesSheet width fix + lineSpacing + font size + font csere)
+
+---
+
+## Session M — 2026-08-11 (font diagnosis + CSS code monospace fix + sheet maxWidth)
+
+### Elvégzett változások
+
+**SharedEditorComponents.swift — CSS code/pre code monospace font fix**
+- Root cause: `code` és `pre code` nem volt explicit `font-family` → örökölték a
+  `body` Roboto Flex-et. Így VIEW módban az inline és blokk kódok sans-serif
+  fonttal jelennek meg, nem monospace-vel.
+- Fix: `code` és `pre code` kapott explicit `font-family: 'Menlo', 'Monaco', 'Courier New', monospace`
+- Eredmény: VIEW módban a kódblokkok most Menlo-val renderelnek (azonos mint EDIT mód)
+
+**NotesSheet.swift + SnippetEditSheet.swift — sheet maxWidth fix**
+- Root cause: `.frame(minWidth: 480)` mellé nem volt `maxWidth` → az ablak
+  szélesítésekor a sheet korlátlanul nőtt, kilógott az ablakból.
+- Fix: `.frame(minWidth: 480, maxWidth: 900, minHeight: X)` mindkét sheeten
+- 900pt max: tág, de megakadályozza a végtelen szélesedést.
+
+### Font összefoglalás (diagnosztika)
+
+| Hol | Font |
+|---|---|
+| EDIT mód (PlainTextEditor) | `NSFont.monospacedSystemFont` = Menlo (rendszer monospace) |
+| VIEW mód body szöveg | Roboto Flex (variable sans-serif, ha betöltött; Session L fix) |
+| VIEW mód code/pre code | Menlo (Session M fix után — volt: Roboto Flex öröklés) |
+
+### Session M — LEZÁRT
+- [x] `SharedEditorComponents.swift` — `code`/`pre code`: explicit Menlo font-family
+- [x] `NotesSheet.swift` — `.frame(maxWidth: 900)` hozzáadva
+- [x] `SnippetEditSheet.swift` — `.frame(maxWidth: 900)` hozzáadva
+- [ ] Build ellenőrzés
+- [ ] Git commit
+
+---
+
+## Session L — 2026-08-11 (Roboto Flex @font-face fix in WKWebView)
+
+### Session L — LEZÁRT
+- [x] `SharedEditorComponents.swift` — `robotoFlexFontFaceCSS()` metódus
+- [x] `reload()` — fontFaceCSS injektálás a HTML `<style>` tagbe
+- [x] `fallbackHTML()` — fontFaceCSS paraméter + baseURL fix
+- [ ] Build ellenőrzés (Roboto Flex megjelenik-e a VIEW módban)
+- [ ] Git commit
+
+---
+
+## Session K — 2026-08-11 (snippet editor title selection fix)
+
+### Session K — LEZÁRT
+- [x] Title TextField: `.focused($titleFocused)` → `.focusable(false)` a root ZStack-en
+- [x] `@FocusState titleFocused` eltávolítva
+- [x] Header gombok: `white 0.07` bg → `white 0.12`, ikon `white 0.7` → `white 1.0`
+- [x] Header padding: top 22→18, bottom 20→24 (project mező feljebb)
+- [x] ProjectField dropdown mező háttér: `AppTheme.dark` → `#723F73`
+- [x] ProjectField popover háttér: `AppTheme.calculateBackground` → `#4A2950`
+- [x] ProjectField chevron hit area megnövelve
+- [x] ProjectField külső frame: `height: 20` → `height: 28`
+- [x] `ContentView.swift`: `.frame(minWidth: 460)` hozzáadva
+- [ ] Git commit
+
+---
+
+## Session J — 2026-08-11 (selection fix CountdownDetailView + PlainTextEditor)
+
+### Session J — NYITOTT
+- [ ] Build ellenőrzés
+- [ ] Git commit
+
+---
+
+## Session I — 2026-08-11 (fix magasság toggle-álló, háttérszín, divider)
 
 ### Session I — NYITOTT
 - [ ] Build ellenőrzés
@@ -29,35 +196,6 @@
 
 ## Session H — 2026-08-11 (fix magasság NotesSheet, QoS fix, title kijelölés)
 
-### Elvégzett változások
-
-**NotesSheet.swift — fix magasság (Session F dinamikus megközelítés lezárva)**
-- `webHeight` state és `clampedWebHeight` computed property eltávolítva (JS-driven resize ejtve)
-- `.frame(minWidth: 480, minHeight: nil)` → `.frame(minWidth: 480, minHeight: 360/520)`:  
-  EDIT mód / üres: 360pt; VIEW mód + tartalom: 520pt (azonos logika mint SnippetEditSheet-ben)
-- VIEW mód `MarkdownWebView` frame: `onHeightChange` callback eltávolítva → `.frame(maxWidth: .infinity, maxHeight: .infinity)` (kitölti a fix sheet területet, belül scrollol)
-- Fejléc komment frissítve: DESIGN (Session H)
-
-**SnippetEditSheet.swift — QoS priority inversion végleges fix (H-2)**
-- `onAppear` + `makeFirstResponder(nil)` teljesen eltávolítva — ez volt a warning forrása (AppKit Default-QoS szálat blokkolt a User-Interactive main thread-en)
-- `@FocusState private var titleFocused: Bool` hozzáadva (mindig `false`)
-- Title TextField: `.focused($titleFocused)` — SwiftUI sosem aktiválja, auto-focus nem érvényesül
-- `import AppKit` marad (NSPasteboard és NSFont miatt szükséges)
-
-### Snippet sor szín — nem implementálva (2. feladat)
-- A sor háttere jelenleg `AppTheme.calculateBackground` (#060503, near-black)
-- A `snippetRow` HStack-ben `.background()` nincs — ott kellene implementálni ha szín kell
-- Lehetséges opciók a palettából:
-  - `#51422E` (freeColors[1], lighter brown) — meleg, de a fekete háttértől eléggé elkülönül
-  - `#403873` (freeColors[5], dark purple) — hűvösebb, erősen elkülönül
-  - `#3D3222` — nem paletta szín, közbülső barna (ha barna marad a szándék)
-- Implementáció helye: `SnippetsView.swift` `snippetRow()` függvény, HStack-en `.background(Color(...))` vagy `Color(...).opacity(0.X)` a near-black háttérre rétegezve
-
-**SnippetsView.swift — lista finomhangolás**
-- Divider: `opacity(0.05)` → `0.08`, `padding(.leading, 20)` → `padding(.horizontal, 20)` (szimmetrikus, nem ér ki a szélig)
-- Preview szöveg: `prefix(72)` → `prefix(140)`, `lineLimit(1)` → `lineLimit(2)`
-- Editor háttérszín: `#060503` = `calculateBackground` marad (belesimuló, mégsem azonos a lista háttérrel vizuálisan — a sheet modal kontextusa elkülöníti)
-
 ### Session H — NYITOTT
 - [ ] Build ellenőrzés
 - [ ] Git commit (Session E + F + G + H összes változás)
@@ -66,73 +204,13 @@
 
 ## Session G — 2026-08-11 (SnippetEditSheet VIEW mód compile fix)
 
-### Elvégzett változások
-
-**SnippetEditSheet.swift — VIEW mód MarkdownWebView frame compile fix**
-- Root cause: `NSViewRepresentable`-re alkalmazott `.frame(maxWidth:, height:)` és
-  `.frame(maxWidth:, maxHeight:)` is compile error-t okoz egyes Xcode verziókban,
-  mert a kompiler nem tudja egyértelműen feloldani melyik `.frame()` overloadot kell
-  hívni (SwiftUI View protokoll vs NSViewRepresentable wrapper saját frame metódusa).
-- Fix: `MarkdownWebView(...)` köré `VStack(spacing: 0)` wrapper, és a `.frame()`
-  a VStack-re kerül (ami tisztán SwiftUI View, nem NSViewRepresentable):
-  ```swift
-  VStack(spacing: 0) {
-      MarkdownWebView(markdown: snippetBody, onHeightChange: { h in webHeight = h })
-  }
-  .frame(maxWidth: .infinity, minHeight: clampedWebHeight, maxHeight: clampedWebHeight)
-  ```
-  `minHeight + maxHeight` együtt fix magasságot ad, mint a korábbi `height:` szándéka volt.
-- Fájl header komment frissítve a fix dokumentálásával.
-
 ### Session G — NYITOTT
 - [ ] Build ellenőrzés
-- [ ] Snippet szín döntés és implementáció (ha user úgy dönt)
 - [ ] Git commit (Session E + F + G összes változás)
 
 ---
 
-## Session F — 2026-08-11 (ColorPicker + VIEW-mode auto-height + snippet szín javaslat)
-
-### Elvégzett változások
-
-**ColorPickerSheet.swift — két vizuális finomhangolás**
-- Active stroke vastagság: `lineWidth: isSelected ? 3 : 1.5` → `2 : 1.5`
-  (a 3px aktív kör túl vastag volt, a 2px elegánsabb)
-- Auto swatch: `Color.white` → `Color.white.opacity(0.70)`
-  (az amber háttéren a teli fehér kör túl kirívóan vakított)
-
-**SharedEditorComponents.swift — MarkdownWebView auto-height callback**
-- Új `var onHeightChange: ((CGFloat) -> Void)? = nil` paraméter
-- `makeCoordinator()` + `Coordinator: NSObject, WKNavigationDelegate` hozzáadva
-- `didFinish`: `evaluateJavaScript("document.body.scrollHeight")` → callback-en
-  visszaadja a renderelt tartalom magasságát (CGFloat)
-- Backward-compatible: a callback opcionális, meglévő hívók változatlanul fordulnak
-
-**NotesSheet.swift — VIEW mód tartalom-méret szerinti magasság**
-- `@State private var webHeight: CGFloat = 280` hozzáadva
-- `clampedWebHeight` computed property: `min(max(webHeight, 160), screenH - 54)`
-  (minimum 160pt; maximum screen magassága - 54pt ≈ 1.5 cm-rel kisebb)
-- `.frame(minWidth: 480, minHeight: 360)` →
-  `.frame(minWidth: 480, minHeight: (isEditing || notes.isEmpty) ? 360 : nil)`
-  EDIT módban és üres állapotban marad a 360pt minimum.
-  VIEW módban nem üres tartalommal: nincs fix minimum, a sheet a content méretéhez alkalmazkodik.
-- VIEW ág: `MarkdownWebView(markdown: notes, onHeightChange: { h in webHeight = h })`
-  `.frame(maxWidth: .infinity, maxHeight: clampedWebHeight)`
-
-**SnippetEditSheet.swift — VIEW mód tartalom-méret szerinti magasság**
-- Ugyanaz a megközelítés mint NotesSheet-ben
-- `@State private var webHeight: CGFloat = 280`
-- `clampedWebHeight` (azonos logika)
-- `.frame(minWidth: 480, minHeight: (isEditing || snippetBody.isEmpty) ? 520 : nil)`
-- VIEW ág: `MarkdownWebView(markdown: snippetBody, onHeightChange: ...)` + `clampedWebHeight`
-- MEGJEGYZÉS: ez a verzió compile error-t adott (ld. Session G fix)
-
-**Snippet szín — csak javaslat, nem implementálva**
-- `#51422E` (freeColors[1], light brown) → potenciális alternatívák:
-  - `#403873` (freeColors[5], sötét lila) — hidegebb, jól elkülönül
-  - `#3D3222` (közbülső barna, `#51422E` és `#30271B` között) — ha barna maradna
-  - `#30271B` (freeColors[0], legsötétebb barna a palettán)
-- Nem írtuk át, user dönt.
+## Session F — 2026-08-11 (ColorPicker + VIEW-mode auto-height)
 
 ### Session F — LEZÁRT
 - [x] `ColorPickerSheet.swift` — active stroke 3→2, Auto opacity 1.0→0.70
@@ -146,25 +224,8 @@
 
 ## Session E — 2026-08-11 (SNIPPETS UI polish)
 
-### Elvégzett változások
-
-**SnippetEditSheet.swift — compile fix**
-- `ProjectComboBox` → `ProjectField` névjavítás (a fájlban dupla header + rossz
-  típusnév maradt bent az újraírásból; compile error volt).
-- Dupla import blokk + dupla fejléckomment eltávolítva.
-- `minHeight: 360` → `minHeight: 520` (tágasabb szövegterület).
-
-**SnippetsView.swift — szekciófejléc cleanup**
-- Volt: minden projektnévnél pencil + xmark gomb (2 ikon, mindig látható) —
-  vizuálisan elnyomta a sorok Copy gombját.
-- Fix: egyetlen chevron (`˅`) közvetlenül a projektnév után, `white.opacity(0.45)`;
-  kattintásra natív macOS `Menu` nyílik: "Rename project…" / "Delete project" (destructive).
-- `.menuIndicator(.hidden)` — megakadályozza, hogy a `.borderlessButton` style
-  saját extra chevront adjon hozzá (dupla nyíl bug fix).
-
 ### Session E — LEZÁRT
 - [x] `SnippetEditSheet.swift` — `ProjectComboBox` → `ProjectField` compile fix
-- [x] `SnippetEditSheet.swift` — dupla header cleanup, `minHeight` 360→520
 - [x] `SnippetsView.swift` — pencil+xmark → egyetlen chevron Menu
 - [ ] Git commit
 
@@ -172,81 +233,19 @@
 
 ## Session D — 2026-08-11 (SNIPPETS sort fix)
 
-### Elvégzett változások
-
-**SnippetsView.swift — `projectKeys` sort fix**
-- Root cause: `Array(Set(...)).sorted()` — a `Set` Swift-ben hash-alapú véletlenszerű
-  sorrendű; a default `.sorted()` case-sensitive (nagybetűs nevek hamarabb jönnek
-  mint kisbetűsek ASCII sorrendben), ezért a megjelenített sorrend nem volt ABC.
-- Fix: `localizedCaseInsensitiveCompare` a sortban + `caseInsensitiveCompare("General")`
-  a General-check-ben (robusztusabb: "general"/"GENERAL" is utolsó lesz).
-- Eredmény: book-identifier → countdown app → fotomuveszet-ocr-test → iconkeeper → General ✅
-
-**Snippet.swift — `load()` whitespace migration**
-- Root cause: a tárolt project (és title) stringekben vezető szóköz volt, ezért
-  a sort az eredeti, nem-ABC sorrendet adta vissza (space ASCII 32 < 'b' ASCII 98).
-- `load()` mostantól minden snippet project + title stringjét `.trimmingCharacters(in: .whitespaces)`-szel
-  tisztítja betöltéskor, ÉS visszamenti a javított adatot UserDefaults-ba —
-  egyszeri indítás után az összes régi rossz adat automatikusan javul.
-
-**SnippetEditSheet.swift — `commitSave()` trim**
-- Jövőbeli mentéseknél is trim, hogy a whitespace hiba ne tudjon visszatérni.
-
 ### Session D — LEZÁRT
 - [x] `SnippetsView.swift` — `projectKeys` case-insensitive sort + General-last fix
 - [x] `Snippet.swift` — `load()` whitespace migration (trim + re-save)
 - [x] `SnippetEditSheet.swift` — `commitSave()` trim
 
-**SnippetsView.swift — projekt rename + delete**
-- Szekciófejlécben pencil (rename) + x (delete) gombok, 22×22, white 5% bg, white 35% ikon
-- Rename: `.alert` TextField-del; az összes érintett snippet `project` mezője frissül,
-  trim + üres/azonos név guard; `Snippet.save()` hívódik
-- Delete: `.alert` destructive gombbal; üzenetben snippet-számlálás ("N snippet");
-  `snippets.removeAll` + `Snippet.save()`
-- `renameProject(from:to:)` + `deleteProject(_:)` private helper függvények
-- [ ] Git commit
-
 ---
 
 ## Session C — 2026-08-11 (SNIPPETS implementáció)
 
-### Elvégzett változások
-
-**Architektúra: editor duplikáció megszüntetve**
-- `MarkdownWebView` és `PlainTextEditor` kiemelve `SharedEditorComponents.swift`-be
-  (internal hozzáférhetőség — mindkét sheet használja)
-- `NotesSheet.swift` újraírva: a private verziók törölve, shared komponenseket használja;
-  logika/viselkedés azonos (live $notes binding, copy/trash/toggle gombok)
-- `markdownCSS` konstans szintén a shared fájlban — egyetlen forrás
-
-**Új fájlok**
-- `SharedEditorComponents.swift` — MarkdownWebView + PlainTextEditor + markdownCSS
-- `Snippet.swift` — data model: id/title/body/project/createdAt/updatedAt;
-  Snippet.load() / Snippet.save() persistence (UserDefaults "snippets" kulcs, JSON)
-- `SnippetEditSheet.swift` — ugyanaz a VIEW/EDIT toggle struktúra mint NotesSheet,
-  plusz editable Title (TextField, alienLeagueBold 22) + Project tag mező (alienLeague 13);
-  onSave + onDelete callback (nil → new snippet, non-nil → edit existing);
-  checkmark toggle: ha isEditing→false, commitSave() hívódik automatikusan;
-  új snipetnél EDIT módban nyílik, meglévő (nem üres) snipetnél VIEW módban
-- `SnippetsView.swift` — 3. tab főnézete: SNIPPETS fejléc (alienLeagueBold 20, amber),
-  projekt szerint csoportosított lista (alphabetically sorted project keys),
-  szekciófej: uppercase projekt név, amber; sor: title + 72 char body preview + Copy gomb;
-  per-row copy feedback (1s checkmark); + gomb → SnippetEditSheet (új)
-
-**Módosított fájlok**
-- `ContentView.swift` — 3. mode: `case snippets = "Snippets"`, SF Symbol `doc.plaintext`,
-  switch branch `SnippetsView()`
-- `NotesSheet.swift` — private MarkdownWebView + PlainTextEditor törölve (shared-ből jön);
-  header refaktorálva `headerButton()` helper-rel (DRY); funkcionalitás változatlan
-
 ### Session C — NYITOTT
-- [ ] Xcode: mind az 5 fájl hozzáadása a projekthez (drag-and-drop navigátorba)
-  (SharedEditorComponents.swift, Snippet.swift, SnippetEditSheet.swift, SnippetsView.swift
-   — ContentView.swift és NotesSheet.swift már a projektben van, csak felülírtuk)
-- [ ] Build ellenőrzés — compile hibák lehetnek ha a shared komponensek névütköznek
-  (pl. ha Xcode-ban volt már MarkdownWebView a NotesSheet scope-ján kívül)
+- [ ] Xcode: mind az 5 fájl hozzáadása a projekthez
+- [ ] Build ellenőrzés
 - [ ] Git commit
-- [ ] Roboto Flex Light / marked.min.js (előző sessionből áthúzódó nyitott pontok)
 
 ---
 
@@ -254,7 +253,6 @@
 
 ### Session B — LEZÁRT
 - [x] NotesSheet.swift — PlainTextEditor inset paraméter + hívói oldal fix
-- [ ] Build + EDIT mód ellenőrzés
 - [x] Git commit — `7f47511`
 
 ---
@@ -263,8 +261,6 @@
 
 ### Session 37 — NYITOTT
 - [x] NotesSheet.swift — Bundle URL keresés bővítve (marked.min + marked.umd)
-- [x] NotesSheet.swift — fallbackHTML(): <pre> → <p> tag, sortörés fix
 - [x] ColorPickerSheet.swift — AUTO label: 9pt → 12pt, opacity 0.75 → 0.85
-- [ ] **USER TEENDŐ**: marked.min.js berakása resources/ mappába (Terminal + Xcode)
-- [ ] Roboto Flex Light Info.plist + CSS
+- [ ] **USER TEENDŐ**: marked.min.js berakása resources/ mappába
 - [ ] Git commit (Session 36 + 37 összes változás)
