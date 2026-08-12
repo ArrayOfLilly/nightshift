@@ -9,7 +9,8 @@
 - [x] `CountdownItem.swift` — `id` decode: `decode()` → `decodeIfPresent(... ) ?? UUID()`
 - [x] `CountdownView.swift` — `storageKey`/`freeOrderKey` inline literálok → `AppKeys.*`
 - [x] `CalculateView.swift` — `@AppStorage` kulcsok + `loadDeadlines`/`saveDeadlines` → `AppKeys.*`
-- [ ] Git commit (Session Q–Z)
+- [x] Git commit: `0844aa2`
+- [x] AA session kettévágva: AA-a (Snippet + CalculateView) / AA-b (CountdownView + notes-elágazás)
 
 ---
 

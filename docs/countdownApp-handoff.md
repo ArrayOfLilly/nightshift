@@ -35,13 +35,14 @@ Z session lezárva. A Codable model fix kész:
 - `CountdownItem.id` ✅ decodeIfPresent
 - Minden UserDefaults kulcs → `AppKeys.*` ✅
 
-**AA session scope (Recovery infrastruktúra — A-2):**
-- Per-item decode logika mind a három load path-on:
-  - `CountdownView.load()` — per-item loop, corrupt fragment → `AppKeys.corruptedDump`
-  - `CalculateView.loadDeadlines()` — ugyanaz
-  - `Snippet.load()` — ugyanaz
+**AA-a session scope:**
+- `Snippet.load()` — per-item recovery + corrupt dump (`AppKeys.corruptedDump`)
+- `CalculateView.loadDeadlines()` — ugyanaz
 - Corrupt dump: `[String]` (JSON-serialized fragment-ek), akkumulálva (nem felülírva)
-- `CountdownItem` notes-szal → dump + banner; notes nélkül → csendes eldobás
+
+**AA-b session scope:**
+- `CountdownView.load()` — per-item recovery + notes-alapú elágazás
+  - notes-szal → dump + banner; notes nélkül → csendes eldobás
 
 ### 1. Git commit
 
