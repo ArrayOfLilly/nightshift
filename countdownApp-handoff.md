@@ -1,33 +1,85 @@
 # countdownApp — handoff a következő chat-hez
 
-## LEGFRISSEBB (Session Q — 2026-08-12, LEZÁRVA — commit PENDING)
+## LEGFRISSEBB (Session S — 2026-08-12, FOLYAMATBAN)
 
-**Session Q elvégzett munkák:**
+**Session S elvégzett munkák:**
+
+**Audit pipeline folytatás (9–11 kész):**
+- Audit 9 (`freecolors-audit.md`) ✅ — Qwen output GFM-re konvertálva + saját kiegészítés:
+  - §3: maga a tömb az antipattern (pozíció-indexelt paletta vs. névvel ellátott tokenek)
+  - §5: `#593C73` és `#723F73` egyszerre `freeColors[7/8]` ÉS inline literál más fájlokban
+  - §6 (ÚJ): megtévesztő szemantikus nevek — `AppTheme.background` = amber (nem agnosztikus háttér),
+    `AppTheme.dark` = amber family árnyék (nem generikus sötét); ugyanaz a hiányosság mint a tömb,
+    csak ellentétes irányból: ott nincs név, itt van név de hazudik
+- Audit 10 (`notificationcenter-audit.md`) ✅ — Qwen output GFM-re konvertálva + saját kiegészítés:
+  - NC-1 (Critical): `FocusedNSTextField.Coordinator` — `addObserver` `deinit` nélkül
+  - NC-2 (High): token nem tárolva, token-alapú cleanup sem lehetséges
+  - NC-3 (Critical): zombie Coordinator-ok minden ablakváltáskor tüzelik `onCommit()`-ot elavult binding-ra
+  - NC-4 (High): strong capture az escaped closure-ban
+  - §4 (saját): teljes 20 fájlos scan — `NotificationCenter` kizárólag `CountdownDetailView.swift`-ben,
+    izolált finding, fix egyetlen helyen szükséges
+- Audit 11 (`font-audit.md`) ✅ — Qwen output GFM-re konvertálva + saját kiegészítés:
+  - FN-1/2 (Critical): `Font.custom("Alien League")` / `"Alien League Bold"` PostScript mismatch →
+    San Francisco fallback az egész appban; a TTF PostScript neve `AlienLeague` / `AlienLeagueBold`
+  - FN-3 (High): WebView heading @font-face hiány — CoreText nem látható WKWebView-ból
+  - §9 (saját): teljes `Font.custom` scan — fix egyetlen helyen szükséges (`AppTheme.swift` L57/L61),
+    mert a többi 18 fájl mind a wrappereken keresztül hív
+  - CSS font stack verify: `body` Mozilla Headline ✅, `h1-h3` AlienLeagueBold ❌ FN-3,
+    `code/pre` Menlo ✅ (rendszerfont, nem bundle-függő)
+
+**Következő session első feladata:**
+- Audit 12 (`storage-audit.md`) — Qwen output várható (Storage Persistence Architecture, minden fájl)
+- Majd 13–16 folytatás
+
+**Egyéb nyitott teendők (Session Q óta):**
+- Build ellenőrzés (BUG-DEADLINE-1 + BUG-DEADLINE-2)
+- Git commit (Session Q+R+S: theme-audit + state-audit + docs-audit + freecolors-audit +
+  notificationcenter-audit + font-audit + BUG-DEADLINE-1/2 + progress.md)
+- Manual megírása (screenshotokat session elején újra be kell másolni:
+  `/Users/ArrayOfLilly/tools/countdownApp/screenshots/`)
+
+---
+
+## Korábbi (Session R — 2026-08-12, LEZÁRVA)
+
+**Session R elvégzett munkák:**
+
+**Session R elvégzett munkák:**
 
 **Audit pipeline folytatás:**
-- Audit 6 (`theme-audit.md`) — Qwen output GFM-re konvertálva, elmentve ✅
-- Audit 7 (`state-audit.md`) — Qwen output GFM-re konvertálva, elmentve ✅
-- SESSION_HANDOFF.md — audit #6 és #7 státusza `✅ KÉSZ`-re frissítve ✅
-- Audit 8 (docs/hungarian text) — Qwen még dolgozik, következő session elején jön
+- Audit 8 (`docs-audit.md`) — Qwen output GFM-re konvertálva + teljes manuális kiegészítés ✅
+  - §5 (obsolete inline comments) teljesen hiányzott a Qwen outputból — 12 finding feltárva
+  - §4 (non-English text) verify: Qwen HELYES volt — a neved valóban csak 3 fájlban van (test target fájlok,
+    a fő 20 Swift fájlnak egyedi headerük van "Created by" sor nélkül)
+  - SESSION_HANDOFF.md — audit #8 státusza `✅ KÉSZ`-re frissítve
 
-**Bugfixek (`CalculateView.swift`):**
-- BUG-DEADLINE-1: `showDeleteDeadlineConfirm: Bool` state var + `.alert` a trash gombra (destructive Delete + Cancel) — a saved deadline törlése mostantól konfirmációt kér
-- BUG-DEADLINE-2: rename TextField `padding(.top, 28)` → `46` — X gomb (12pt top + 26pt height + 8pt gap = 46pt) alá kerül, nincs átfedés
-
-**Audit cross-check (BUG-DEADLINE-1/2 hatása):**
-- `duplication-audit.md` §11D — 6. delete-confirm bool instance dokumentálva
-- `magic-numbers-audit.md` §11D — új alert string literálok + 46pt levezetett érték
-- `srp-audit.md` — post-fix értékelés, nincs új finding
-- `state-audit.md` — 9. @State bool a CalculateView-ban + implicit layout coupling note
-
-**Következő session nyitott teendői:**
+**Session Q-ból örökölt nyitott teendők (még elvégzendő):**
 - Build ellenőrzés (BUG-DEADLINE-1 + BUG-DEADLINE-2)
-- Git commit (Session Q: theme-audit + state-audit + BUG-DEADLINE-1/2 + progress.md)
-- Audit 8 (docs-audit.md) — Qwen output konvertálása, SESSION_HANDOFF.md frissítése
+- Git commit (Session Q+R: theme-audit + state-audit + docs-audit + BUG-DEADLINE-1/2 + progress.md)
 - Audit 9–16 pipeline folytatása
 - Manual megírása (screenshotokat session elején újra be kell másolni: `/Users/ArrayOfLilly/tools/countdownApp/screenshots/`)
 
-**Fontos megjegyzés — SM-2a (state-audit.md):** A Qwen által "data loss bug"-nak jelölt `localDeadline` reset `.onAppear`-ben (CountdownDetailView) **szándékos design döntés** — a FREE slot deadline-ja múltbeli, a stepper "most"-tól kezd, ez a reaktiváció belépési pontja. Nem fixelendő.
+**FONTOS — tervezési fázis megkezdésekor (audit pipeline után):**
+Mielőtt bármilyen refaktor-tervet vagy javítási prioritást készítünk, menj végig az ÖSSZES
+audit fájlon (1–16, `docs/` mappában), ne csak az utolsón. A findingek összesített képe
+alapján kell dönteni a sorrendről és a hatókörről — sok finding keresztezi egymást
+(pl. duplication + magic-numbers + SRP ugyanazokat a helyeket érinti).
+
+**docs-audit.md legfontosabb findingek (Session R):**
+- `hash-based fallback` leírás 3 helyen stale: CountdownItem.swift (`accentColorIndex` doc),
+  ColorPickerSheet.swift (2 komment) — nincs hash számítás, fixed index 6 (`?? 6`)
+- `ColorPickerSheet.swift` `opacity(0.70)` komment vs tényleges `0.60` a kódban
+- `SunTimesService.swift` header: `SUN-1-B/C` planned — ezek már KÉSZ featuresök; plannned: SUN-1-E
+- `CountdownRowView.swift`: `var index: Int = 0` dead parameter (soha nem olvasott)
+- `spec.md` 6 stale pont: "Two modes" (valójában 3), "LazyVStack" (VStack, bug-23B), moon
+  "horizontal ScrollView" (HStack arc), "Capsule pill" (nincs Capsule a kódban), #593C73 (index 6 = #523554)
+- `SharedEditorComponents.swift`: Roboto Flex @font-face injektálva de `body { font-family }`-ben
+  nem szerepel (Mozilla Headline váltotta fel, Session O)
+- `CountdownDetailView.swift`: sound + notes button opacity ternary no-op: `opacity(1.0)` == unmodified
+
+**Fontos megjegyzés — SM-2a (state-audit.md):** A Qwen által "data loss bug"-nak jelölt `localDeadline`
+reset `.onAppear`-ben (CountdownDetailView) **szándékos design döntés** — a FREE slot deadline-ja múltbeli,
+a stepper "most"-tól kezd, ez a reaktiváció belépési pontja. Nem fixelendő.
 
 ---
 

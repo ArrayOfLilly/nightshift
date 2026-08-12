@@ -27,17 +27,23 @@ Következő session elején újra be kell másolni:
 Készül: `manual.md` (technikai, fejlesztői referencia) + `manual.pdf` (end-user, képekkel).
 Mindkét fájl célkönyvtára: `/Users/ArrayOfLilly/tools/countdownApp/docs/`
 
-### Session Q — FOLYAMATBAN
+### Session Q+R+S — LEZÁRVA (2026-08-12)
 - [x] Audit 6 (theme-audit.md) — Qwen output GFM-re konvertálva, elmentve
-- [x] Buglist rögzítve a progress.md-ben (BUG-DEADLINE-1, BUG-DEADLINE-2, NOTE-DEADLINE-3)
-- [x] 28 screenshot végignézve, manual struktúra fejben kész
-- [x] SESSION_HANDOFF.md — 6. audit státusz frissítve ✅ KÉSZ-re
 - [x] Audit 7 (state-audit.md) — Qwen output GFM-re konvertálva, elmentve
-- [ ] Manual megírása (következő session)
-- [x] BUG-DEADLINE-1 — delete saved deadline confirm alert hozzáadva (`showDeleteDeadlineConfirm` + `.alert`, trash → destructive pattern)
-- [x] BUG-DEADLINE-2 — rename TextField `.padding(.top, 46)` → X gomb alá kerül (volt: 28pt, átfedett a 12+26pt X gombbal)
-- [ ] Build ellenőrzés (BUG-DEADLINE-1 + BUG-DEADLINE-2)
-- [ ] Git commit (Session Q: theme-audit + buglist + state-audit + BUG-DEADLINE-1/2)
+- [x] Audit 8 (docs-audit.md) — Qwen output GFM-re konvertálva + teljes manuális kiegészítés (§5 hiányzott, §4 verify), elmentve
+- [x] Audit 9 (freecolors-audit.md) — Qwen output GFM-re konvertálva + saját kiegészítés (§3 antipattern, §5 named token átfedések, §6 megtévesztő szemantikus nevek), elmentve
+- [x] Audit 10 (notificationcenter-audit.md) — Qwen output GFM-re konvertálva; NC-1..4 kritikus leak; saját kibővítés: teljes 20 fájlos scan, izolált finding, elmentve
+- [x] Audit 11 (font-audit.md) — Qwen output GFM-re konvertálva; FN-1/2 PostScript mismatch, FN-3 WebView heading @font-face hiány; saját kibővítés: Font.custom scan + CSS stack verify, elmentve
+- [x] Buglist rögzítve (BUG-DEADLINE-1, BUG-DEADLINE-2, NOTE-DEADLINE-3)
+- [x] 28 screenshot végignézve, manual struktúra fejben kész
+- [x] SESSION_HANDOFF.md — 6–11. audit státusz ✅ KÉSZ-re frissítve
+- [x] BUG-DEADLINE-1 — delete saved deadline confirm alert hozzáadva
+- [x] BUG-DEADLINE-2 — rename TextField `.padding(.top, 46)` fix
+- [x] countdownApp-handoff.md — Session S összefoglaló megírva
+- [ ] Build ellenőrzés (BUG-DEADLINE-1 + BUG-DEADLINE-2) — következő session
+- [ ] Git commit (Session Q+R+S teljes) — következő session
+- [ ] Manual megírása — következő session
+- [ ] Audit 12–16 pipeline — következő session
 
 ---
 
