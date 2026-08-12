@@ -13,6 +13,9 @@ Döntési elv: `Claude.md`
 
 ## Következő session feladata
 
+**Free tier constraint**: egy session = egy jól körülhatárolt task, dokumentálással együtt.
+Tervezésnél ezt vedd figyelembe — ne tervezz többet egy sessionba mint ami elfér.
+
 1. Olvasd el az auditokat egyenként — ne töltsd be az összeset egyszerre
 2. Minden findinghez: melyik fájlt érinti, mi a kockázat, mi blokkoló
 3. Prioritizálási keretek kialakítása az összesített kép alapján
