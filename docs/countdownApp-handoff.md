@@ -16,40 +16,42 @@
 ## Jelenlegi állapot
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
-- Manual: kész, `docs/manual/`
-- Git commit: **PENDING** (Session Q–AA-b)
+- Manual: kész, `docs/manual/` — **banner screenshot + szöveg hiányzik** (AD session feladata)
+- Git: **naprakész** — legutóbbi commit `d94a372` (AC session docs)
 - `Claude.md` megírva a gyökérbe
-- `refactor-plan.md` **teljes findings listával** (7 kategória, A–G, 35+ finding)
-- **Z session kész**: Codable model fix (`Snippet`, `NamedDeadline`, `CountdownItem.id`), `AppKeys` bevezetve minden persistence path-on
-- **AA-a session kész**: Per-item recovery infrastruktúra — `Snippet.load()` + `CalculateView.loadDeadlines()` + `AppKeys.appendCorruptFragments`
-- **AA-b session kész**: `CountdownView.load()` per-item recovery + notes-alapú elágazás
-- **AB session kész**: Banner UI (mindhárom view) + `FocusedNSTextField.Coordinator` deinit fix + `countdownAppApp.swift` lifecycle hook
-- **AC session kész**: DEBUG Cmd+Shift+D trigger — corrupt banner screenshot workflow
+- `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
+- **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
+- **AA-a+AA-b session**: Per-item recovery — `Snippet.load()`, `CalculateView.loadDeadlines()`, `CountdownView.load()`
+- **AB session**: Banner UI (mindhárom view) + `FocusedNSTextField.Coordinator` deinit (NC-1..4 fix) + `AppDelegate` lifecycle hook
+- **AC session**: DEBUG Cmd+Shift+D trigger — corrupt banner screenshothoz
 
 ---
 
-## Következő session feladata
+## Következő session feladata (AD)
 
-### Amber döntés (F-6)
+### 1. Manual — banner screenshot + leírás
 
-CSS `#F5A623` vs SwiftUI `AppTheme.background` `#E5A020` — vizuálisan összehasonlítani és dönteni.
-Ha `#F5A623` nyeri → `AppTheme.background` frissítés + `markdownCSS` computed property-vé alakítás.
+- Build & Run DEBUG
+- Navigálj mindhárom view-ra (Countdown, Calculate, Snippets)
+- Cmd+Shift+D → banner megjelenik → screenshot mentése
+- `docs/manual/` mappába beilleszteni a screenshotokat
+- Manual szöveg kiegészítése: recovery banner viselkedés, Copy raw data, Dismiss
 
-### Git commit (PENDING)
+### 2. Amber döntés (F-6)
 
-```bash
-cd /Users/ArrayOfLilly/tools/countdownApp/countdownApp
-git add -A
-git commit -m "Session Z+AA-a: Codable fix + per-item recovery infrastruktúra (Snippet, CalculateView)"
-```
+- `AppTheme.background` jelenleg `#E5A020`; a `markdownCSS` WKWebView CSS-ben `#F5A623` van
+- Vizuálisan összehasonlítani a kettőt — valószínűleg `#F5A623` nyeri
+- Ha igen: `AppTheme.swift` → `background` hex → `#F5A623` + `amberHex` szinkron ellenőrzés
+- `markdownCSS` már computed `var` (AA-a session óta), `amberHex`-et használja — csak `AppTheme.background` hex kell frissíteni
 
 ---
 
 ## Recovery infrastruktúra — áttekintés
 
 ### AppKeys.appendCorruptFragments(_ fragments: [String])
-- Shared helper — `AppKeys.swift`-ben, az `AppKeys.corruptedDump` kulcshoz közel
-- Akkumulál, nem felülír — minden call hozzáappendál
+- `AppKeys.swift`-ben, a `corruptedDump` kulcs mellett
+- `#if DEBUG` alatt itt van `DebugNotifications.injectCorruptBanner` is
+- Akkumulál, nem felülír
 
 ### Load path státusz
 | Path | Recovery | Dump |
@@ -59,11 +61,21 @@ git commit -m "Session Z+AA-a: Codable fix + per-item recovery infrastruktúra (
 | `CountdownView.load()` | ✅ per-item + notes-elágazás | ✅ notes esetén |
 
 ### Banner státusz
-| View | Banner | Dismiss |
-|------|--------|---------|
-| `SnippetsView` | ✅ kész | ✅ kész |
-| `CalculateView` | ✅ kész | ✅ kész |
-| `CountdownView` | ✅ kész | ✅ kész |
+| View | Banner | Dismiss | Debug trigger |
+|------|--------|---------|---------------|
+| `SnippetsView` | ✅ | ✅ | ✅ .onReceive |
+| `CalculateView` | ✅ | ✅ | ✅ .onReceive |
+| `CountdownView` | ✅ | ✅ | ✅ .onReceive |
+
+---
+
+## Kritikus tudás
+
+- `CountdownItem`, `Snippet`, `NamedDeadline` — custom `init(from decoder:)`. **Soha ne adj hozzá mezőt `decodeIfPresent` + default nélkül.**
+- `AppTheme.swift` — shared design token forrás. `amberHex` a CSS/WebView szinkron kulcs.
+- `freeOrder` `.onChange` csak `rebuildCache()`-t hív, `saveFreeOrder()`-t nem — szándékos, latens footgun (OWN-LC-2).
+- Font PostScript nevek: `AlienLeague` / `AlienLeagueBold` — centralizálva `AppTheme.swift`-ben.
+- `DebugNotifications.injectCorruptBanner` — csak `#if DEBUG`, `AppKeys.swift` alján.
 
 ---
 
@@ -92,19 +104,3 @@ SunTimes.swift
 SunTimesService.swift
 countdownAppApp.swift
 ```
-
----
-
-## Kritikus tudás
-
-- `CountdownItem` — custom `init(from decoder:)`-rel; `Snippet` és `NamedDeadline` szintén (Z session óta).
-  **Soha ne adj hozzá mezőt `decodeIfPresent` + default nélkül.**
-- `AppTheme.swift` — shared design token forrás.
-- `freeOrder` `.onChange` csak `rebuildCache()`-t hív, `saveFreeOrder()`-t nem — szándékos, de
-  latens footgun (OWN-LC-2).
-- Font PostScript nevek: `AlienLeague` / `AlienLeagueBold` — centralizálva `AppTheme.swift`-ben.
-- `FocusedNSTextField.Coordinator` — **observer leak** (NC-1..4): `deinit` hiányzik, zombie
-  Coordinator-ok minden ablakváltáskor `onCommit()`-ot futtatnak. Fix: AB session (B-1).
-- `markdownCSS` amber (`#F5A623`) ≠ `AppTheme.background` (#E5A020) — vizuális eltérés a
-  WKWebView renderelt tartalmában. **Vizuális döntés függőben:** a CSS amber szebb, 90%+
-  valószínűséggel `AppTheme.background` → `#F5A623` lesz. AB session előtt dönteni.
