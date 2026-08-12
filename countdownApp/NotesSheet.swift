@@ -7,8 +7,9 @@
 //
 //  MarkdownWebView and PlainTextEditor live in SharedEditorComponents.swift.
 //
-//  EDIT mode binds directly to the `notes` @Binding — no draft buffer. Every keystroke
-//  writes through to item.notes. See SharedEditorComponents for editor details.
+//  EDIT mode uses a local `draft` @State buffer. Changes are flushed to the `notes`
+//  @Binding (and thus to UserDefaults) with a ~500 ms debounce to avoid per-keystroke
+//  JSON encode + disk write of the entire items array. See SharedEditorComponents for editor details.
 //  Copy button: copies raw markdown to NSPasteboard, 1 s checkmark feedback.
 //  Trash button: clears notes string after confirmation alert.
 //
@@ -26,6 +27,9 @@ struct NotesSheet: View {
     @Binding var notes: String
     @Environment(\.dismiss) private var dismiss
 
+    /// Local buffer for EDIT mode. Flushed to the `notes` @Binding with a debounce.
+    @State private var draft:            String = ""
+    @State private var debounceTask:     Task<Void, Never>? = nil
     @State private var isEditing         = false
     @State private var copyFeedback      = false
     @State private var showDeleteConfirm = false
@@ -52,10 +56,21 @@ struct NotesSheet: View {
         // fixed-size overload, because that overload can't take `minHeight:`
         // in the same call.
         .frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: 520)
-        .onAppear { updateSheetWidth() }
+        .onAppear {
+            draft = notes
+            updateSheetWidth()
+        }
+        .onChange(of: draft) { newValue in
+            debounceTask?.cancel()
+            debounceTask = Task {
+                try? await Task.sleep(for: .milliseconds(500))
+                guard !Task.isCancelled else { return }
+                notes = newValue
+            }
+        }
         .alert("Delete all notes?", isPresented: $showDeleteConfirm) {
             Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) { notes = "" }
+            Button("Delete", role: .destructive) { notes = ""; draft = "" }
         } message: {
             Text("This clears the notes for this slot. This cannot be undone.")
         }
@@ -74,9 +89,12 @@ struct NotesSheet: View {
                 headerButton(icon: copyFeedback ? "checkmark" : "doc.on.doc",
                              tint: copyFeedback ? AppTheme.background : Color.white.opacity(0.7)) {
                     NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(notes, forType: .string)
+                    NSPasteboard.general.setString(draft, forType: .string)
                     copyFeedback = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) { copyFeedback = false }
+                    Task {
+                        try? await Task.sleep(for: .milliseconds(1000))
+                        copyFeedback = false
+                    }
                 }
                 headerButton(icon: isEditing ? "checkmark" : "pencil") { isEditing.toggle() }
                 headerButton(icon: "trash") { showDeleteConfirm = true }
@@ -111,7 +129,7 @@ struct NotesSheet: View {
     private var contentArea: some View {
         if isEditing {
             PlainTextEditor(
-                text: $notes,
+                text: $draft,
                 font: .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular),
                 textColor: NSColor(AppTheme.background),
                 inset: NSSize(width: 24, height: 20),

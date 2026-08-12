@@ -853,17 +853,11 @@ struct CalculateView: View {
     }
 
     private func monthAbbrev(from date: Date) -> String {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "MMM"
-        fmt.locale = Locale(identifier: "en_US")
-        return fmt.string(from: date).uppercased()
+        Formatters.monthAbbrev.string(from: date).uppercased()
     }
 
     private func deadlineDateString(_ date: Date) -> String {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "yyyy MMM dd  HH:mm"
-        fmt.locale = Locale(identifier: "en_US")
-        return fmt.string(from: date).uppercased()
+        Formatters.deadlineCompact.string(from: date).uppercased()
     }
 
     /// Compact remaining-time string for the saved-deadlines list.

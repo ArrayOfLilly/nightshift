@@ -199,7 +199,8 @@ struct CountdownDetailView: View {
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(trimmed, forType: .string)
                         copyFeedback = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                        Task {
+                            try? await Task.sleep(for: .milliseconds(1200))
                             copyFeedback = false
                         }
                     } label: {
@@ -474,9 +475,6 @@ struct CountdownDetailView: View {
     }
 
     private func monthAbbrev() -> String {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "MMM"
-        fmt.locale = Locale(identifier: "en_US")
-        return fmt.string(from: localDeadline).uppercased()
+        Formatters.monthAbbrev.string(from: localDeadline).uppercased()
     }
 }

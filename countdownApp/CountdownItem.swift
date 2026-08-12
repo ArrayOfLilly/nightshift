@@ -92,8 +92,6 @@ struct CountdownItem: Identifiable, Codable, Equatable, Hashable {
 
     /// "2026.08.10 14:00"
     var deadlineFormatted: String {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy.MM.dd HH:mm"
-        return f.string(from: deadline)
+        Formatters.deadline.string(from: deadline)
     }
 }

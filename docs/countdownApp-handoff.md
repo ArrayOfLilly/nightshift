@@ -27,13 +27,14 @@
 - **AC session**: DEBUG Cmd+Shift+D trigger — commit `e2c3666`
 - **AD session**: Manual Data Recovery szekció + image groups — `manual_build.py` group parser, 9 group a manualban, 03b/03c+03d 2+1 layout, path fix
 - **AE session**: Swift concurrency cleanup — B-2 `SnippetEditSheet` copyFeedback DispatchQueue→Task, B-3 `CalculateView` hoverTask DispatchWorkItem→Task, A-4 `SnippetEditSheet` `.onDisappear` auto-save — commit `f7f774d`
+- **AF session**: Performance + concurrency — B-2 maradék (`SnippetsView` copy), C-1 MarkdownWebView guard, C-2 NotesSheet debounce, C-3 orderedFreeItems O(n), C-4 `Formatters.swift` (DateFormatter centralizálás + lokalizáció deferred task dokumentálva)
 
 ---
 
 ## Következő session feladata
 
-- `refactor-plan.md` nyitott findingek: C-* (performance), E-* (state management), F-* (duplication), G-* (layout)
-- B-2 `SnippetsView` sorában is van `DispatchQueue.main.asyncAfter` — következő sessionban javítandó
+- `refactor-plan.md` nyitott findingek: E-* (state management), F-* (duplication), G-* (layout)
+- C kategória teljesen lezárva; B, C kategóriák kész
 - Manual PDF újragenerálása (`manual_build.py` futtatása) ha szükséges
 
 ---
@@ -77,6 +78,7 @@
 AddCountdownSheet.swift
 AppKeys.swift
 AppTheme.swift
+Formatters.swift
 CalculateView.swift
 ColorPickerSheet.swift
 ContentView.swift

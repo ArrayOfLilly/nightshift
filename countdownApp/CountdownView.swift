@@ -119,11 +119,11 @@ struct CountdownView: View {
 
     private func orderedFreeItems(at now: Date) -> [CountdownItem] {
         let expired = items.filter { $0.isExpired(at: now) }
+        // O(n) lookup: build a dictionary once instead of expired.first(where:) per freeOrder element.
+        let expiredByID = Dictionary(uniqueKeysWithValues: expired.map { ($0.id, $0) })
         var result: [CountdownItem] = []
         for id in freeOrder {
-            if let item = expired.first(where: { $0.id == id }) {
-                result.append(item)
-            }
+            if let item = expiredByID[id] { result.append(item) }
         }
         let positioned = Set(result.map { $0.id })
         let remaining = expired

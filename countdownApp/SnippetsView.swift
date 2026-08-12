@@ -291,7 +291,8 @@ struct SnippetsView: View {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(snippet.body, forType: .string)
                 copiedID = snippet.id
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                Task {
+                    try? await Task.sleep(for: .milliseconds(1000))
                     if copiedID == snippet.id { copiedID = nil }
                 }
             } label: {

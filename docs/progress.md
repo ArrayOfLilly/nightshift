@@ -191,3 +191,30 @@
 ---
 
 *Session B–O: lásd `docs/history.md`*
+
+## Session AF — 2026-08-13 (B-2 maradék, C-1, C-2, C-3, C-4 — performance + concurrency)
+
+### Session AF — LEZÁRVA
+- [x] **B-2 maradék** — `SnippetsView` inline copy gomb: `DispatchQueue.main.asyncAfter` → `Task { .sleep(1000ms) }`
+- [x] **C-1** — `MarkdownWebView.updateNSView` feltétel nélküli reload:
+  - `Coordinator.lastMarkdown: String` property hozzáadva
+  - `updateNSView`: `guard markdown != context.coordinator.lastMarkdown else { return }` + `lastMarkdown` update
+  - Hatás: WKWebView reload csak valódi markdown-változáskor fut (pl. `copyFeedback` toggle nem triggerel újratöltést)
+- [x] **C-2** — `NotesSheet` per-keystroke write debounce:
+  - `@State private var draft: String` lokális buffer bevezetése
+  - `PlainTextEditor` a `$draft`-ra bind-ol (volt: `$notes`)
+  - `.onAppear`: `draft = notes` inicializálás
+  - `.onChange(of: draft)`: 500 ms debounce Task → `notes = newValue`
+  - Copy gomb és delete alert `draft`-aware
+  - Komment frissítve a fájl fejlécében
+- [x] **C-3** — `orderedFreeItems` O(n²) → O(n):
+  - `Dictionary(uniqueKeysWithValues:)` lookup `expired.first(where:)` helyett
+- [x] **C-4** — `DateFormatter` centralizálás: `Formatters.swift` új fájl
+  - `Formatters.monthAbbrev` — `"MMM"`, en_US (CountdownDetailView, CalculateView)
+  - `Formatters.deadline` — `"yyyy.MM.dd HH:mm"`, system locale (CountdownItem)
+  - `Formatters.deadlineCompact` — `"yyyy MMM dd  HH:mm"`, en_US (CalculateView list)
+  - `Formatters.time` — `"HH:mm"`, en_US_POSIX (SunPanel)
+  - Érintett fájlok: `CountdownItem`, `CountdownDetailView`, `CalculateView`, `SunPanel`
+  - Lokalizációs deferred task dokumentálva `Formatters.swift` fejlécében
+- [x] Git commit: PENDING
+

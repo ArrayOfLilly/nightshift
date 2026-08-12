@@ -251,10 +251,7 @@ struct SunPanel: View {
     // MARK: - Formatters
 
     private func timeString(_ date: Date) -> String {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "HH:mm"
-        fmt.locale = Locale(identifier: "en_US_POSIX")
-        return fmt.string(from: date)
+        Formatters.time.string(from: date)
     }
 
     private func dayLengthString(_ seconds: Int) -> String {

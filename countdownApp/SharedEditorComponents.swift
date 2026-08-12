@@ -34,6 +34,8 @@ struct MarkdownWebView: NSViewRepresentable {
     }
 
     func updateNSView(_ wv: WKWebView, context: Context) {
+        guard markdown != context.coordinator.lastMarkdown else { return }
+        context.coordinator.lastMarkdown = markdown
         reload(markdown, into: wv)
     }
 
@@ -41,6 +43,9 @@ struct MarkdownWebView: NSViewRepresentable {
 
     final class Coordinator: NSObject, WKNavigationDelegate {
         var parent: MarkdownWebView
+        /// Tracks the last markdown string passed to reload(_:into:).
+        /// updateNSView guards against reloading the WebView when content is unchanged.
+        var lastMarkdown: String = ""
         init(_ p: MarkdownWebView) { parent = p }
         func webView(_ wv: WKWebView, didFinish navigation: WKNavigation!) {
             wv.evaluateJavaScript("document.body.scrollHeight") { val, _ in
