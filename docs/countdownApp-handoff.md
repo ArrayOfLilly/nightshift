@@ -17,7 +17,7 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `6642535` (AD session)
+- Git: **naprakész** — legutóbbi commit `f7f774d` (AE session)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
@@ -26,13 +26,15 @@
 - **AB session**: Banner UI (mindhárom view) + `FocusedNSTextField.Coordinator` deinit (NC-1..4 fix) + `AppDelegate` lifecycle hook
 - **AC session**: DEBUG Cmd+Shift+D trigger — commit `e2c3666`
 - **AD session**: Manual Data Recovery szekció + image groups — `manual_build.py` group parser, 9 group a manualban, 03b/03c+03d 2+1 layout, path fix
+- **AE session**: Swift concurrency cleanup — B-2 `SnippetEditSheet` copyFeedback DispatchQueue→Task, B-3 `CalculateView` hoverTask DispatchWorkItem→Task, A-4 `SnippetEditSheet` `.onDisappear` auto-save — commit `f7f774d`
 
 ---
 
 ## Következő session feladata
 
+- `refactor-plan.md` nyitott findingek: C-* (performance), E-* (state management), F-* (duplication), G-* (layout)
+- B-2 `SnippetsView` sorában is van `DispatchQueue.main.asyncAfter` — következő sessionban javítandó
 - Manual PDF újragenerálása (`manual_build.py` futtatása) ha szükséges
-- `refactor-plan.md` findings implementálása (A–G kategóriák)
 
 ---
 

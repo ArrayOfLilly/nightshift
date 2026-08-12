@@ -1,5 +1,22 @@
 # countdownApp — Progress
 
+## Session AE — 2026-08-13 (B-2, B-3, A-4 — Swift concurrency cleanup)
+
+### Session AE — LEZÁRVA
+- [x] **B-2** — `copyFeedback` timer: `DispatchQueue.main.asyncAfter` → `Task { try? await Task.sleep(...) }`
+  - `CountdownDetailView.swift` — már Task volt (korábbi session), nem érintett
+  - `NotesSheet.swift` — már Task volt (korábbi session), nem érintett
+  - `SnippetEditSheet.swift` — javítva: `DispatchQueue.main.asyncAfter(deadline: .now() + 1)` → `Task { .sleep(1000ms) }`
+- [x] **B-3** — `hoverTask: DispatchWorkItem?` → `Task<Void, Never>?` (`CalculateView.swift`)
+  - Property típus cserélve
+  - `onHover` blokk: `DispatchWorkItem` + `DispatchQueue.main.asyncAfter` → `Task { .sleep(200ms) + isCancelled check }`
+- [x] **A-4** — `SnippetEditSheet` — `.onDisappear { commitSave() }` hozzáadva
+  - Fedezi az Esc / system dismiss eseteket (az xmark gomb már hívta `commitSave()`-t)
+  - Per-keystroke write nem vezettünk be (debounce egyeztetés nélkül nem kerül be)
+- [x] Git commit: `f7f774d`
+
+---
+
 ## Session AD — 2026-08-13 (Manual — data recovery szekció + image groups)
 
 ### Session AD — LEZÁRVA
