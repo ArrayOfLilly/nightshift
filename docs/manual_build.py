@@ -3,7 +3,7 @@
 manual_build.py — Converts countdownApp-manual.md to a self-contained HTML file.
 All referenced images are base64-encoded and embedded inline.
 Usage: python3 manual_build.py
-Output: /Users/ArrayOfLilly/tools/countdownApp/docs/countdownApp-manual.html
+Output: /Users/ArrayOfLilly/tools/countdownApp/countdownApp/docs/manual/countdownApp-manual.html
 """
 
 import re
@@ -11,8 +11,9 @@ import base64
 import mimetypes
 from pathlib import Path
 
-MANUAL_MD   = Path("/Users/ArrayOfLilly/tools/countdownApp/docs/countdownApp-manual.md")
-OUTPUT_HTML = Path("/Users/ArrayOfLilly/tools/countdownApp/docs/countdownApp-manual.html")
+MANUAL_MD       = Path("/Users/ArrayOfLilly/tools/countdownApp/countdownApp/docs/manual/countdownApp-manual.md")
+OUTPUT_HTML     = Path("/Users/ArrayOfLilly/tools/countdownApp/countdownApp/docs/manual/countdownApp-manual.html")
+SCREENSHOTS_DIR = Path("/Users/ArrayOfLilly/tools/countdownApp/screenshots")
 
 # h2 headings that should trigger a page break before them (main chapters only)
 PAGE_BREAK_H2 = {
@@ -134,7 +135,9 @@ CSS = """
 """
 
 def embed_image(path_str: str, md_dir: Path) -> str:
-    img_path = (md_dir / path_str).resolve()
+    # All images live in SCREENSHOTS_DIR regardless of the relative prefix in the md.
+    filename = Path(path_str).name
+    img_path = SCREENSHOTS_DIR / filename
     if not img_path.exists():
         print(f"  WARNING: image not found: {img_path}")
         return ""
