@@ -267,18 +267,12 @@ clipboard, ready to paste into an AI assistant or any other app.
 The **trash button** in the sheet header clears the entire notes field.
 A confirmation dialog appears; click **Delete** to confirm or **Cancel** to abort.
 
+<!-- group -->
 ![Notes delete confirmation dialog](../../screenshots/11 CountDown Detail View - Note Editor - Confirm Delete.png)
-
 *A confirmation dialog appears before the notes content is permanently cleared.*
-
-If the notes field is empty, the sheet opens showing a placeholder prompt.
-Tap the placeholder area to jump straight into Editor mode.
-
 ![Notes sheet – empty state with placeholder prompt](../../screenshots/12 CountDown Detail View - Note Editor - Empty.png)
-
 *When there are no notes yet, a placeholder is shown. Tap it to jump straight into Editor mode.*
-
----
+<!-- /group -->
 
 ## Snippets
 
