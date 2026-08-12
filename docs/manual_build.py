@@ -60,6 +60,28 @@ CSS = """
         margin-top: -12px;
         margin-bottom: 24px;
     }
+    /* ── Image groups ── */
+    .img-group {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        align-items: flex-start;
+        margin: 20px 0;
+    }
+    .img-group figure {
+        flex: 1;
+        margin: 0;
+        text-align: center;
+    }
+    .img-group figure img.screenshot {
+        max-width: 100%;
+        margin: 0 auto 6px;
+    }
+    .img-group figure figcaption {
+        font-size: 0.82em;
+        color: #888;
+        font-style: italic;
+    }
     hr { border: none; border-top: 1px solid #e8e8e8; margin: 2.5em 0; }
     li { margin: 4px 0; }
 
@@ -131,6 +153,31 @@ CSS = """
 
         hr { border-top: 0.5pt solid #bbb; }
         a  { color: #000; text-decoration: none; }
+
+        .img-group {
+            display: flex;
+            gap: 10pt;
+            justify-content: center;
+            align-items: flex-start;
+            page-break-inside: avoid;
+        }
+        .img-group figure {
+            flex: 1;
+            margin: 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+        .img-group figure img.screenshot {
+            max-width: 100%;
+            margin: 0 auto 4pt;
+            box-shadow: none;
+            border: 1px solid #ccc;
+        }
+        .img-group figure figcaption {
+            font-size: 8.5pt;
+            color: #555;
+            font-style: italic;
+        }
     }
 """
 
@@ -184,6 +231,46 @@ def md_to_html(md: str, md_dir: Path) -> str:
 
     while i < len(lines):
         line = lines[i]
+
+        # <!-- group --> ... <!-- /group -->
+        if line.strip() == "<!-- group -->":
+            close_lists()
+            # collect lines until <!-- /group -->
+            i += 1
+            group_lines = []
+            while i < len(lines) and lines[i].strip() != "<!-- /group -->":
+                group_lines.append(lines[i])
+                i += 1
+            i += 1  # skip <!-- /group -->
+            # parse image+caption pairs from group_lines
+            figures = []
+            gi = 0
+            while gi < len(group_lines):
+                gline = group_lines[gi]
+                img_m = re.match(r'^\s*!\[([^\]]*)\]\(([^)]+)\)', gline)
+                if img_m:
+                    alt  = img_m.group(1)
+                    path = img_m.group(2)
+                    uri  = embed_image(path, md_dir)
+                    img_tag = f'<img class="screenshot" src="{uri}" alt="{alt}">' if uri else f'[image not found: {path}]'
+                    # look ahead for caption (italic line)
+                    caption = ""
+                    if gi + 1 < len(group_lines):
+                        cap_m = re.match(r'^\*([^*].+[^*])\*$', group_lines[gi + 1].strip())
+                        if cap_m:
+                            caption = cap_m.group(1)
+                            gi += 1
+                    figures.append((img_tag, caption))
+                gi += 1
+            html.append('<div class="img-group">')
+            for img_tag, caption in figures:
+                html.append("  <figure>")
+                html.append(f"    {img_tag}")
+                if caption:
+                    html.append(f"    <figcaption>{caption}</figcaption>")
+                html.append("  </figure>")
+            html.append("</div>")
+            continue
 
         # fenced code block
         if line.startswith("```"):
