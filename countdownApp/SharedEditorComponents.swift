@@ -69,6 +69,8 @@ struct MarkdownWebView: NSViewRepresentable {
         let escaped = highlighted
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "`", with: "\\`")
+            .replacingOccurrences(of: "${", with: "\\${")
+            .replacingOccurrences(of: "</script>", with: "<\\/script>")
         let html = """
         <!DOCTYPE html><html><head><meta charset="utf-8">
         <style>\(fontFaceCSS)\(markdownCSS)</style></head><body>

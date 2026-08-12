@@ -15,6 +15,7 @@ struct AddCountdownSheet: View {
 
     @State private var label:    String = ""
     @State private var deadline: Date   = Date()
+    @State private var sheetWidth: CGFloat = 420
 
     private var cal: Calendar { Calendar.current }
 
@@ -81,6 +82,14 @@ struct AddCountdownSheet: View {
                 Spacer()
             }
             .padding(24)
+        }
+        .frame(minWidth: sheetWidth, maxWidth: sheetWidth)
+        .onAppear {
+            let windowMargin: CGFloat = 24
+            let windowWidth = NSApp.mainWindow?.frame.width
+                ?? NSApp.windows.first(where: { $0.isVisible })?.frame.width
+                ?? 600
+            sheetWidth = max(380, min(560, windowWidth - windowMargin))
         }
     }
 

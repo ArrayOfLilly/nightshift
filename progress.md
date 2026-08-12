@@ -1,5 +1,58 @@
 # countdownApp — Progress
 
+## Session P — 2026-08-12 (CALC-SAVE: deadline rename + popover width fix)
+
+### Elvégzett változások
+
+**CalculateView.swift — deadline rename (pencil gomb a detail sheet-ben)**
+- Két új `@State` var: `isRenamingDeadline: Bool` + `renameDraft: String`
+- `deadlineDetailContent()` átírva: normál módban a régi LOAD AS TO + trash mellé
+  bekerült egy `pencil` ikon gomb (ugyanolyan 40×38 icon-only stílus, mint a trash).
+- Pencil tapp: `isRenamingDeadline = true`, `renameDraft = deadline.title` —
+  a fejléc title szövege TextField-re vált, alatta CANCEL + RENAME gombok jelennek meg
+  (save sheet stílusban: szürke CANCEL, amber RENAME).
+- RENAME: megkeresi a `namedDeadlines` tömbben az ID szerint, frissíti a title-t,
+  hívja `saveDeadlines()`, majd `isRenamingDeadline = false`.
+- `.onDisappear { isRenamingDeadline = false }` — sheet bezárásakor reset,
+  nehogy a következő megnyitáskor rename módban nyíljon.
+
+**CalculateView.swift — deadline list popover width fix**
+- `deadlineListPopoverContent` `.frame(minWidth: 320)` →
+  `.frame(minWidth: 260, maxWidth: 340)` — megakadályozza, hogy a popover
+  szélesebb legyen az ablaknál (korábban `maxWidth` hiánya miatt korlátlan
+  szélesedés volt lehetséges).
+
+### Session P — FOLYAMATBAN
+- [x] `CalculateView.swift` — rename state vars hozzáadva
+- [x] `deadlineDetailContent()` — pencil gomb + rename mód inline (TextField + CANCEL/RENAME)
+- [x] `deadlineListPopoverContent` — `maxWidth: 340` hozzáadva (első kísérlet, nem volt elég)
+- [x] `deadlineListPopoverContent` — dinamikus `popoverWidth` state + `.onAppear` window width olvasás,
+  `.frame(width: popoverWidth)` fixált szélességgel (SnippetEditSheet minta, min 220 / max 320 / ablak-48)
+- [x] `deadlineDetailContent()` — X dismiss gomb hozzáadva: fejléc ZStack overlay, topTrailing,
+  26×26, `cornerRadius: 6`, `selectedDeadline = nil` action (rename módban is működik, mindig kilép)
+- [ ] Build ellenőrzés
+- [ ] Git commit
+- [x] Audit 1 (codable-audit.md) — post-fix note hozzáadva: rename write path CA-2 still applies; NamedDeadline hiányzó updatedAt mezőjéről figyelmeztetés
+- [x] Audit 2 (duplication-audit.md) — Finding 9A (CANCEL/RENAME ≈ CANCEL/SAVE), Finding 9B (isRenamingDeadline + renameDraft mirrors showSaveSheet + saveTitleDraft)
+- [x] Audit 3 (magic-numbers-audit.md) — §9A (260/340 új popover width), §9B (padding .vertical 6 új, inconsistens a save sheet 10-ével), §9C (többi literal már dokumentált)
+- [x] Audit 4 (srp-audit.md) — pre-seeded CalculateView findings: CV-SRP-1 (8 felelősség), CV-SRP-2 (deadlineDetailContent 4 felelősség), CV-SRP-3 (BUG-1 remaining time formatter), CV-SRP-4 (datumformatter a view-ban), CV-SRP-5 (persistence a view-ban), CV-SRP-6 (calcSaveGradient nem AppTheme-ben van)
+- [x] Audit 4 (srp-audit.md) TELJES — Qwen output (CountdownView/CountdownDetailView/NotesSheet/SnippetEditSheet/SharedEditorComponents) GFM-re konvertálva és bemerge-elve; issue ID-k: CV2-SRP-1..4, CDV-SRP-1..3, NS-SRP-1..2, SES-SRP-1..2, SEC-SRP-1..2
+- [x] BUG-WIDTH-CALC: saveSheetContent + deadlineDetailContent width overflow javítva — `.frame(minWidth: X)` → `.frame(minWidth: sheetWidth, maxWidth: sheetWidth)` + `@State private var sheetWidth: CGFloat = 400` + `updateSheetWidth()` metódus (NSApp.mainWindow alapú, clamp [300, 520], windowMargin 24pt); azonos minta mint SnippetEditSheet/NotesSheet
+- [x] BUG-WIDTH-COLOR: ColorPickerSheet ugyanaz a probléma — `.frame(minWidth: 300, minHeight: 260)` → `.frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: 260)` + `@State private var sheetWidth: CGFloat = 340` + inline `.onAppear` (clamp [300, 420], windowMargin 24pt); `updateSheetWidth()` inlineban van (nem külön metódus, mert a sheet egyszerűbb)
+- [x] BUG-WIDTH-ADD: AddCountdownSheet — nem volt `.frame` egyáltalán → `.frame(minWidth: sheetWidth, maxWidth: sheetWidth)` + `@State private var sheetWidth: CGFloat = 420` + inline `.onAppear` (clamp [380, 560], windowMargin 24pt)
+- [x] BUG-COLOR-NODISMISS: ColorPickerSheet — nem volt X gomb, csak swatch tapra zárt → ZStack wrapper a title köré, topTrailing X gomb (26×26, cornerRadius 6, dark 0.08 bg, dark 0.5 fg), `.dismiss()` action; azonos stílus mint CalculateView deadlineDetailContent X gombja
+- [x] BUG-DELETE-CONFIRM: `CountdownDetailView.swift` trash gomb — `@State private var showDeleteConfirm: Bool = false` +
+  `.alert("Delete \"\(item.label)\"?", isPresented: $showDeleteConfirm) { Button("Delete", role: .destructive) { onDelete() }; Button("Cancel", role: .cancel) {} } message: { Text("This slot will be permanently removed.") }`
+  a trash gomb action-je `showDeleteConfirm = true`-ra váltva (nem hívja közvetlenül `onDelete()`-et) — VERIFIED a forrásban.
+- [x] Audit 2 (duplication-audit.md) §11 — Finding 11A (`updateSheetWidth()` 4.+5. instance, CalculateView+ColorPickerSheet+AddCountdownSheet), 11B (`showDeleteConfirm` 5. bool-flag+alert instance), 11C (X dismiss gomb 5. instance, ColorPickerSheet)
+- [x] Audit 3 (magic-numbers-audit.md) §11 — 11A (5 fájl sheet-width clamp literáljai), 11B (ColorPickerSheet X gomb literálok), 11C (showDeleteConfirm alert string-ek)
+- [x] Audit 4 (srp-audit.md) — "Post-fix findings — Session P (BUG-WIDTH-CALC/COLOR/ADD/DELETE-CONFIRM/COLOR-NODISMISS)" szekció: CV-SRP-7/8, CPS-SRP-1, ACS-SRP-1 + frissített summary tábla
+- [x] Audit 1 (codable-audit.md) — nem érintett, egyik mai fix sem nyúl adatmodellhez (ellenőrizve, nincs teendő)
+- [ ] Build ellenőrzés (saveSheet + detailSheet + colorPicker + addSheet nem lóg ki az ablakon)
+- [ ] Git commit (Session P teljes: rename + popover width + BUG-WIDTH-CALC/COLOR/ADD + BUG-DELETE-CONFIRM + BUG-COLOR-NODISMISS + mind a 4 audit frissítés)
+
+---
+
 ## Session O — 2026-08-11 (Mozilla Headline font bundle + @font-face)
 
 ### Elvégzett változások
@@ -47,7 +100,9 @@ Build Phases fül → `Copy Bundle Resources` → `+` gomb →
 - [x] `reload()` frissítve: `fontFaceCSS` mostantól tartalmazza Mozilla Headline-t is
 - [x] **USER TEENDŐ**: font hozzáadása Xcode Copy Bundle Resources-hoz — KÉSZ
 - [x] Build ellenőrzés (VIEW mód: Mozilla Headline megjelenik-e?) — KÉSZ
-- [ ] Git commit (Session N + O összes változás)
+- [x] Git commit — `1267ac1`
+
+### Session O — LEZÁRT
 
 ---
 

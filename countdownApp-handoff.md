@@ -1,6 +1,38 @@
 # countdownApp — handoff a következő chat-hez
 
-## LEGFRISSEBB (Session N — 2026-08-11)
+## LEGFRISSEBB (Session P — 2026-08-12, audit-szinkron)
+
+**Állapot ellenőrizve és VERIFIED a forráskód alapján (Filesystem MCP-n keresztül,
+`/Users/ArrayOfLilly/tools/countdownApp/countdownApp/countdownApp/` alatt):**
+
+Session P mai 5 fixe mind implementálva van a kódban:
+- BUG-WIDTH-CALC (`CalculateView.swift` — saveSheetContent + deadlineDetailContent)
+- BUG-WIDTH-COLOR (`ColorPickerSheet.swift`)
+- BUG-WIDTH-ADD (`AddCountdownSheet.swift`)
+- BUG-DELETE-CONFIRM (`CountdownDetailView.swift` — `showDeleteConfirm` + `.alert`)
+- BUG-COLOR-NODISMISS (`ColorPickerSheet.swift` — X gomb)
+
+**Mind a 4 audit dokumentum (`/Users/ArrayOfLilly/tools/countdownApp/docs/`) frissítve
+van a mai fixekhez** — ellenőrizve, a `duplication-audit.md` §11, `magic-numbers-audit.md`
+§11 és `srp-audit.md` "Post-fix findings — Session P (BUG-WIDTH-CALC/...)" szekciói mind
+készen vannak a lemezen. `codable-audit.md` nem érintett (helyesen). `progress.md`
+frissítve, hogy ezt tükrözze (korábban a checklist-en nem szerepelt, csak a fájlokban
+volt kész — dokumentációs lemaradás, most szinkronban).
+
+**Hátralévő teendő (session limit miatt nem történt meg):**
+- [ ] Build ellenőrzés Xcode-ban (saveSheet + detailSheet + colorPicker + addSheet
+  egyike sem lóg ki az ablakból semmilyen ablakméretnél)
+- [ ] Git commit — Session P TELJES: rename + popover width fix + BUG-WIDTH-CALC/COLOR/ADD
+  + BUG-DELETE-CONFIRM + BUG-COLOR-NODISMISS + mind a 4 audit fájl frissítése egy commitban
+
+**Nyitott audit-témák (SESSION_HANDOFF.md, docs/ mappa) — nem ehhez a session-höz tartozik,
+későbbi audit-pipeline munka:** Performance (#5), AppTheme/CSS-szinkron (#6), State Management (#7),
+Docs/Hungarian text (#8), freeColors (#9), NotificationCenter (#10), Font registration (#11),
+Storage (#12), Layout overflow (#13), JS injection (#14), Accessibility (#15), App Lifecycle (#16).
+
+---
+
+## Korábbi (Session N — 2026-08-11)
 
 **SnippetEditSheet.swift + NotesSheet.swift szélesség fix**: mindkét sheet
 régi `.frame(minWidth: X, maxWidth: 900, ...)` beállítása mindig túllógott

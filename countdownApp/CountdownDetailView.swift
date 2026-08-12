@@ -149,6 +149,7 @@ struct CountdownDetailView: View {
     @State private var isEditing: Bool = false
     @State private var showColorPicker: Bool = false
     @State private var showNotes: Bool = false
+    @State private var showDeleteConfirm: Bool = false
     /// Local to this view (not item.showRemaining, which is the row's own toggle) —
     /// the detail screen always opens showing remaining time, regardless of what the
     /// row list was last toggled to.
@@ -315,7 +316,7 @@ struct CountdownDetailView: View {
                         }
                     }
 
-                    Button(action: onDelete) {
+                    Button { showDeleteConfirm = true } label: {
                         Image(systemName: "trash")
                             .foregroundStyle(AppTheme.background)
                             .frame(width: 32, height: 32)
@@ -324,6 +325,12 @@ struct CountdownDetailView: View {
                     }
                         .buttonStyle(.plain)
                         .focusable(false)
+                        .alert("Delete \"\(item.label)\"?", isPresented: $showDeleteConfirm) {
+                            Button("Delete", role: .destructive) { onDelete() }
+                            Button("Cancel", role: .cancel) { }
+                        } message: {
+                            Text("This slot will be permanently removed.")
+                        }
                 }
                     .padding(.bottom, 36)
             }

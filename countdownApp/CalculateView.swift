@@ -16,6 +16,8 @@
 //  - Buttons: amber-fill SAVE/LOAD (dark text), grey CANCEL (white 50% text, white 7% bg), trash (white 10% bg).
 //  - Split SAVE button: left = bookmark + "SAVE" (opens save sheet), right = chevron.down (opens list popover).
 //    The chevron half uses .contentShape(Rectangle()) so the full padded zone is tappable, not just the icon.
+//  - Sheet width: sheetWidth @State + updateSheetWidth() called in both sheet .onAppear — mirrors
+//    SnippetEditSheet/NotesSheet pattern; clamps to [300, 520], always 24pt narrower than window.
 //
 
 import SwiftUI
@@ -39,6 +41,10 @@ struct CalculateView: View {
     @State private var saveTitleDraft:          String          = ""
     @State private var showDeadlineListPopover: Bool            = false
     @State private var selectedDeadline:        NamedDeadline?  = nil
+    @State private var isRenamingDeadline:      Bool            = false
+    @State private var renameDraft:             String          = ""
+    @State private var popoverWidth:            CGFloat         = 280
+    @State private var sheetWidth:              CGFloat         = 400
 
     private var fromDate: Date {
         get { Date(timeIntervalSince1970: fromInterval) }
@@ -376,16 +382,24 @@ struct CalculateView: View {
                         showDeadlineListPopover = false
                         DispatchQueue.main.async { selectedDeadline = deadline }
                     } label: {
-                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        HStack(alignment: .center, spacing: 6) {
                             Text(deadline.title)
                                 .font(AppTheme.alienLeague(12))
                                 .foregroundStyle(Color.white.opacity(0.5))
                                 .lineLimit(1)
                             Spacer()
-                            Text(deadlineDateString(deadline.date))
-                                .font(AppTheme.alienLeagueBold(15))
-                                .foregroundStyle(AppTheme.background)
-                                .multilineTextAlignment(.trailing)
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text(deadlineRemainingString(for: deadline.date))
+                                    .font(AppTheme.alienLeagueBold(15))
+                                    .foregroundStyle(
+                                        deadline.date > Date()
+                                            ? AppTheme.background
+                                            : Color.white.opacity(0.35)
+                                    )
+                                Text(deadlineDateString(deadline.date))
+                                    .font(AppTheme.alienLeague(11))
+                                    .foregroundStyle(Color.white.opacity(0.35))
+                            }
                         }
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
@@ -402,8 +416,14 @@ struct CalculateView: View {
             }
             .padding(.vertical, 8)
         }
-        .frame(minWidth: 320)
+        .frame(width: popoverWidth)
         .background(calcSaveGradient)
+        .onAppear {
+            let windowWidth = NSApp.mainWindow?.frame.width
+                ?? NSApp.windows.first(where: { $0.isVisible })?.frame.width
+                ?? 600
+            popoverWidth = min(320, max(220, windowWidth - 48))
+        }
     }
 
     // MARK: - CALC-SAVE: Save sheet (new deadline name entry)
@@ -476,76 +496,173 @@ struct CalculateView: View {
             .padding(.top, 20)
             .padding(.bottom, 28)
         }
-        .frame(minWidth: 320)
+        .frame(minWidth: sheetWidth, maxWidth: sheetWidth)
         .background(calcSaveGradient)
+        .onAppear { updateSheetWidth() }
     }
 
-    // MARK: - CALC-SAVE: Deadline detail sheet (load / delete)
+    // MARK: - CALC-SAVE: Deadline detail sheet (load / rename / delete)
     // Same design language as save sheet and list popover.
+    // Rename mode: pencil button switches the title header into an editable TextField;
+    // CANCEL reverts, RENAME saves and persists.
 
     @ViewBuilder
     private func deadlineDetailContent(_ deadline: NamedDeadline) -> some View {
         VStack(spacing: 0) {
-            // Header — purple gradient zone
-            VStack(spacing: 10) {
-                Text(deadline.title)
-                    .font(AppTheme.alienLeagueBold(20))
-                    .foregroundStyle(AppTheme.background)
-                    .multilineTextAlignment(.center)
-                    .padding(.top, 28)
+            // Header — title (static or editable) + date, with X dismiss overlay
+            ZStack(alignment: .topTrailing) {
+                VStack(spacing: 10) {
+                    if isRenamingDeadline {
+                        TextField("Name...", text: $renameDraft)
+                            .textFieldStyle(.plain)
+                            .font(AppTheme.alienLeagueBold(20))
+                            .foregroundStyle(AppTheme.background)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
+                            .background(Color.white.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .padding(.horizontal, 24)
+                            .padding(.top, 28)
+                    } else {
+                        Text(deadline.title)
+                            .font(AppTheme.alienLeagueBold(20))
+                            .foregroundStyle(AppTheme.background)
+                            .multilineTextAlignment(.center)
+                            .padding(.top, 28)
+                    }
+                    Text(deadlineDateString(deadline.date))
+                        .font(AppTheme.alienLeague(13))
+                        .foregroundStyle(Color.white.opacity(0.55))
+                        .padding(.bottom, 20)
+                }
+                .frame(maxWidth: .infinity)
 
-                Text(deadlineDateString(deadline.date))
-                    .font(AppTheme.alienLeague(13))
-                    .foregroundStyle(Color.white.opacity(0.55))
-                    .padding(.bottom, 20)
+                Button { selectedDeadline = nil } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(Color.white.opacity(0.5))
+                        .frame(width: 26, height: 26)
+                        .background(Color.white.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                .buttonStyle(.plain)
+                .focusable(false)
+                .padding(.top, 12)
+                .padding(.trailing, 14)
             }
-            .frame(maxWidth: .infinity)
 
             Rectangle()
                 .fill(Color.white.opacity(0.08))
                 .frame(height: 1)
                 .padding(.horizontal, 28)
 
-            // Body — actions
-            HStack(spacing: 16) {
-                Button {
-                    toInterval = deadline.date.timeIntervalSince1970
-                    selectedDeadline = nil
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "arrow.down.to.line")
-                            .font(.system(size: 12, weight: .bold))
-                        Text("LOAD AS TO")
-                            .font(AppTheme.alienLeagueBold(13))
+            // Body — actions (normal mode) or rename confirm (rename mode)
+            if isRenamingDeadline {
+                HStack(spacing: 12) {
+                    Spacer()
+                    Button("CANCEL") {
+                        isRenamingDeadline = false
                     }
+                    .buttonStyle(.plain)
+                    .focusable(false)
+                    .font(AppTheme.alienLeague(13))
+                    .foregroundStyle(Color.white.opacity(0.5))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.white.opacity(0.07))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                    Button("RENAME") {
+                        let trimmed = renameDraft.trimmingCharacters(in: .whitespaces)
+                        if !trimmed.isEmpty,
+                           let idx = namedDeadlines.firstIndex(where: { $0.id == deadline.id }) {
+                            namedDeadlines[idx].title = trimmed
+                            saveDeadlines()
+                        }
+                        isRenamingDeadline = false
+                    }
+                    .buttonStyle(.plain)
+                    .focusable(false)
+                    .font(AppTheme.alienLeagueBold(13))
                     .foregroundStyle(AppTheme.calculateBackground)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
                     .background(AppTheme.background)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .disabled(renameDraft.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
-                .buttonStyle(.plain)
-                .focusable(false)
-
-                Button {
-                    namedDeadlines.removeAll { $0.id == deadline.id }
-                    saveDeadlines()
-                    selectedDeadline = nil
-                } label: {
-                    Image(systemName: "trash")
-                        .font(.system(size: 14))
-                        .foregroundStyle(AppTheme.background.opacity(0.6))
-                        .frame(width: 40, height: 38)
-                        .background(Color.white.opacity(0.1))
+                .padding(.horizontal, 28)
+                .padding(.vertical, 24)
+            } else {
+                HStack(spacing: 16) {
+                    Button {
+                        toInterval = deadline.date.timeIntervalSince1970
+                        selectedDeadline = nil
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.down.to.line")
+                                .font(.system(size: 12, weight: .bold))
+                            Text("LOAD AS TO")
+                                .font(AppTheme.alienLeagueBold(13))
+                        }
+                        .foregroundStyle(AppTheme.calculateBackground)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(AppTheme.background)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.plain)
+                    .focusable(false)
+
+                    Button {
+                        isRenamingDeadline = true
+                        renameDraft = deadline.title
+                    } label: {
+                        Image(systemName: "pencil")
+                            .font(.system(size: 14))
+                            .foregroundStyle(AppTheme.background.opacity(0.6))
+                            .frame(width: 40, height: 38)
+                            .background(Color.white.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.plain)
+                    .focusable(false)
+
+                    Button {
+                        namedDeadlines.removeAll { $0.id == deadline.id }
+                        saveDeadlines()
+                        selectedDeadline = nil
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.system(size: 14))
+                            .foregroundStyle(AppTheme.background.opacity(0.6))
+                            .frame(width: 40, height: 38)
+                            .background(Color.white.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.plain)
+                    .focusable(false)
                 }
-                .buttonStyle(.plain)
-                .focusable(false)
+                .padding(.vertical, 24)
             }
-            .padding(.vertical, 24)
         }
-        .frame(minWidth: 300)
+        .frame(minWidth: sheetWidth, maxWidth: sheetWidth)
         .background(calcSaveGradient)
+        .onAppear { updateSheetWidth() }
+        .onDisappear { isRenamingDeadline = false }
+    }
+
+    // MARK: - CALC-SAVE: Sheet width helper
+    // Mirrors SnippetEditSheet / NotesSheet pattern: reads real window width on appear,
+    // clamps to [300, 520], subtracts windowMargin so the sheet never overflows the window.
+
+    private func updateSheetWidth() {
+        let windowMargin: CGFloat = 24
+        let windowWidth = NSApp.mainWindow?.frame.width
+            ?? NSApp.windows.first(where: { $0.isVisible })?.frame.width
+            ?? 600
+        sheetWidth = max(300, min(520, windowWidth - windowMargin))
     }
 
     // MARK: - CALC-SAVE: Persistence
@@ -648,6 +765,29 @@ struct CalculateView: View {
         fmt.dateFormat = "yyyy MMM dd  HH:mm"
         fmt.locale = Locale(identifier: "en_US")
         return fmt.string(from: date).uppercased()
+    }
+
+    /// Compact remaining-time string for the saved-deadlines list.
+    /// Shows the two most significant non-zero components (e.g. "42D 3H", "2Y 5MO", "14M").
+    /// Returns "EXPIRED" for dates in the past.
+    private func deadlineRemainingString(for date: Date) -> String {
+        let now = Date()
+        guard date > now else { return "EXPIRED" }
+        let comps = cal.dateComponents(
+            [.year, .month, .day, .hour, .minute],
+            from: now, to: date
+        )
+        let pairs: [(Int, String)] = [
+            (comps.year  ?? 0, "Y"),
+            (comps.month ?? 0, "MO"),
+            (comps.day   ?? 0, "D"),
+            (comps.hour  ?? 0, "H"),
+            (comps.minute ?? 0, "M"),
+        ]
+        let nonZero = pairs.filter { $0.0 > 0 }
+        let top = nonZero.prefix(2)
+        guard !top.isEmpty else { return "< 1M" }
+        return top.map { "\($0.0)\($0.1)" }.joined(separator: " ")
     }
 }
 

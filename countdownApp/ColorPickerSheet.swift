@@ -17,17 +17,34 @@ struct ColorPickerSheet: View {
 
     // Grid: 4 columns
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 4)
+    @State private var sheetWidth: CGFloat = 340
 
     var body: some View {
         VStack(spacing: 0) {
 
-            // ── Title ───────────────────────────────────────────────────
-            Text("PICK A COLOR")
-                .font(AppTheme.alienLeagueBold(20))
-                .foregroundStyle(AppTheme.dark.opacity(0.85))
-                .kerning(2)
-                .padding(.top, 28)
-                .padding(.bottom, 20)
+            // ── Title + X dismiss ────────────────────────────────────────
+            ZStack(alignment: .topTrailing) {
+                Text("PICK A COLOR")
+                    .font(AppTheme.alienLeagueBold(20))
+                    .foregroundStyle(AppTheme.dark.opacity(0.85))
+                    .kerning(2)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 28)
+                    .padding(.bottom, 20)
+
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(AppTheme.dark.opacity(0.5))
+                        .frame(width: 26, height: 26)
+                        .background(AppTheme.dark.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                .buttonStyle(.plain)
+                .focusable(false)
+                .padding(.top, 12)
+                .padding(.trailing, 14)
+            }
 
             // ── Swatch grid ─────────────────────────────────────────────
             LazyVGrid(columns: columns, spacing: 16) {
@@ -47,7 +64,14 @@ struct ColorPickerSheet: View {
             .padding(.bottom, 28)
         }
         .background(AppTheme.background.ignoresSafeArea())
-        .frame(minWidth: 300, minHeight: 260)
+        .frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: 260)
+        .onAppear {
+            let windowMargin: CGFloat = 24
+            let windowWidth = NSApp.mainWindow?.frame.width
+                ?? NSApp.windows.first(where: { $0.isVisible })?.frame.width
+                ?? 600
+            sheetWidth = max(300, min(420, windowWidth - windowMargin))
+        }
     }
 
     // MARK: - Swatch button
