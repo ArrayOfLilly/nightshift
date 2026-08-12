@@ -8,7 +8,7 @@
   - 18 (Calculate), 18b (Countdown), 18c (Snippets) screenshotok beillesztve
   - Recovery banner viselkedés leírva: megjelenés feltétele, Copy Raw Data, Dismiss
   - Note: mi történik az itemekkel (nem töltődnek be, Dismiss utáni állapot)
-- [ ] Git commit (AD session)
+- [x] Git commit: `946fc91`
 
 ---
 
