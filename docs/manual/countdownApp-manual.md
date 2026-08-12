@@ -95,9 +95,11 @@ The detail sheet shows the deadline name and date. From here you can:
 - **Trash icon** — deletes the deadline permanently. A confirmation dialog appears;
   click **Delete** to confirm or **Cancel** to abort.
 
-<!-- group -->
 ![Deadline detail sheet – name, date, and action buttons](../../screenshots/03b Calculate View - Saved Named Durations Details.png)
+
 *The detail sheet shows the deadline name and date. LOAD AS TO, rename (pencil), and delete (trash) are available.*
+
+<!-- group -->
 ![Deadline rename mode – inline name editing with RENAME and CANCEL](../../screenshots/03c Calculate View - Edit Saved Named Durations.png)
 *Rename mode: the name becomes an editable text field. Click RENAME to confirm or CANCEL to discard.*
 ![Deadline delete confirmation dialog](../../screenshots/03d Calculate View - Delete Saved Named Durations.png)
