@@ -1,6 +1,32 @@
 # countdownApp — handoff a következő chat-hez
 
-## LEGFRISSEBB (Session S — 2026-08-12, FOLYAMATBAN)
+## LEGFRISSEBB (Session T — 2026-08-12, FOLYAMATBAN)
+
+**Session T elvégzett munkák:**
+
+**Audit 12 (`storage-audit.md`) ✅ — Qwen output GFM-re konvertálva + saját szerkesztés:**
+- §1: @AppStorage (5 bejegyzés) vs. manual UserDefaults (5 bejegyzés) teljes táblázat
+- INCONSISTENCY #1: `CalculateView` egyszerre használ `@AppStorage` (skalar) és manual JSON (collection) — egy logikai képernyő két access pattern alatt
+- INCONSISTENCY #2: key declaration style 4-féle (inline literal / instance-let / static-let / computed) — nincs centralizált registry
+- INCONSISTENCY #3: error handling non-uniform — minden path `try?` + `else { return }`, adatvesztés csendben; kivétel: `Snippet.load()` a load alatt mutál (whitespace scrub + re-persist), ez az egyetlen ilyen
+- §2: `"namedDeadlines"` — 2 bare literal `CalculateView.swift`-ben, `NamedDeadline`-ban nincs `static let storageKey` (szemben `Snippet.storageKey` mintájával); ajánlás: `enum AppKeys` namespace
+- §3 (legkritikusabb): `Snippet` és `NamedDeadline` — Swift-szintetizált `Codable`, nincs `decodeIfPresent` → bármely mező hozzáadásakor az egész tömb `[]`; `CountdownItem` az egyedüli biztonságos modell (custom `init(from decoder:)`)
+- RISK A/B: `createdAt`/`updatedAt` default value-val rendelkeznek de nincs `decodeIfPresent` → `.keyNotFound` throw → minden adat elvész
+- RISK C: SunTimesCache stampede — no eviction, no versioning; régi cached évek akkumulálódnak
+- RISK D: `freeSlotOrder` UUID cleanup ✅ — `loadFreeOrder()` helyesen filtrálja az árva UUID-ket
+- RISK E: nincs bundle-prefix a key stringeken — low risk, de jelen van
+
+**Következő session első feladata:**
+- Audit 13 (`layout-audit.md` — Layout Overflow & Safe Area) — Qwen output várható
+
+**Egyéb nyitott teendők (Session Q óta):**
+- Build ellenőrzés (BUG-DEADLINE-1 + BUG-DEADLINE-2)
+- Git commit (Session Q+R+S+T: 6–12 auditok + BUG-DEADLINE-1/2 + progress.md)
+- Manual megírása (screenshotokat session elején újra be kell másolni: `/Users/ArrayOfLilly/tools/countdownApp/screenshots/`)
+
+---
+
+## Korábbi (Session S — 2026-08-12, LEZÁRVA)
 
 **Session S elvégzett munkák:**
 

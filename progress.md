@@ -1,5 +1,30 @@
 # countdownApp — Progress
 
+## Session T — 2026-08-12 (Audit 12 — storage-audit.md)
+
+### Elvégzett változások
+
+**Audit 12 → `storage-audit.md` ✅ KÉSZ**
+Qwen outputból GFM-re konvertálva + szerkesztve, `/Users/ArrayOfLilly/tools/countdownApp/docs/storage-audit.md` elmentve.
+3 szekció: @AppStorage vs. manual UserDefaults (5+5 bejegyzés táblázatban), hardcoded key strings (inline literálok vs. instance-scoped vs. computed vs. @AppStorage), data migration és fallback hiányosságok.
+
+Legfontosabb findingek:
+- `NamedDeadline` és `Snippet` — Swift-szintetizált `Codable`, nincs `decodeIfPresent` → bármely mező hozzáadásakor az egész tömb `[]`-re esik vissza (minden adat elveszik). `CountdownItem` az egyedüli kivétel: custom `init(from decoder:)`.
+- `"namedDeadlines"` key — 2 helyen bare literal a `CalculateView.swift`-ben, nincs `static let` a `NamedDeadline`-ban (szemben a `Snippet.storageKey` helyes mintájával).
+- `CountdownView.swift` `storageKey`/`freeOrderKey` — instance property, nem `static let`, nem refaktorálható külső kódból.
+- `calculateDisplayMode` `@AppStorage` — `"days"`/`"cal"` string érték nincs validálva: typo esetén a toggle logika csendben megtörik.
+- SunTimesCache: nincs eviction/verzionálás — régi évek akkumulálódnak a UserDefaults-ban.
+- Ajánlás: `enum AppKeys` centralizált namespace az összes manual UserDefaults kulcshoz.
+
+### Session T — FOLYAMATBAN
+- [x] Audit 12 (storage-audit.md) — Qwen output GFM-re konvertálva + saját kiegészítés, elmentve
+- [ ] Audit 13–16 pipeline folytatása
+- [ ] Build ellenőrzés (BUG-DEADLINE-1 + BUG-DEADLINE-2)
+- [ ] Git commit (Session Q+R+S+T)
+- [ ] Manual megírása (screenshotok újra bemásolandók session elején)
+
+---
+
 ## Session Q — 2026-08-12 (theme-audit + buglist + manual előkészítés)
 
 ### Elvégzett változások
