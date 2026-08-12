@@ -236,6 +236,7 @@ struct CountdownDetailView: View {
                     }
                         .buttonStyle(.plain)
                         .focusable(false)
+                        .accessibilityLabel(copyFeedback ? "Label copied" : "Copy label")
                 }
                     .padding(.horizontal, 24)
                     .padding(.top, 28)
@@ -300,6 +301,7 @@ struct CountdownDetailView: View {
                             }
                                 .buttonStyle(.plain)
                                 .focusable(false)
+                                .accessibilityLabel("Pick color")
                                 .sheet(isPresented: $showColorPicker) {
                                 ColorPickerSheet(selectedIndex: $item.accentColorIndex)
                             }
@@ -322,6 +324,7 @@ struct CountdownDetailView: View {
                         }
                             .buttonStyle(.plain)
                             .focusable(false)
+                            .accessibilityLabel(item.soundEnabled ? "Mute sound" : "Unmute sound")
 
                         // ── Notes — all slot types (SLOT-NOTES) ───────────────
                         // note.text.fill + amber tint when non-empty; dim when empty.
@@ -339,6 +342,7 @@ struct CountdownDetailView: View {
                         }
                             .buttonStyle(.plain)
                             .focusable(false)
+                            .accessibilityLabel(item.notes.isEmpty ? "Add notes" : "View notes")
                             .sheet(isPresented: $showNotes) {
                             NotesSheet(slotLabel: item.label, notes: $item.notes)
                         }
@@ -353,6 +357,7 @@ struct CountdownDetailView: View {
                     }
                         .buttonStyle(.plain)
                         .focusable(false)
+                        .accessibilityLabel("Delete countdown")
                         .alert("Delete \"\(item.label)\"?", isPresented: $showDeleteConfirm) {
                             Button("Delete", role: .destructive) { onDelete() }
                             Button("Cancel", role: .cancel) { }
@@ -370,30 +375,35 @@ struct CountdownDetailView: View {
         HStack(spacing: 10) {
             componentStepper(
                 label: "YEAR",
+                unit: "year",
                 value: String(component(.year)),
                 onInc: { adjust(.year, by: 1) },
                 onDec: { adjust(.year, by: -1) }
             )
             componentStepper(
                 label: "MON",
+                unit: "month",
                 value: monthAbbrev(),
                 onInc: { adjust(.month, by: 1) },
                 onDec: { adjust(.month, by: -1) }
             )
             componentStepper(
                 label: "DAY",
+                unit: "day",
                 value: String(format: "%02d", component(.day)),
                 onInc: { adjust(.day, by: 1) },
                 onDec: { adjust(.day, by: -1) }
             )
             componentStepper(
                 label: "HOUR",
+                unit: "hour",
                 value: String(format: "%02d", component(.hour)),
                 onInc: { adjust(.hour, by: 1) },
                 onDec: { adjust(.hour, by: -1) }
             )
             componentStepper(
                 label: "MIN",
+                unit: "minute",
                 value: String(format: "%02d", component(.minute)),
                 onInc: { adjust(.minute, by: 1) },
                 onDec: { adjust(.minute, by: -1) }
@@ -409,6 +419,7 @@ struct CountdownDetailView: View {
     @ViewBuilder
     private func componentStepper(
         label: String,
+        unit: String,
         value: String,
         onInc: @escaping () -> Void,
         onDec: @escaping () -> Void
@@ -422,7 +433,8 @@ struct CountdownDetailView: View {
                 systemImage: "chevron.up",
                 action: onInc,
                 foregroundColor: AppTheme.dark,
-                backgroundColor: AppTheme.dark.opacity(0.12)
+                backgroundColor: AppTheme.dark.opacity(0.12),
+                accessibilityLabel: "Increase \(unit)"
             )
 
             Text(value)
@@ -435,7 +447,8 @@ struct CountdownDetailView: View {
                 systemImage: "chevron.down",
                 action: onDec,
                 foregroundColor: AppTheme.dark,
-                backgroundColor: AppTheme.dark.opacity(0.12)
+                backgroundColor: AppTheme.dark.opacity(0.12),
+                accessibilityLabel: "Decrease \(unit)"
             )
         }
             .frame(maxWidth: .infinity)

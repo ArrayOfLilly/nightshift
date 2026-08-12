@@ -29,6 +29,10 @@ struct LongPressStepperButton: View {
     var foregroundColor: Color = AppTheme.dark
     var backgroundColor: Color = AppTheme.dark.opacity(0.12)
 
+    /// VoiceOver label for this icon-only control (G-5). Defaults to empty for call
+    /// sites not yet migrated — those are tracked separately, not silently accepted.
+    var accessibilityLabel: String = ""
+
     @State private var timer: Timer? = nil
     @State private var isPressed: Bool = false
 
@@ -39,6 +43,8 @@ struct LongPressStepperButton: View {
             .frame(width: 32, height: 22)
             .background(isPressed ? backgroundColor.opacity(2) : backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: 5))
+            .accessibilityLabel(accessibilityLabel)
+            .accessibilityAddTraits(.isButton)
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in

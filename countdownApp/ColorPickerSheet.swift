@@ -42,6 +42,7 @@ struct ColorPickerSheet: View {
                 }
                 .buttonStyle(.plain)
                 .focusable(false)
+                .accessibilityLabel("Close")
                 .padding(.top, 12)
                 .padding(.trailing, 14)
             }
@@ -79,6 +80,11 @@ struct ColorPickerSheet: View {
     @ViewBuilder
     private func swatchButton(color: Color, index: Int?, label: String?) -> some View {
         let isSelected = (selectedIndex == index)
+        // G-5: palette swatches (label == nil) are plain color circles with no text
+        // child, so VoiceOver needs an explicit description. The "AUTO" swatch already
+        // has a visible Text label that SwiftUI folds into the button's accessibility
+        // label automatically, but we still normalize it here for a consistent voice.
+        let accessibilityText = label.map { "\($0) color" } ?? "Color \((index ?? 0) + 1)"
         Button {
             selectedIndex = index
             dismiss()
@@ -110,5 +116,7 @@ struct ColorPickerSheet: View {
         }
         .buttonStyle(.plain)
         .focusable(false)
+        .accessibilityLabel(accessibilityText)
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 }

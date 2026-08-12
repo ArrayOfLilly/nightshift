@@ -99,30 +99,35 @@ struct AddCountdownSheet: View {
         HStack(spacing: 10) {
             componentStepper(
                 label: "YEAR",
+                unit: "year",
                 value: String(cal.component(.year, from: deadline)),
                 onInc: { adjust(.year,   by:  1) },
                 onDec: { adjust(.year,   by: -1) }
             )
             componentStepper(
                 label: "MON",
+                unit: "month",
                 value: monthAbbrev(),
                 onInc: { adjust(.month,  by:  1) },
                 onDec: { adjust(.month,  by: -1) }
             )
             componentStepper(
                 label: "DAY",
+                unit: "day",
                 value: String(format: "%02d", cal.component(.day,    from: deadline)),
                 onInc: { adjust(.day,    by:  1) },
                 onDec: { adjust(.day,    by: -1) }
             )
             componentStepper(
                 label: "HOUR",
+                unit: "hour",
                 value: String(format: "%02d", cal.component(.hour,   from: deadline)),
                 onInc: { adjust(.hour,   by:  1) },
                 onDec: { adjust(.hour,   by: -1) }
             )
             componentStepper(
                 label: "MIN",
+                unit: "minute",
                 value: String(format: "%02d", cal.component(.minute, from: deadline)),
                 onInc: { adjust(.minute, by:  1) },
                 onDec: { adjust(.minute, by: -1) }
@@ -137,6 +142,7 @@ struct AddCountdownSheet: View {
     @ViewBuilder
     private func componentStepper(
         label: String,
+        unit: String,
         value: String,
         onInc: @escaping () -> Void,
         onDec: @escaping () -> Void
@@ -155,6 +161,7 @@ struct AddCountdownSheet: View {
             }
             .buttonStyle(.plain)
             .focusable(false)
+            .accessibilityLabel("Increase \(unit)")
             Text(value)
                 .font(AppTheme.alienLeagueBold(15))
                 .foregroundStyle(AppTheme.dark)
@@ -170,6 +177,7 @@ struct AddCountdownSheet: View {
             }
             .buttonStyle(.plain)
             .focusable(false)
+            .accessibilityLabel("Decrease \(unit)")
         }
         .frame(maxWidth: .infinity)
     }

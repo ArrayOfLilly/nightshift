@@ -1,5 +1,56 @@
 # countdownApp — Progress
 
+## Session AH — 2026-08-13 (G-5 accessibility — prep, egyeztetés alatt)
+
+### Session AH — folyamatban
+- [x] Claude.md, progress.md, countdownApp-handoff.md, refactor-plan.md elolvasva
+- [x] Mind a 10 érintett fájl elolvasva (CountdownDetailView, SnippetEditSheet, NotesSheet,
+      CalculateView, CountdownRowView, ColorPickerSheet, AddCountdownSheet, SnippetsView,
+      CountdownView, LongPressStepperButton), icon-only gombok tételesen leltározva:
+  - `LongPressStepperButton` — maga a shared chevron gomb komponens (CountdownDetailView +
+    CalculateView component stepperjei ezt használják) → egy fix helyben mindkét call site-ot fedi
+  - `CountdownDetailView`: copy (label), paintbrush (color picker), sound toggle, notes, trash —
+    5 gomb (a "Show Deadline/Remaining" gombnak már van szöveges label, nem érintett)
+  - `SnippetEditSheet`: `ProjectField` chevron.down, `headerButton` 4× (copy, edit-toggle, trash, xmark)
+  - `NotesSheet`: `headerButton` 4× (copy, edit-toggle, trash, xmark) — azonos minta mint SnippetEditSheet
+  - `CalculateView`: saveButton split jobb fele (chevron.down), deadlineDetailContent xmark/pencil/trash — 4 gomb
+    (nowButton és LOAD AS TO gombnak már van szöveges label)
+  - `CountdownRowView`: calendar/clock toggle gomb — 1 gomb
+  - `ColorPickerSheet`: xmark dismiss, + palette swatch-ok (színkör, nincs szöveges jelzés) — accessibilityLabel
+    a swatch színéhez/névhez kell
+  - `AddCountdownSheet`: componentStepper chevron up/down (plain Button, nem LongPressStepperButton — F-3 finding) — 2 gomb minta
+  - `SnippetsView`: "+" új snippet gomb, sectionHeader Menu chevron.down, snippetRow copy gomb — 3 gomb minta
+  - `CountdownView`: nincs icon-only gomb accessibilityLabel nélkül a saját szintjén (addButton szöveges,
+    banner gombok szövegesek) — az érintettség csak a beágyazott CountdownRowView-n és NavigationLink-eken
+    keresztül jön
+- [x] Egyeztetés lezárva: **3 csoport**, sessionenként:
+  - **Csoport 1** (ez a session): CountdownDetailView, ColorPickerSheet, AddCountdownSheet, LongPressStepperButton
+  - **Csoport 2**: SnippetEditSheet, NotesSheet
+  - **Csoport 3**: CalculateView, CountdownRowView, SnippetsView, CountdownView
+- [x] Egyeztetés lezárva: **label konvenció vegyes** — rövid akciószó ha egyértelmű ("Copy label", "Close"),
+  kontextusos ha több hasonló gomb van egy view-ban (pl. stepper +/−: "Increase year"/"Decrease year";
+  color swatch-ok: "Color 1", "Color 2"…)
+- [x] `LongPressStepperButton.swift` — `accessibilityLabel: String = ""` param + `.accessibilityLabel()` + `.accessibilityAddTraits(.isButton)` (default üres, call site-onként feltöltve; CalculateView call site-ok még hátra, Csoport 3)
+- [x] `CountdownDetailView.swift` — copy ("Copy label"/"Label copied"), paintbrush ("Pick color"),
+  sound toggle ("Mute/Unmute sound"), notes ("Add/View notes"), trash ("Delete countdown");
+  `componentStepper` új `unit` param → LongPressStepperButton "Increase/Decrease \(unit)" mind az 5 stepperre
+- [x] `ColorPickerSheet.swift` — xmark dismiss ("Close"); `swatchButton` új `accessibilityText`
+  (palette swatch → "Color N", AUTO → "AUTO color") + `.accessibilityAddTraits(.isSelected)` kiválasztott swatch-on
+- [x] `AddCountdownSheet.swift` — saját (nem shared) `componentStepper` új `unit` param,
+  plain chevron Button-ok "Increase/Decrease \(unit)" (F-3 duplikáció érintetlen hagyva, csak label hozzáadva)
+
+### Csoport 1 — LEZÁRVA
+- G-5 részlegesen kész: CountdownDetailView, ColorPickerSheet, AddCountdownSheet, LongPressStepperButton
+- Build ellenőrzés NEM történt (nincs shell/xcodebuild hozzáférés ebben a sessionben) — következő sessionben
+  vagy manuálisan ajánlott ellenőrizni
+- [ ] Git commit — PENDING (nincs shell hozzáférés ebben a sessionben)
+
+**Csoport 2 következő session feladata:** SnippetEditSheet + NotesSheet (azonos `headerButton` minta:
+copy/checkmark, edit-toggle pencil/checkmark, trash, xmark — mindegyik 4×; SnippetEditSheet-ben
+még a `ProjectField` chevron.down gombja is)
+
+---
+
 ## Session AG — 2026-08-13 (G kategória — layout/accessibility rész: G-1–G-4)
 
 ### Session AG — státusz
