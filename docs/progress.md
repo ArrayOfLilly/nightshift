@@ -1,5 +1,18 @@
 # countdownApp — Progress
 
+## Session AC — 2026-08-13 (Debug trigger — corrupt banner screenshot)
+
+### Session AC — LEZÁRVA
+- [x] `AppKeys.swift` — `DebugNotifications.injectCorruptBanner` notification name (`#if DEBUG`)
+- [x] `countdownAppApp.swift` — `CommandMenu("Debug")` + Cmd+Shift+D shortcut, 3 fake fragment inject + broadcast
+- [x] `SnippetsView`, `CalculateView`, `CountdownView` — `.onReceive(injectCorruptBanner)` → `corruptedFragments` reload
+- [x] Release buildből teljes kizárás: `#if DEBUG` minden érintett ponton
+- [x] Git commit: `e2c3666`
+
+**Használat:** DEBUG build → navigálj a kívánt view-ra → Cmd+Shift+D → banner megjelenik 3 fake itemmel → screenshot → Dismiss → újra triggelhető
+
+---
+
 ## Session AB — 2026-08-13 (Recovery Banner UI + lifecycle fixes)
 
 ### Session AB — LEZÁRVA

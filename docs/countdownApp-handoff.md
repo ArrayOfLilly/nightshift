@@ -24,6 +24,7 @@
 - **AA-a session kész**: Per-item recovery infrastruktúra — `Snippet.load()` + `CalculateView.loadDeadlines()` + `AppKeys.appendCorruptFragments`
 - **AA-b session kész**: `CountdownView.load()` per-item recovery + notes-alapú elágazás
 - **AB session kész**: Banner UI (mindhárom view) + `FocusedNSTextField.Coordinator` deinit fix + `countdownAppApp.swift` lifecycle hook
+- **AC session kész**: DEBUG Cmd+Shift+D trigger — corrupt banner screenshot workflow
 
 ---
 
