@@ -7,6 +7,18 @@ Ez a fájl kötelező érvényű minden fejlesztési sessionban. Olvasd el a `do
 
 ---
 
+## Session management — free tier
+
+Ez a projekt ingyenes Claude tieren fut. Ennek következményei:
+
+- **Egy session = egy jól körülhatárolt task**, dokumentálással együtt — ne tervezz többet mint ami elfér
+- **Azonnal dokumentálj** minden olvasást és döntést — session határon semmi sem marad meg
+- **Fájlolvasás szeriálisan** — soha ne töltsd be az összes érintett fájlt egyszerre
+- **Fájlírás**: `Filesystem:write_file` teljes cserével vagy `MacOS-MCP:Shell` — soha ne chunkolj
+  Desktop Commander stílusban, mert fél fájl elveszhet ha a session letelik közben
+
+---
+
 ## Egyeztetés implementáció előtt
 
 Minden döntésnél, ami érinti a kód minőségét, későbbi fejleszthetőségét, módosíthatóságát
