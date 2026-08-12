@@ -1,0 +1,27 @@
+{
+  "saved_at": "2026-08-11T22:30:57.462836",
+  "root": "/Users/ArrayOfLilly/tools/countdownApp/countdownApp/countdownApp",
+  "files": [
+    "AddCountdownSheet.swift",
+    "AppTheme.swift",
+    "CalculateView.swift",
+    "ColorPickerSheet.swift",
+    "ContentView.swift",
+    "CountdownDetailView.swift",
+    "CountdownItem.swift",
+    "CountdownRowView.swift",
+    "CountdownView.swift",
+    "LongPressStepperButton.swift",
+    "NamedDeadline.swift",
+    "NotesSheet.swift",
+    "SharedEditorComponents.swift",
+    "Snippet.swift",
+    "SnippetEditSheet.swift",
+    "SnippetsView.swift",
+    "SunPanel.swift",
+    "SunTimes.swift",
+    "SunTimesService.swift",
+    "countdownAppApp.swift",
+    "resources/marked.min.js"
+  ]
+}
