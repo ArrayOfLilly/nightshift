@@ -31,17 +31,21 @@ Mindkét fájl célkönyvtára: `/Users/ArrayOfLilly/tools/countdownApp/docs/`
 - [x] Audit 6 (theme-audit.md) — Qwen output GFM-re konvertálva, elmentve
 - [x] Buglist rögzítve a progress.md-ben (BUG-DEADLINE-1, BUG-DEADLINE-2, NOTE-DEADLINE-3)
 - [x] 28 screenshot végignézve, manual struktúra fejben kész
-- [ ] SESSION_HANDOFF.md — 6. audit státusz frissítése ✅ KÉSZ-re
+- [x] SESSION_HANDOFF.md — 6. audit státusz frissítve ✅ KÉSZ-re
+- [x] Audit 7 (state-audit.md) — Qwen output GFM-re konvertálva, elmentve
 - [ ] Manual megírása (következő session)
-- [ ] Git commit (Session Q: theme-audit + buglist + progress.md frissítés)
+- [x] BUG-DEADLINE-1 — delete saved deadline confirm alert hozzáadva (`showDeleteDeadlineConfirm` + `.alert`, trash → destructive pattern)
+- [x] BUG-DEADLINE-2 — rename TextField `.padding(.top, 46)` → X gomb alá kerül (volt: 28pt, átfedett a 12+26pt X gombbal)
+- [ ] Build ellenőrzés (BUG-DEADLINE-1 + BUG-DEADLINE-2)
+- [ ] Git commit (Session Q: theme-audit + buglist + state-audit + BUG-DEADLINE-1/2)
 
 ---
 
 ## Buglist (audit után javítandó, Session P után rögzítve — 2026-08-12)
 
-- **BUG-DEADLINE-1**: Delete saved deadline nem kér konfirmációt — `.alert` szükséges (mint a CountdownDetailView trash gombján, Session P BUG-DELETE-CONFIRM minta).
-- **BUG-DEADLINE-2**: Edit saved deadline detail modalban az X dismiss gomb átfedésben van a TextField-del — padding szükséges alá.
-- **NOTE-DEADLINE-3** (nem bug, megjegyzés): Edit saved deadline detail modalban csak a megnevezés szerkeszthető, a deadline dátuma nem — ez egyelőre szándékos/ismert korlát, nem prioritás.
+- **BUG-DEADLINE-1** ✅ KÉSZ (Session Q): `showDeleteDeadlineConfirm: Bool` state var + `.alert` a trash gombra, destructive Delete + Cancel. Minta: CountdownDetailView BUG-DELETE-CONFIRM.
+- **BUG-DEADLINE-2** ✅ KÉSZ (Session Q): rename TextField `.padding(.top, 46)` — X gomb (12pt top + 26pt height + 8pt gap) alá kerül. Volt: 28pt, átfedés.
+- **NOTE-DEADLINE-3** (nem bug): Edit saved deadline detail modalban csak a megnevezés szerkeszthető, a deadline dátuma nem — szándékos korlát, nem prioritás.
 
 ---
 

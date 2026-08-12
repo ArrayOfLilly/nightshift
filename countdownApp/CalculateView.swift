@@ -43,6 +43,7 @@ struct CalculateView: View {
     @State private var selectedDeadline:        NamedDeadline?  = nil
     @State private var isRenamingDeadline:      Bool            = false
     @State private var renameDraft:             String          = ""
+    @State private var showDeleteDeadlineConfirm: Bool          = false
     @State private var popoverWidth:            CGFloat         = 280
     @State private var sheetWidth:              CGFloat         = 400
 
@@ -523,7 +524,7 @@ struct CalculateView: View {
                             .background(Color.white.opacity(0.1))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .padding(.horizontal, 24)
-                            .padding(.top, 28)
+                            .padding(.top, 46)  // BUG-DEADLINE-2: clear X button (12pt top + 26pt height + 8pt gap)
                     } else {
                         Text(deadline.title)
                             .font(AppTheme.alienLeagueBold(20))
@@ -630,9 +631,7 @@ struct CalculateView: View {
                     .focusable(false)
 
                     Button {
-                        namedDeadlines.removeAll { $0.id == deadline.id }
-                        saveDeadlines()
-                        selectedDeadline = nil
+                        showDeleteDeadlineConfirm = true
                     } label: {
                         Image(systemName: "trash")
                             .font(.system(size: 14))
@@ -643,6 +642,16 @@ struct CalculateView: View {
                     }
                     .buttonStyle(.plain)
                     .focusable(false)
+                    .alert("Delete \"\(deadline.title)\"?", isPresented: $showDeleteDeadlineConfirm) {
+                        Button("Delete", role: .destructive) {
+                            namedDeadlines.removeAll { $0.id == deadline.id }
+                            saveDeadlines()
+                            selectedDeadline = nil
+                        }
+                        Button("Cancel", role: .cancel) { }
+                    } message: {
+                        Text("This deadline will be permanently removed.")
+                    }
                 }
                 .padding(.vertical, 24)
             }

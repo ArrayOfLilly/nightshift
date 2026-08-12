@@ -1,6 +1,37 @@
 # countdownApp — handoff a következő chat-hez
 
-## LEGFRISSEBB (Session P — 2026-08-12, LEZÁRVA — commit `cb1623a`)
+## LEGFRISSEBB (Session Q — 2026-08-12, LEZÁRVA — commit PENDING)
+
+**Session Q elvégzett munkák:**
+
+**Audit pipeline folytatás:**
+- Audit 6 (`theme-audit.md`) — Qwen output GFM-re konvertálva, elmentve ✅
+- Audit 7 (`state-audit.md`) — Qwen output GFM-re konvertálva, elmentve ✅
+- SESSION_HANDOFF.md — audit #6 és #7 státusza `✅ KÉSZ`-re frissítve ✅
+- Audit 8 (docs/hungarian text) — Qwen még dolgozik, következő session elején jön
+
+**Bugfixek (`CalculateView.swift`):**
+- BUG-DEADLINE-1: `showDeleteDeadlineConfirm: Bool` state var + `.alert` a trash gombra (destructive Delete + Cancel) — a saved deadline törlése mostantól konfirmációt kér
+- BUG-DEADLINE-2: rename TextField `padding(.top, 28)` → `46` — X gomb (12pt top + 26pt height + 8pt gap = 46pt) alá kerül, nincs átfedés
+
+**Audit cross-check (BUG-DEADLINE-1/2 hatása):**
+- `duplication-audit.md` §11D — 6. delete-confirm bool instance dokumentálva
+- `magic-numbers-audit.md` §11D — új alert string literálok + 46pt levezetett érték
+- `srp-audit.md` — post-fix értékelés, nincs új finding
+- `state-audit.md` — 9. @State bool a CalculateView-ban + implicit layout coupling note
+
+**Következő session nyitott teendői:**
+- Build ellenőrzés (BUG-DEADLINE-1 + BUG-DEADLINE-2)
+- Git commit (Session Q: theme-audit + state-audit + BUG-DEADLINE-1/2 + progress.md)
+- Audit 8 (docs-audit.md) — Qwen output konvertálása, SESSION_HANDOFF.md frissítése
+- Audit 9–16 pipeline folytatása
+- Manual megírása (screenshotokat session elején újra be kell másolni: `/Users/ArrayOfLilly/tools/countdownApp/screenshots/`)
+
+**Fontos megjegyzés — SM-2a (state-audit.md):** A Qwen által "data loss bug"-nak jelölt `localDeadline` reset `.onAppear`-ben (CountdownDetailView) **szándékos design döntés** — a FREE slot deadline-ja múltbeli, a stepper "most"-tól kezd, ez a reaktiváció belépési pontja. Nem fixelendő.
+
+---
+
+## Korábbi (Session P — 2026-08-12, LEZÁRVA — commit `cb1623a`)
 
 **Session P teljes egészében lezárva.** User visszaigazolta: build OK, exportálva és
 használatban. Git commit megtörtént (`cb1623a`, 7 fájl, +331/-62 sor):
