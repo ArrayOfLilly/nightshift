@@ -216,5 +216,5 @@
   - `Formatters.time` — `"HH:mm"`, en_US_POSIX (SunPanel)
   - Érintett fájlok: `CountdownItem`, `CountdownDetailView`, `CalculateView`, `SunPanel`
   - Lokalizációs deferred task dokumentálva `Formatters.swift` fejlécében
-- [x] Git commit: PENDING
+- [x] Git commit: `5c7760b`
 
