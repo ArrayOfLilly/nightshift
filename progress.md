@@ -1,5 +1,50 @@
 # countdownApp — Progress
 
+## Session Q — 2026-08-12 (theme-audit + buglist + manual előkészítés)
+
+### Elvégzett változások
+
+**Audit 6 → `theme-audit.md` ✅ KÉSZ**
+Qwen outputból konvertálva, `/Users/ArrayOfLilly/tools/countdownApp/docs/theme-audit.md` elmentve.
+5 szekció: CSS/Swift color sync, inline hardcoded colors, font consistency, spacing/padding/corner radii, theme change impact map.
+Legfontosabb findingek: #F5A623 vs #E4A020 eltérés (CSS vs Swift amber), 16 különböző `Color.white.opacity(X)` érték, `freeColors[6/7/10]` hardcoded RGB duplikáció 3 helyen, `"AlienLeagueBold"` (szóköz nélkül) PostScript name mismatch 2 helyen.
+
+**SESSION_HANDOFF.md — 6. audit státusza frissítendő** (következő session elején, ha van DC hozzáférés):
+`| 6 | AppTheme Centralizáció & CSS-szinkron | theme-audit.md | ⏳ Várakozik |` → `✅ KÉSZ`
+
+**Manual előkészítés — screenshotok végignézve**
+Mind a 28 screenshot megtekintve (`/Users/ArrayOfLilly/tools/countdownApp/screenshots/`).
+Az app 3 területe dokumentálva mentálisan:
+- **Calculate**: dátumszámítás, kétféle módban (naptári nap / epocha), mentett deadlines (save/lista/detail/rename), Sun & Moon popover
+- **Countdown**: slot lista (aktív amber+timer, lejárt lila+FREE), detail view (spooky tomato, deadline/countdown toggle, color picker, notes editor, delete confirm)
+- **Snippets**: projektenkénti lista (collapse/expand), snippet editor (view/edit mód, projekt-dropdown, copy, delete confirm)
+
+**FONTOS — manual következő sessionben**: screenshotok Claude gépén NEM maradnak meg session határon.
+Következő session elején újra be kell másolni:
+```
+/Users/ArrayOfLilly/tools/countdownApp/screenshots/
+```
+Készül: `manual.md` (technikai, fejlesztői referencia) + `manual.pdf` (end-user, képekkel).
+Mindkét fájl célkönyvtára: `/Users/ArrayOfLilly/tools/countdownApp/docs/`
+
+### Session Q — FOLYAMATBAN
+- [x] Audit 6 (theme-audit.md) — Qwen output GFM-re konvertálva, elmentve
+- [x] Buglist rögzítve a progress.md-ben (BUG-DEADLINE-1, BUG-DEADLINE-2, NOTE-DEADLINE-3)
+- [x] 28 screenshot végignézve, manual struktúra fejben kész
+- [ ] SESSION_HANDOFF.md — 6. audit státusz frissítése ✅ KÉSZ-re
+- [ ] Manual megírása (következő session)
+- [ ] Git commit (Session Q: theme-audit + buglist + progress.md frissítés)
+
+---
+
+## Buglist (audit után javítandó, Session P után rögzítve — 2026-08-12)
+
+- **BUG-DEADLINE-1**: Delete saved deadline nem kér konfirmációt — `.alert` szükséges (mint a CountdownDetailView trash gombján, Session P BUG-DELETE-CONFIRM minta).
+- **BUG-DEADLINE-2**: Edit saved deadline detail modalban az X dismiss gomb átfedésben van a TextField-del — padding szükséges alá.
+- **NOTE-DEADLINE-3** (nem bug, megjegyzés): Edit saved deadline detail modalban csak a megnevezés szerkeszthető, a deadline dátuma nem — ez egyelőre szándékos/ismert korlát, nem prioritás.
+
+---
+
 ## Session P — 2026-08-12 (CALC-SAVE: deadline rename + popover width fix)
 
 ### Elvégzett változások
