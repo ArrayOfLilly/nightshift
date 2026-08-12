@@ -19,9 +19,13 @@
 //  responder on open, so no auto-selection occurs. @FocusState titleFocused removed (was
 //  always false and did nothing). Previous onAppear/asyncAfter workaround also removed.
 //
-//  DESIGN (Session G-3): Sheet is fixed height, no JS-driven resize.
-//  Empty / EDIT mode: 520pt. VIEW mode with content: 680pt.
-//  MarkdownWebView fills available area and scrolls internally.
+//  DESIGN (Session G-3): Sheet height does not change on VIEW/EDIT toggle,
+//  no JS-driven resize. MarkdownWebView fills available area and scrolls
+//  internally.
+//  UPDATE (refactor G-2): height is no longer hardcoded 680 — it's derived
+//  from the main window's height at presentation time (updateSheetSize()),
+//  capped at 680 and floored at 400, so short displays scroll/fit instead
+//  of clipping.
 //
 
 import SwiftUI
@@ -130,8 +134,11 @@ struct SnippetEditSheet: View {
         _isEditing   = State(initialValue: snippet == nil || (snippet?.body ?? "").isEmpty)
     }
 
-    /// Sheet height: always 680 — does not change on VIEW/EDIT toggle.
-    private var sheetMinHeight: CGFloat { 680 }
+    // G-2: sheet height was a fixed 680, which clipped on short displays.
+    // Now computed from the main window's height at presentation time,
+    // capped at 680 (design ceiling) and floored at 400 (usable minimum
+    // for header + content), same clamp pattern as sheetWidth below.
+    @State private var sheetHeight: CGFloat = 680
 
     /// Margin the sheet stays inside the window edges by, on each side is
     /// implied (this value is the *total* width subtracted, i.e. applied
@@ -155,8 +162,8 @@ struct SnippetEditSheet: View {
         // NOTE: minWidth/maxWidth set to the same value (rather than the
         // `width:` fixed-size overload) because that overload doesn't
         // accept `minHeight:` in the same call.
-        .frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: sheetMinHeight)
-        .onAppear { updateSheetWidth() }
+        .frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: sheetHeight)
+        .onAppear { updateSheetSize() }
         .onDisappear { commitSave() }
         .focusable(false)
         .alert("Delete snippet?", isPresented: $showDeleteAlert) {
@@ -274,11 +281,13 @@ struct SnippetEditSheet: View {
     /// [450, 900]. `NSApp.mainWindow` is used rather than `keyWindow`
     /// because once the sheet is presented, the sheet's own child window
     /// can become key — the underlying content window stays main.
-    private func updateSheetWidth() {
-        let windowWidth = NSApp.mainWindow?.frame.width
-            ?? NSApp.windows.first(where: { $0.isVisible && $0.title == "countdownApp" })?.frame.width
-            ?? 900
+    private func updateSheetSize() {
+        let window = NSApp.mainWindow
+            ?? NSApp.windows.first(where: { $0.isVisible && $0.title == "countdownApp" })
+        let windowWidth = window?.frame.width ?? 900
+        let windowHeight = window?.frame.height ?? 680
         sheetWidth = min(900, max(450, windowWidth - windowMargin))
+        sheetHeight = min(680, max(400, windowHeight - windowMargin))
     }
 
     // MARK: - Persistence

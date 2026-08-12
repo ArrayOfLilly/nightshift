@@ -151,9 +151,8 @@ előtt kötelező fix.
 - `.onAppear` csak egyszer hívódik; ha a view nem deallocálódik, tab váltás nem frissíti
 - **Fix:** `.task(id: isTabActive) { loadDeadlines() }` vagy értesítési mechanizmus
 
-### E-3: `SnippetEditSheet.onDisappear` — nincs `commitSave` external dismiss esetén
-- System-initiated dismiss (Esc, force quit) megkerüli a mentést
-- **Fix:** `.onDisappear { commitSave() }` guard-dal
+### E-3: `SnippetEditSheet.onDisappear` — nincs `commitSave` external dismiss esetén — ✅ KÉSZ (AE session, A-4)
+- `.onDisappear { commitSave() }` hozzáadva, commit `f7f774d`
 
 ### E-4: `SM-4a` — `FocusedNSTextField.updateNSView` font recreation per-second (TimelineView)
 - Minden 1Hz tick újra beállítja a font-ot az NSTextField-en — AppKit layout pass
@@ -177,8 +176,8 @@ előtt kötelező fix.
 
 ### F-5: `headerButton()` — NotesSheet vs SnippetEditSheet bg opacity eltérés (0.07 vs 0.12)
 
-### F-6: `markdownCSS` — `#F5A623` nem egyezik `AppTheme.background` (#E5A020) amberrel
-- **Fix:** `markdownCSS` computed property legyen, `AppTheme.amberHex` interpolációval
+### F-6: `markdownCSS` — `#F5A623` nem egyezik `AppTheme.background` (#E5A020) amberrel — ✅ KÉSZ (AA-a session)
+- `AppTheme.background` → `#F5A623`, `amberHex` szinkron kulcs bevezetve, `markdownCSS` computed var lett, commit `2dd8900`
 
 ### F-7: `#593C73` purple gradient — 3 helyen re-encoded RGB, `AppTheme.freeColors[7]` kellene
 
@@ -192,11 +191,16 @@ előtt kötelező fix.
 
 ## G — LAYOUT / Accessibility
 
-### G-1: `CountdownDetailView` — nincs ScrollView, rövid ablakban clipping
-### G-2: `SnippetEditSheet` — 680pt minHeight, kis kijelzőn levágódik
-### G-3: `SunPanel` — 360pt minWidth + polover edge clipping kockázat
-### G-4: `CalculateView` deadline popover — nincs ScrollView, sok deadline esetén unreachable items
-### G-5: Accessibility: icon-only gombok wszerte `.accessibilityLabel` nélkül
+### G-1: `CountdownDetailView` — nincs ScrollView, rövid ablakban clipping — ✅ KÉSZ (AG session)
+- `body` GeometryReader+ScrollView-ba csomagolva, tartalom `detailContent`-be kiemelve, Spacer-centerozás megőrizve
+### G-2: `SnippetEditSheet` — 680pt minHeight, kis kijelzőn levágódik — ✅ KÉSZ (AG session)
+- `sheetHeight` din. számított (`min(680, max(400, windowHeight - margin))`), sheetWidth mintára
+### G-3: `SunPanel` — 360pt minWidth + polover edge clipping kockázat — ✅ KÉSZ (AG session)
+- `body` ScrollView-ba csomagolva, `.frame(minWidth: 360, maxHeight: 600)`
+### G-4: `CalculateView` deadline popover — nincs ScrollView, sok deadline esetén unreachable items — ✅ KÉSZ (AG session)
+- Lista ScrollView-ba csomagolva, `.frame(maxHeight: 320)`, header fix marad
+### G-5: Accessibility: icon-only gombok wszerte `.accessibilityLabel` nélkül — NYITOTT
+- Sok fájlt érint: CountdownDetailView, SnippetEditSheet, NotesSheet, CalculateView, CountdownRowView, ColorPickerSheet, AddCountdownSheet, SnippetsView, CountdownView, LongPressStepperButton
 
 ---
 

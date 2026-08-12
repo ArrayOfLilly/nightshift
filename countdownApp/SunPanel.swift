@@ -19,18 +19,24 @@ struct SunPanel: View {
     let isLoading: Bool
 
     var body: some View {
-        VStack(spacing: 0) {
-            sunIcon
-            if let st = sunTimes {
-                dataContent(st)
-            } else if isLoading {
-                loadingState
-            } else {
-                noDataState
+        // G-3: popover has no ScrollView, so on short screens (or when
+        // positioned near a screen edge) the content could be clipped by
+        // the system with no way to reach the rest. Capping maxHeight and
+        // scrolling keeps it fully reachable regardless of screen size.
+        ScrollView {
+            VStack(spacing: 0) {
+                sunIcon
+                if let st = sunTimes {
+                    dataContent(st)
+                } else if isLoading {
+                    loadingState
+                } else {
+                    noDataState
+                }
             }
+            .padding(.vertical, 20)
         }
-        .padding(.vertical, 20)
-        .frame(minWidth: 360)
+        .frame(minWidth: 360, maxHeight: 600)
         .background(
             LinearGradient(
                 stops: [

@@ -448,6 +448,10 @@ struct CalculateView: View {
                 .frame(height: 1)
                 .padding(.horizontal, 20)
 
+            // G-4: no ScrollView — with many saved deadlines, items past the
+            // popover's implicit height were unreachable. Capping maxHeight
+            // and scrolling keeps the full list reachable.
+            ScrollView {
             VStack(spacing: 0) {
                 ForEach(namedDeadlines) { deadline in
                     Button {
@@ -487,6 +491,8 @@ struct CalculateView: View {
                 }
             }
             .padding(.vertical, 8)
+            }
+            .frame(maxHeight: 320)
         }
         .frame(width: popoverWidth)
         .background(calcSaveGradient)

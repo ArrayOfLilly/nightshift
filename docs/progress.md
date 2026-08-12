@@ -1,5 +1,30 @@
 # countdownApp — Progress
 
+## Session AG — 2026-08-13 (G kategória — layout/accessibility rész: G-1–G-4)
+
+### Session AG — státusz
+- [x] **G-1** — `CountdownDetailView` nincs ScrollView, rövid ablakban clipping
+  - `body` szétválasztva: `ZStack` most `GeometryReader { outerGeo in ScrollView { detailContent.frame(minHeight: outerGeo.size.height) } }`
+  - Eredeti tartalom `detailContent` computed property-be kiemelve, változatlan
+  - Spacer-alapú centerezés megmarad, ha elég magas az ablak; rövid ablaknál scroll jelenik meg clipping helyett
+  - `.navigationTitle` + `.onAppear` a `body`-ban maradt, a ZStack köré kerültek
+- [x] **G-2** — `SnippetEditSheet` fix 680pt minHeight, kis kijelzőn clipping
+  - Egyeztetés: dinamikus clamp választva (nem ScrollView, nem skip)
+  - `sheetMinHeight` computed property → `@State sheetHeight: CGFloat = 680`
+  - `updateSheetWidth()` → `updateSheetSize()` — mind width, mind height számítása egy helyen
+  - `sheetHeight = min(680, max(400, windowHeight - windowMargin))` — ugyanaz a clamp-mintázat mint sheetWidth-nél (450–900)
+  - Fejléc komment frissítve (elavult "fixed height" állítás korrigálva)
+- [x] **G-3** — `SunPanel` 360pt minWidth + popover edge clipping risk
+  - `body` külső `VStack` → `ScrollView { VStack {...} }`, `.frame(minWidth: 360, maxHeight: 600)`
+  - Popover hívási hely (`CalculateView.sunPopoverContent`) változatlan, nincs érintett API
+- [x] **G-4** — `CalculateView` deadline list popover, nincs ScrollView, sok deadline esetén unreachable items
+  - `deadlineListPopoverContent`: belső `VStack` (ForEach lista) → `ScrollView { VStack {...} }.frame(maxHeight: 320)`
+  - Header ("SAVED DEADLINES" + divider) a ScrollView-n kívül maradt (fixen látszik, csak a lista görgethető)
+  - `popoverWidth` számítás, `.onAppear` változatlan
+- [ ] **G-5** — accessibility: icon-only gombok `.accessibilityLabel` nélkül — áthalasztva következő sessionra (több fájlt érint: CountdownDetailView, SnippetEditSheet, NotesSheet, CalculateView, CountdownRowView, ColorPickerSheet, AddCountdownSheet, SnippetsView, CountdownView, LongPressStepperButton)
+
+### Session AG — LEZÁRVA (G-1–G-4)
+
 ## Session AE — 2026-08-13 (B-2, B-3, A-4 — Swift concurrency cleanup)
 
 ### Session AE — LEZÁRVA

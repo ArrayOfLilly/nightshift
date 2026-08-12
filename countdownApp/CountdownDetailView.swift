@@ -167,6 +167,29 @@ struct CountdownDetailView: View {
         ZStack {
             AppTheme.background.ignoresSafeArea()
 
+            // G-1: ScrollView + minHeight so short windows scroll instead of
+            // clipping the tomato/buttons; the Spacer-driven centered layout
+            // is preserved whenever the window is tall enough.
+            GeometryReader { outerGeo in
+                ScrollView {
+                    detailContent
+                        .frame(minHeight: outerGeo.size.height)
+                }
+            }
+        }
+            .navigationTitle("")
+            .onAppear {
+            if item.isExpired(at: Date()) {
+                let now = Date()
+                item.deadline = now
+                localDeadline = now
+            } else {
+                localDeadline = item.deadline
+            }
+        }
+    }
+
+    private var detailContent: some View {
             VStack(spacing: 0) {
 
                 // ── Account label — tap to edit ──
@@ -339,17 +362,6 @@ struct CountdownDetailView: View {
                 }
                     .padding(.bottom, 36)
             }
-        }
-            .navigationTitle("")
-            .onAppear {
-            if item.isExpired(at: Date()) {
-                let now = Date()
-                item.deadline = now
-                localDeadline = now
-            } else {
-                localDeadline = item.deadline
-            }
-        }
     }
 
     // MARK: - Deadline stepper
