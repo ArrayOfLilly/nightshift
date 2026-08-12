@@ -17,65 +17,67 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: kész, `docs/manual/`
-- Git commit: **PENDING** (Session Q–Z)
+- Git commit: **PENDING** (Session Q–AA-a)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` **teljes findings listával** (7 kategória, A–G, 35+ finding)
 - **Z session kész**: Codable model fix (`Snippet`, `NamedDeadline`, `CountdownItem.id`), `AppKeys` bevezetve minden persistence path-on
+- **AA-a session kész**: Per-item recovery infrastruktúra — `Snippet.load()` + `CalculateView.loadDeadlines()` + `AppKeys.appendCorruptFragments`
 
 ---
 
 ## Következő session feladata
 
-### 0. AA session — Recovery infrastruktúra (A-2 fix)
+### AA-b — CountdownView.load() per-item recovery + notes-elágazás
 
-Z session lezárva. A Codable model fix kész:
-- `AppKeys.swift` ✅ (már meglévő)
-- `Snippet.swift` ✅ custom Codable
-- `NamedDeadline.swift` ✅ custom Codable
-- `CountdownItem.id` ✅ decodeIfPresent
-- Minden UserDefaults kulcs → `AppKeys.*` ✅
+**Scope:**
+- `CountdownView.load()` — per-item recovery
+  - notes-szal → dump + banner flag; notes nélkül → csendes eldobás
+  - A döntés runtime, per-item: corrupt CountdownItem raw fragmentjét megvizsgáljuk,
+    van-e nem-üres `notes` kulcs — ha igen, dump-ba kerül, ha nem, csendesen eldobjuk
+- Szükséges `@State` hozzáadása a banner olvasáshoz (ha CountdownView felelős a saját banner-éért)
 
-**AA-a session scope:**
-- `Snippet.load()` — per-item recovery + corrupt dump (`AppKeys.corruptedDump`)
-- `CalculateView.loadDeadlines()` — ugyanaz
-- Corrupt dump: `[String]` (JSON-serialized fragment-ek), akkumulálva (nem felülírva)
+### AB — Recovery UI + lifecycle
 
-**AA-b session scope:**
-- `CountdownView.load()` — per-item recovery + notes-alapú elágazás
-  - notes-szal → dump + banner; notes nélkül → csendes eldobás
+- Banner UI a három érintett view-ban (`SnippetsView`, `CalculateView`, `CountdownView`)
+  - "N item could not be loaded" + **"Copy raw data"** gomb (pretty-printed JSON a vágólapra)
+  - Explicit Dismiss gomb — törli `AppKeys.corruptedDump` kulcsot
+- `FocusedNSTextField.Coordinator` — `deinit { NotificationCenter.default.removeObserver(self) }`
+- `countdownAppApp.swift` — `NSApplicationDelegateAdaptor` + `applicationWillTerminate` → `synchronize()`
 
-### 1. Git commit
+### Amber döntés (F-6)
+
+CSS `#F5A623` vs SwiftUI `AppTheme.background` `#E5A020` — vizuálisan összehasonlítani és dönteni.
+Ha `#F5A623` nyeri → `AppTheme.background` frissítés + `markdownCSS` computed property-vé alakítás.
+
+### Git commit (PENDING)
 
 ```bash
 cd /Users/ArrayOfLilly/tools/countdownApp/countdownApp
-git add docs/refactor-plan.md docs/progress.md docs/countdownApp-handoff.md
-git commit -m "Session Y: audit összesítés, refactor-plan findings (A–G)"
+git add -A
+git commit -m "Session Z+AA-a: Codable fix + per-item recovery infrastruktúra (Snippet, CalculateView)"
 ```
 
-(Session Q–X commit-ja még mindig PENDING — vagy összevonni, vagy külön.)
+---
 
-### 2. Refaktor prioritizálás és session-bontás egyeztetése
+## Recovery infrastruktúra — áttekintés
 
-Dokumentum: `docs/refactor-plan.md` — teljes findings lista, 5 nyílt tervezési kérdéssel (T1–T5).
+### AppKeys.appendCorruptFragments(_ fragments: [String])
+- Shared helper — `AppKeys.swift`-ben, az `AppKeys.corruptedDump` kulcshoz közel
+- Akkumulál, nem felülír — minden call hozzáappendál
 
-Egyeztetési kérdések implementáció előtt:
-- **T1**: partial decode scope — elég `do/catch` + log, vagy per-item recovery is?
-- **T2**: `CountdownViewModel` mikor — Codable fixek után azonnal, vagy külön phase?
-- **T3**: `enum CalculationModalState` bevezethető-e a jelenlegi `CalculateView` struktúrában,
-  vagy csak a D-1/D-4 szétválasztással együtt?
-- **T4**: `markdownCSS` computed property-vé alakítás kockázata?
-- **T5**: session-bontás javaslat: A+B track / C+E track / D track (3 session)?
+### Load path státusz
+| Path | Recovery | Dump |
+|------|----------|------|
+| `Snippet.load()` | ✅ per-item | ✅ AppKeys.corruptedDump |
+| `CalculateView.loadDeadlines()` | ✅ per-item | ✅ AppKeys.corruptedDump |
+| `CountdownView.load()` | ❌ AA-b | ❌ AA-b |
 
-### 3. Javasolt első track: A+B (Codable + Observer leak)
-
-Ha az egyeztetés után a prioritizálás A+B első → session scope:
-- `Snippet.swift`: custom `init(from decoder:)` + `CodingKeys`
-- `NamedDeadline.swift`: ugyanaz
-- `CountdownItem.swift`: `id` → `decodeIfPresent`
-- `CountdownView`, `CalculateView`, `Snippet`: `try?` → `do/catch` (legalább log)
-- `enum AppKeys` bevezetése
-- `FocusedNSTextField.Coordinator`: `deinit { removeObserver(self) }`
-- `countdownAppApp.swift`: `applicationWillTerminate` + `synchronize()`
+### Banner státusz
+| View | Banner | Dismiss |
+|------|--------|---------|
+| `SnippetsView` | ❌ AB session | ❌ AB session |
+| `CalculateView` | ❌ AB session | ❌ AB session |
+| `CountdownView` | ❌ AB session | ❌ AB session |
 
 ---
 
@@ -83,6 +85,7 @@ Ha az egyeztetés után a prioritizálás A+B első → session scope:
 
 ```
 AddCountdownSheet.swift
+AppKeys.swift
 AppTheme.swift
 CalculateView.swift
 ColorPickerSheet.swift
@@ -108,17 +111,14 @@ countdownAppApp.swift
 
 ## Kritikus tudás
 
-- `CountdownItem` — egyedüli modell custom `init(from decoder:)`-rel; `Snippet` és `NamedDeadline`
-  synthesized Codable → bármely új mező hozzáadásakor az egész tömb `[]`-re esik.
+- `CountdownItem` — custom `init(from decoder:)`-rel; `Snippet` és `NamedDeadline` szintén (Z session óta).
   **Soha ne adj hozzá mezőt `decodeIfPresent` + default nélkül.**
 - `AppTheme.swift` — shared design token forrás.
 - `freeOrder` `.onChange` csak `rebuildCache()`-t hív, `saveFreeOrder()`-t nem — szándékos, de
   latens footgun (OWN-LC-2).
 - Font PostScript nevek: `AlienLeague` / `AlienLeagueBold` — centralizálva `AppTheme.swift`-ben.
 - `FocusedNSTextField.Coordinator` — **observer leak** (NC-1..4): `deinit` hiányzik, zombie
-  Coordinator-ok minden ablakváltáskor `onCommit()`-ot futtatnak. Fix: B-1.
+  Coordinator-ok minden ablakváltáskor `onCommit()`-ot futtatnak. Fix: AB session (B-1).
 - `markdownCSS` amber (`#F5A623`) ≠ `AppTheme.background` (#E5A020) — vizuális eltérés a
   WKWebView renderelt tartalmában. **Vizuális döntés függőben:** a CSS amber szebb, 90%+
-  valószínűséggel `AppTheme.background` → `#F5A623` lesz (az egész UI-t érinti). Következő
-  session elején kipróbálni és dönteni — utána a `markdownCSS` computed property-vé alakítása
-  és az interpoláció triviális.
+  valószínűséggel `AppTheme.background` → `#F5A623` lesz. AB session előtt dönteni.

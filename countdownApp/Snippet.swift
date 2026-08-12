@@ -54,20 +54,41 @@ struct Snippet: Identifiable, Codable {
 
 extension Snippet {
     static func load() -> [Snippet] {
-        guard let data = UserDefaults.standard.data(forKey: AppKeys.snippets),
-              let list = try? JSONDecoder().decode([Snippet].self, from: data)
-        else { return [] }
+        guard let data = UserDefaults.standard.data(forKey: AppKeys.snippets) else { return [] }
+
+        // Per-item recovery: parse as a raw JSON array so that one corrupt item
+        // does not wipe the entire collection. Each element is decoded individually;
+        // failures are captured as raw JSON strings and accumulated in corruptedDump.
+        guard let rawArray = (try? JSONSerialization.jsonObject(with: data)) as? [Any] else {
+            return []
+        }
+
+        var snippets: [Snippet] = []
+        var corruptFragments: [String] = []
+
+        for element in rawArray {
+            guard let elementData = try? JSONSerialization.data(withJSONObject: element) else { continue }
+            do {
+                snippets.append(try JSONDecoder().decode(Snippet.self, from: elementData))
+            } catch {
+                if let fragment = String(data: elementData, encoding: .utf8) {
+                    corruptFragments.append(fragment)
+                }
+            }
+        }
+
+        AppKeys.appendCorruptFragments(corruptFragments)
+
         // Trim leading/trailing whitespace from project and title.
         // Repairs any previously saved snippets with accidental whitespace.
-        let cleaned = list.map { s -> Snippet in
+        let cleaned = snippets.map { s -> Snippet in
             var c = s
             c.project = s.project.trimmingCharacters(in: .whitespaces)
             c.title   = s.title.trimmingCharacters(in: .whitespaces)
             return c
         }
-        // Persist the cleaned data so UserDefaults is also repaired.
-        if cleaned.map({ $0.project }) != list.map({ $0.project }) ||
-           cleaned.map({ $0.title })   != list.map({ $0.title }) {
+        if cleaned.map({ $0.project }) != snippets.map({ $0.project }) ||
+           cleaned.map({ $0.title })   != snippets.map({ $0.title }) {
             save(cleaned)
         }
         return cleaned

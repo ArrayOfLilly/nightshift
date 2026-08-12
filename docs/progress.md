@@ -1,5 +1,20 @@
 # countdownApp — Progress
 
+## Session AA-a — 2026-08-12 (Recovery infrastruktúra — Snippet + CalculateView)
+
+### Session AA-a — LEZÁRVA
+- [x] `AppKeys.swift` — `appendCorruptFragments(_ fragments: [String])` static helper hozzáadva
+- [x] `Snippet.load()` — per-item recovery: raw JSON array → elemenkénti `do/catch` decode →
+       corrupt elem → fragment string → `AppKeys.appendCorruptFragments`
+- [x] `CalculateView.loadDeadlines()` — ugyanaz `NamedDeadline`-ra
+- [ ] Git commit
+
+**AA-b következő:**
+- `CountdownView.load()` — per-item recovery + notes-alapú elágazás
+  - notes-szal → dump + banner; notes nélkül → csendes eldobás
+
+---
+
 ## Session Z — 2026-08-12 (Codable model fix)
 
 ### Session Z — LEZÁRVA
