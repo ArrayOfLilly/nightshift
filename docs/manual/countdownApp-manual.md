@@ -47,11 +47,11 @@ A toggle button switches between two display modes:
 
 The toggle state is remembered across launches.
 
-![Calculate View – DAYS mode: total elapsed days between two dates](../screenshots/01 Calculate View - Calculated Days.png) 
+![Calculate View – DAYS mode: total elapsed days between two dates](../../screenshots/01 Calculate View - Calculated Days.png) 
 
 *Calculate View in DAYS mode — the result is shown as a single total day count.*
 
-![Calculate View – CAL mode: calendar breakdown into years, months, and days](../screenshots/01b Calculate View - Calculated Epochs.png)
+![Calculate View – CAL mode: calendar breakdown into years, months, and days](../../screenshots/01b Calculate View - Calculated Epochs.png)
 
 *Calculate View in CAL mode — the same interval broken down into years, months, and days.*
 
@@ -68,11 +68,11 @@ so you can reload it later without re-entering the date manually.
 2. Click the **bookmark icon** (left part of the SAVE button). A sheet slides open.
 3. Type a name for this deadline and click **SAVE**. The deadline is stored.
 
-![Save Named Deadline sheet – empty name field ready for input](../screenshots/02 Calculate View - Save Named Duration - empty.png)
+![Save Named Deadline sheet – empty name field ready for input](../../screenshots/02 Calculate View - Save Named Duration - empty.png)
 
 *The Save sheet opens with an empty name field. Type a name and click SAVE.*
 
-![Save Named Deadline sheet – name field filled in, ready to save](../screenshots/02b Calculate View - Save Named Duration - edit.png)
+![Save Named Deadline sheet – name field filled in, ready to save](../../screenshots/02b Calculate View - Save Named Duration - edit.png)
 
 *A deadline name has been entered. SAVE stores it; CANCEL discards the sheet.*
 
@@ -83,7 +83,7 @@ saved deadlines with their names and dates.
 
 - **Tap a row** to open its detail sheet.
 
-![Saved Named Deadlines popover – list of stored deadlines](../screenshots/03 Calculate View - Saved Named Durations.png)
+![Saved Named Deadlines popover – list of stored deadlines](../../screenshots/03 Calculate View - Saved Named Durations.png)
 
 *The deadline list popover shows all saved deadlines. Tap any row to open its detail sheet.*
 
@@ -97,15 +97,15 @@ The detail sheet shows the deadline name and date. From here you can:
 - **Trash icon** — deletes the deadline permanently. A confirmation dialog appears;
   click **Delete** to confirm or **Cancel** to abort.
 
-![Deadline detail sheet – name, date, and action buttons](../screenshots/03b Calculate View - Saved Named Durations Details.png)
+![Deadline detail sheet – name, date, and action buttons](../../screenshots/03b Calculate View - Saved Named Durations Details.png)
 
 *The detail sheet shows the deadline name and date. LOAD AS TO, rename (pencil), and delete (trash) are available.*
 
-![Deadline rename mode – inline name editing with RENAME and CANCEL](../screenshots/03c Calculate View - Edit Saved Named Durations.png)
+![Deadline rename mode – inline name editing with RENAME and CANCEL](../../screenshots/03c Calculate View - Edit Saved Named Durations.png)
 
 *Rename mode: the name becomes an editable text field. Click RENAME to confirm or CANCEL to discard.*
 
-![Deadline delete confirmation dialog](../screenshots/03d Calculate View - Delete Saved Named Durations.png)
+![Deadline delete confirmation dialog](../../screenshots/03d Calculate View - Delete Saved Named Durations.png)
 
 *A confirmation dialog appears before permanent deletion. Click Delete to confirm or Cancel to abort.*
 
@@ -121,7 +121,7 @@ astronomical data for the current date and location. The popover shows:
 - **Moon phase** with phase name and illumination percentage.
 - A decorative moon phase strip for the current lunar month.
 
-![Sun and Moon Data popover – sunrise, sunset, golden hour, and moon phase](../screenshots/04 Calculate View - Sun and Moon Data.png)
+![Sun and Moon Data popover – sunrise, sunset, golden hour, and moon phase](../../screenshots/04 Calculate View - Sun and Moon Data.png)
 
 *The Sun & Moon popover shows today's sunrise/sunset, golden hour windows, and current moon phase with illumination.*
 
@@ -140,13 +140,13 @@ Entries appear in two groups:
 - **Free slots** — deadline has passed. Shown with a colored **FREE ✓** badge.
   Free slots can be reordered by dragging them into any position within the free slot section.
 
-![Countdown list – overview of all active and free slots](../screenshots/05 CountDown View.png)
+![Countdown list – overview of all active and free slots](../../screenshots/05 CountDown View.png)
 
 *The Countdown list showing both active entries (amber timer) and free slots (colored FREE badge).*
 *An active entry row: the dark pill on the left shows the label; the right side shows the live countdown.*
 *Free slots display a colored FREE ✓ badge. They can be reordered by dragging.*
 
-![Countdown list – entry row in deadline display mode](../screenshots/05d CountDown View - Deadline.png)
+![Countdown list – entry row in deadline display mode](../../screenshots/05d CountDown View - Deadline.png)
 
 *The right-side toggle switched to deadline mode: the static target date is shown instead of the live countdown.*
 
@@ -166,7 +166,7 @@ The pill briefly shows "COPIED" as confirmation.
 Tap the **+ ADD** button at the bottom of the list. A sheet opens with a label field
 and deadline steppers. Fill in the details and confirm to create the slot.
 
-![Add New Item sheet – label field and deadline steppers](../screenshots/06 Add New Item.png)
+![Add New Item sheet – label field and deadline steppers](../../screenshots/06 Add New Item.png)
 
 *The Add sheet: enter a label and set the deadline date, then confirm to create the slot.*
 
@@ -176,7 +176,7 @@ From the list, tap a card to open its detail view, then use the trash button the
 A confirmation dialog always appears before deletion — click **Delete** to confirm
 or **Cancel** to abort.
 
-![Delete confirmation dialog for a countdown slot](../screenshots/06b Delete Item.png)
+![Delete confirmation dialog for a countdown slot](../../screenshots/06b Delete Item.png)
 
 *A confirmation dialog appears before any slot is permanently removed.*
 
@@ -200,15 +200,15 @@ in the centre of the screen.
 **Deadline stepper:** five component steppers (YEAR, MON, DAY, HOUR, MIN) let you
 adjust the deadline. Click and hold a chevron to repeat quickly. Changes are saved automatically.
 
-![Detail view in countdown mode – live DD:HH:MM:SS display](../screenshots/07 CountDown Detail View - Countdown.png)
+![Detail view in countdown mode – live DD:HH:MM:SS display](../../screenshots/07 CountDown Detail View - Countdown.png)
 
 *Detail view in countdown mode: the live remaining time is shown over the illustration.*
 
-![Detail view in deadline mode – static target date display](../screenshots/07b CountDown Detail View - Deadline.png)
+![Detail view in deadline mode – static target date display](../../screenshots/07b CountDown Detail View - Deadline.png)
 
 *Detail view in deadline mode: the static target date replaces the live countdown.*
 
-![Detail view for an expired (free) slot](../screenshots/07c CountDown Detail View - Expired.png)
+![Detail view for an expired (free) slot](../../screenshots/07c CountDown Detail View - Expired.png)
 
 *An expired slot in the detail view: the FREE state is indicated and the color picker button becomes active.*
 
@@ -235,7 +235,7 @@ The color picker sheet shows twelve accent color swatches plus an **AUTO** optio
 Tap any swatch to apply it to the free slot card. AUTO resets to the default color.
 The selection is saved immediately.
 
-![Color picker sheet – twelve accent swatches and AUTO option](../screenshots/08 CountDown Detail View - Color Picker.png)
+![Color picker sheet – twelve accent swatches and AUTO option](../../screenshots/08 CountDown Detail View - Color Picker.png)
 
 *The color picker offers twelve accent colors and an AUTO option. The selection is applied immediately.*
 
@@ -261,11 +261,11 @@ A toggle button in the sheet header switches between:
 - **Viewer mode** — rendered markdown in a scrollable web view.
 - **Editor mode** — plain text editor for writing or editing markdown directly.
 
-![Notes sheet in Editor mode – plain text markdown editor](../screenshots/09 CountDown Detail View - Note Editor - Editor View.png)
+![Notes sheet in Editor mode – plain text markdown editor](../../screenshots/09 CountDown Detail View - Note Editor - Editor View.png)
 
 *Editor mode: write or edit raw markdown directly. Changes are reflected immediately in Viewer mode.*
 
-![Notes sheet in Viewer mode – rendered markdown output](../screenshots/10 CountDown Detail View - Note Editor - Viewer View.png)
+![Notes sheet in Viewer mode – rendered markdown output](../../screenshots/10 CountDown Detail View - Note Editor - Viewer View.png)
 
 *Viewer mode: the markdown is rendered with headings, lists, code blocks, and highlighted text.*
 
@@ -279,14 +279,14 @@ clipboard, ready to paste into an AI assistant or any other app.
 The **trash button** in the sheet header clears the entire notes field.
 A confirmation dialog appears; click **Delete** to confirm or **Cancel** to abort.
 
-![Notes delete confirmation dialog](../screenshots/11 CountDown Detail View - Note Editor - Confirm Delete.png)
+![Notes delete confirmation dialog](../../screenshots/11 CountDown Detail View - Note Editor - Confirm Delete.png)
 
 *A confirmation dialog appears before the notes content is permanently cleared.*
 
 If the notes field is empty, the sheet opens showing a placeholder prompt.
 Tap the placeholder area to jump straight into Editor mode.
 
-![Notes sheet – empty state with placeholder prompt](../screenshots/12 CountDown Detail View - Note Editor - Empty.png)
+![Notes sheet – empty state with placeholder prompt](../../screenshots/12 CountDown Detail View - Note Editor - Empty.png)
 
 *When there are no notes yet, a placeholder is shown. Tap it to jump straight into Editor mode.*
 
@@ -308,7 +308,7 @@ Tap a row to open the snippet in the editor sheet.
 
 Tap the **+ button** in the toolbar to create a new snippet.
 
-![Snippets list – project groups with snippet rows](../screenshots/13 Snippets View - Rows.png)
+![Snippets list – project groups with snippet rows](../../screenshots/13 Snippets View - Rows.png)
 
 *The Snippets list grouped by project. Each row shows the title, a content preview, and a Copy button.*
 
@@ -324,11 +324,11 @@ The header also contains:
 - **Copy** — copies the full raw markdown body to the clipboard.
 - **Delete** — deletes the snippet permanently after confirmation.
 
-![Snippet editor in Viewer mode – rendered markdown](../screenshots/14 Snippet Edtor - Viewer.png)
+![Snippet editor in Viewer mode – rendered markdown](../../screenshots/14 Snippet Edtor - Viewer.png)
 
 *Viewer mode renders the snippet body as formatted markdown — headings, lists, code blocks, and more.*
 
-![Snippet editor in Editor mode – plain text markdown editor](../screenshots/15 Snippet Edtor - Editor.png)
+![Snippet editor in Editor mode – plain text markdown editor](../../screenshots/15 Snippet Edtor - Editor.png)
 
 *Editor mode: edit the title, project, and body directly. The body field supports full markdown.*
 
@@ -346,7 +346,7 @@ Tapping the project field opens a dropdown list of existing project names.
 Select an existing project to assign the snippet to it, or type a new name
 to create a new project group.
 
-![Project chooser dropdown – list of existing project names](../screenshots/16 Snippet Edtor - Projectname choser Dropdown List.png)
+![Project chooser dropdown – list of existing project names](../../screenshots/16 Snippet Edtor - Projectname choser Dropdown List.png)
 
 *The project chooser shows all existing project names. Select one or type a new name to create a group.*
 
@@ -355,7 +355,7 @@ to create a new project group.
 Long-pressing or right-clicking a snippet row in the list opens a context menu
 with quick actions including rename and delete.
 
-![Snippet row context menu – quick actions](../screenshots/16b Snippets View - Project Editing Context Menu.png)
+![Snippet row context menu – quick actions](../../screenshots/16b Snippets View - Project Editing Context Menu.png)
 
 *Right-clicking or long-pressing a snippet row opens a context menu with quick actions.*
 
@@ -363,9 +363,52 @@ with quick actions including rename and delete.
 
 The **Delete** button in the editor header removes the snippet permanently after confirmation.
 
-![Snippet delete confirmation dialog](../screenshots/17 Snippet Edtor - Delete.png)
+![Snippet delete confirmation dialog](../../screenshots/17 Snippet Edtor - Delete.png)
 
 *A confirmation dialog appears before a snippet is permanently deleted.*
+
+---
+
+## Data Recovery
+
+If the app detects that some stored data could not be loaded at startup — for example
+because a file was corrupted or written in an incompatible format — a recovery banner
+appears at the top of the affected tab.
+
+### Recovery banner
+
+The banner is shown in all three tabs independently: each tab only shows the banner if
+its own data set had a problem. The banner displays the number of items that could not
+be loaded and offers two actions.
+
+![Recovery banner in Calculate View – 3 items could not be loaded](../../screenshots/18 Calculate View - Corrupted Data Warning.png)
+
+*The recovery banner in Calculate View: "3 ITEMS COULD NOT BE LOADED" with Copy Raw Data and Dismiss buttons.*
+
+![Recovery banner in Countdown View – 3 items could not be loaded](../../screenshots/18b Countdown View - Corrupted Data Warning.png)
+
+*The same banner in Countdown View. The banner colour is slightly darker here to contrast with the amber background.*
+
+![Recovery banner in Snippets View – 3 items could not be loaded](../../screenshots/18c Snippets View - Corrupted Data Warning.png)
+
+*The recovery banner in Snippets View. The banner sits above the snippet list.*
+
+### Copy Raw Data
+
+Click **Copy Raw Data** to copy the raw JSON of the unreadable items to the clipboard.
+The data is formatted as pretty-printed JSON so it can be inspected or forwarded to
+support. This action does not dismiss the banner.
+
+### Dismiss
+
+Click **Dismiss** to remove the banner. The unreadable items are cleared from the
+recovery buffer. If new corruption is detected on a subsequent launch, the banner
+will appear again.
+
+> **Note:** Items shown in the recovery banner were not loaded into the app — they are
+> not visible in the list and their data is not active. Dismissing the banner after
+> copying the raw data is safe; the copy on the clipboard is your only remaining
+> reference to those items.
 
 ---
 

@@ -1,5 +1,17 @@
 # countdownApp — Progress
 
+## Session AD — 2026-08-13 (Manual — data recovery szekció)
+
+### Session AD — LEZÁRVA
+- [x] Amber döntés: már lezárva (AA-a session, commit `2dd8900`) — handoff elavult szekciója törölve
+- [x] `countdownApp-manual.md` — "Data Recovery" szekció hozzáadva a Tips elé
+  - 18 (Calculate), 18b (Countdown), 18c (Snippets) screenshotok beillesztve
+  - Recovery banner viselkedés leírva: megjelenés feltétele, Copy Raw Data, Dismiss
+  - Note: mi történik az itemekkel (nem töltődnek be, Dismiss utáni állapot)
+- [ ] Git commit (AD session)
+
+---
+
 ## Session AC — 2026-08-13 (Debug trigger — corrupt banner screenshot)
 
 ### Session AC — LEZÁRVA

@@ -16,33 +16,23 @@
 ## Jelenlegi állapot
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
-- Manual: kész, `docs/manual/` — **banner screenshot + szöveg hiányzik** (AD session feladata)
-- Git: **naprakész** — legutóbbi commit `d94a372` (AC session docs)
+- Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
+- Git: **naprakész** — legutóbbi commit `d94a372` (AC session docs), AD commit következik
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
-- **AA-a+AA-b session**: Per-item recovery — `Snippet.load()`, `CalculateView.loadDeadlines()`, `CountdownView.load()`
+- **AA-a session**: Per-item recovery (Snippet + CalculateView) + Amber fix (`AppTheme.background` → `#F5A623`, `amberHex` szinkron, `markdownCSS` computed var) — commit `2dd8900`
+- **AA-b session**: `CountdownView.load()` per-item recovery + notes-elágazás
 - **AB session**: Banner UI (mindhárom view) + `FocusedNSTextField.Coordinator` deinit (NC-1..4 fix) + `AppDelegate` lifecycle hook
-- **AC session**: DEBUG Cmd+Shift+D trigger — corrupt banner screenshothoz
+- **AC session**: DEBUG Cmd+Shift+D trigger — commit `e2c3666`
+- **AD session**: Manual Data Recovery szekció — 18/18b/18c screenshotok beillesztve, szöveg megírva
 
 ---
 
-## Következő session feladata (AD)
+## Következő session feladata
 
-### 1. Manual — banner screenshot + leírás
-
-- Build & Run DEBUG
-- Navigálj mindhárom view-ra (Countdown, Calculate, Snippets)
-- Cmd+Shift+D → banner megjelenik → screenshot mentése
-- `docs/manual/` mappába beilleszteni a screenshotokat
-- Manual szöveg kiegészítése: recovery banner viselkedés, Copy raw data, Dismiss
-
-### 2. Amber döntés (F-6)
-
-- `AppTheme.background` jelenleg `#E5A020`; a `markdownCSS` WKWebView CSS-ben `#F5A623` van
-- Vizuálisan összehasonlítani a kettőt — valószínűleg `#F5A623` nyeri
-- Ha igen: `AppTheme.swift` → `background` hex → `#F5A623` + `amberHex` szinkron ellenőrzés
-- `markdownCSS` már computed `var` (AA-a session óta), `amberHex`-et használja — csak `AppTheme.background` hex kell frissíteni
+- Manual PDF újragenerálása (`manual_build.py` futtatása) ha szükséges
+- `refactor-plan.md` findings implementálása (A–G kategóriák)
 
 ---
 
