@@ -13,8 +13,11 @@ enum AppTheme {
 
     // MARK: - Colors
 
-    /// Warm amber background (the dominant color in the reference design)
-    static let background         = Color(red: 0.898, green: 0.627, blue: 0.125)
+    /// Warm amber background (the dominant color in the reference design).
+    /// Hex: #F5A623. Also exposed as `amberHex` for CSS/WebView use.
+    static let background         = Color(red: 0xF5/255, green: 0xA6/255, blue: 0x23/255)
+    /// Hex string version of `background` — used in markdownCSS so WebView amber matches SwiftUI.
+    static let amberHex           = "#F5A623"
     /// Dark brown used for buttons and card text
     static let dark               = Color(red: 0.165, green: 0.125, blue: 0.082)
     /// Near-black background for Calculate mode (#060503)
