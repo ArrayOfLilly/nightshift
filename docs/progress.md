@@ -1,5 +1,29 @@
 # countdownApp — Progress
 
+## Session Z — 2026-08-12 (Codable model fix)
+
+### Session Z — LEZÁRVA
+- [x] `AppKeys.swift` — már létezett, tartalom helyes, semmi teendő
+- [x] `Snippet.swift` — custom `init(from decoder:)` + `CodingKeys` + `storageKey` → `AppKeys.snippets`
+- [x] `NamedDeadline.swift` — custom `init(from decoder:)` + `CodingKeys` + persistence key → `AppKeys.namedDeadlines`
+- [x] `CountdownItem.swift` — `id` decode: `decode()` → `decodeIfPresent(... ) ?? UUID()`
+- [x] `CountdownView.swift` — `storageKey`/`freeOrderKey` inline literálok → `AppKeys.*`
+- [x] `CalculateView.swift` — `@AppStorage` kulcsok + `loadDeadlines`/`saveDeadlines` → `AppKeys.*`
+- [ ] Git commit (Session Q–Z)
+
+---
+
+## Session Y — 2026-08-12 (Audit összesítés + refactor-plan findings)
+
+### Session Y — LEZÁRVA
+- [x] Mind a 16 audit fájl elolvasva egyenként (codable, storage, srp, state, duplication, magic-numbers, theme, lifecycle, performance, notificationcenter, layout, accessibility + font, freecolors, docs, js-injection)
+- [x] `docs/refactor-plan.md` teljes findings listával feltöltve — 7 kategória (A–G), 35+ finding tételesen
+- [x] `docs/countdownApp-handoff.md` frissítve
+- [x] Prioritizálás és session-bontás: egyeztetésre vár
+- [ ] Git commit (Session Q–Y)
+
+---
+
 ## Session X — 2026-08-12 (Handoff + refactor-plan váz + Claude.md)
 
 ### Session X — LEZÁRVA

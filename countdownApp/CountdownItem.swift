@@ -56,7 +56,7 @@ struct CountdownItem: Identifiable, Codable, Equatable, Hashable {
 
     init(from decoder: Decoder) throws {
         let c             = try decoder.container(keyedBy: CodingKeys.self)
-        id               = try c.decode(UUID.self,   forKey: .id)
+        id               = try c.decodeIfPresent(UUID.self,   forKey: .id) ?? UUID()
         label            = try c.decode(String.self, forKey: .label)
         deadline         = try c.decode(Date.self,   forKey: .deadline)
         showRemaining    = try c.decodeIfPresent(Bool.self,   forKey: .showRemaining)    ?? true

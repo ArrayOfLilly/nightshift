@@ -26,9 +26,9 @@ struct CalculateView: View {
 
     @EnvironmentObject private var sunService: SunTimesService
 
-    @AppStorage("calculateFromDate")    private var fromInterval: Double = Date().timeIntervalSince1970
-    @AppStorage("calculateToDate")      private var toInterval:   Double = Date().timeIntervalSince1970
-    @AppStorage("calculateDisplayMode") private var displayMode: String = "days"
+    @AppStorage(AppKeys.calculateFromDate)    private var fromInterval: Double = Date().timeIntervalSince1970
+    @AppStorage(AppKeys.calculateToDate)      private var toInterval:   Double = Date().timeIntervalSince1970
+    @AppStorage(AppKeys.calculateDisplayMode) private var displayMode: String = "days"
 
     // SUN-1-B: hover trigger state for sun popover
     @State private var showSunPopover = false
@@ -677,7 +677,7 @@ struct CalculateView: View {
     // MARK: - CALC-SAVE: Persistence
 
     private func loadDeadlines() {
-        guard let data    = UserDefaults.standard.data(forKey: "namedDeadlines"),
+        guard let data    = UserDefaults.standard.data(forKey: AppKeys.namedDeadlines),
               let decoded = try? JSONDecoder().decode([NamedDeadline].self, from: data)
         else { return }
         namedDeadlines = decoded
@@ -685,7 +685,7 @@ struct CalculateView: View {
 
     private func saveDeadlines() {
         if let data = try? JSONEncoder().encode(namedDeadlines) {
-            UserDefaults.standard.set(data, forKey: "namedDeadlines")
+            UserDefaults.standard.set(data, forKey: AppKeys.namedDeadlines)
         }
     }
 

@@ -60,8 +60,8 @@ struct CountdownView: View {
     // Used to detect which items just expired when crossingTask fires.
     @State private var previousActiveIDs: Set<UUID> = []
 
-    private let storageKey   = "countdownItems"
-    private let freeOrderKey = "freeSlotOrder"
+    private let storageKey   = AppKeys.countdownItems
+    private let freeOrderKey = AppKeys.freeSlotOrder
 
     var body: some View {
         NavigationStack {
