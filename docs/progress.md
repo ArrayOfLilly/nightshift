@@ -1,5 +1,24 @@
 # countdownApp — Progress
 
+## Session AA-b — 2026-08-12 (CountdownView.load() per-item recovery + notes-elágazás)
+
+### Session AA-b — LEZÁRVA
+- [x] `CountdownView.load()` — per-item recovery implementálva (`edit_block`, csak a `load()` metódus érintett)
+  - Raw JSON array parse → elemenkénti `do/catch` decode
+  - Corrupt elem: notes-alapú elágazás runtime, per-item:
+    - `notes` kulcs jelen és nem üres → `AppKeys.appendCorruptFragments` (dump-ba kerül)
+    - `notes` hiányzik vagy üres → csendes eldobás, semmi dump
+  - Minta: `Snippet.load()` és `CalculateView.loadDeadlines()` struktúrája követve
+- [x] Load path táblázat: `CountdownView.load()` ✅ per-item + ✅ notes-elágazás
+- [ ] Git commit (Session Z+AA-a+AA-b összevonva, PENDING)
+
+**AB következő:**
+- Banner UI (`SnippetsView`, `CalculateView`, `CountdownView`)
+- `FocusedNSTextField.Coordinator` — deinit observer leak fix
+- `countdownAppApp.swift` — `NSApplicationDelegateAdaptor` + `applicationWillTerminate` → `synchronize()`
+
+---
+
 ## Session AA-a — 2026-08-12 (Recovery infrastruktúra — Snippet + CalculateView + amber fix)
 
 ### Session AA-a — LEZÁRVA

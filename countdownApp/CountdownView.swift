@@ -270,11 +270,36 @@ struct CountdownView: View {
     }
 
     private func load() {
-        guard
-            let data    = UserDefaults.standard.data(forKey: storageKey),
-            let decoded = try? JSONDecoder().decode([CountdownItem].self, from: data)
-        else { return }
-        items = decoded
+        guard let data = UserDefaults.standard.data(forKey: storageKey) else { return }
+
+        // Per-item recovery: parse as a raw JSON array so one corrupt item does not
+        // wipe the entire collection. Each element is decoded individually.
+        // Corrupt items are handled based on whether they carry a non-empty "notes" key:
+        //   - notes present and non-empty → raw fragment saved to corruptedDump (user-visible)
+        //   - notes absent or empty       → silently dropped (no dump, no banner)
+        guard let rawArray = (try? JSONSerialization.jsonObject(with: data)) as? [Any] else { return }
+
+        var loaded: [CountdownItem] = []
+        var corruptFragments: [String] = []
+
+        for element in rawArray {
+            guard let elementData = try? JSONSerialization.data(withJSONObject: element) else { continue }
+            do {
+                loaded.append(try JSONDecoder().decode(CountdownItem.self, from: elementData))
+            } catch {
+                let hasNotes: Bool = {
+                    let dict = element as? [String: Any]
+                    let notes = dict?["notes"] as? String
+                    return !(notes?.isEmpty ?? true)
+                }()
+                if hasNotes, let fragment = String(data: elementData, encoding: .utf8) {
+                    corruptFragments.append(fragment)
+                }
+            }
+        }
+
+        AppKeys.appendCorruptFragments(corruptFragments)
+        items = loaded
     }
 
     private func saveFreeOrder() {

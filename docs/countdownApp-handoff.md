@@ -17,24 +17,16 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: kész, `docs/manual/`
-- Git commit: **PENDING** (Session Q–AA-a)
+- Git commit: **PENDING** (Session Q–AA-b)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` **teljes findings listával** (7 kategória, A–G, 35+ finding)
 - **Z session kész**: Codable model fix (`Snippet`, `NamedDeadline`, `CountdownItem.id`), `AppKeys` bevezetve minden persistence path-on
 - **AA-a session kész**: Per-item recovery infrastruktúra — `Snippet.load()` + `CalculateView.loadDeadlines()` + `AppKeys.appendCorruptFragments`
+- **AA-b session kész**: `CountdownView.load()` per-item recovery + notes-alapú elágazás
 
 ---
 
 ## Következő session feladata
-
-### AA-b — CountdownView.load() per-item recovery + notes-elágazás
-
-**Scope:**
-- `CountdownView.load()` — per-item recovery
-  - notes-szal → dump + banner flag; notes nélkül → csendes eldobás
-  - A döntés runtime, per-item: corrupt CountdownItem raw fragmentjét megvizsgáljuk,
-    van-e nem-üres `notes` kulcs — ha igen, dump-ba kerül, ha nem, csendesen eldobjuk
-- Szükséges `@State` hozzáadása a banner olvasáshoz (ha CountdownView felelős a saját banner-éért)
 
 ### AB — Recovery UI + lifecycle
 
@@ -70,7 +62,7 @@ git commit -m "Session Z+AA-a: Codable fix + per-item recovery infrastruktúra (
 |------|----------|------|
 | `Snippet.load()` | ✅ per-item | ✅ AppKeys.corruptedDump |
 | `CalculateView.loadDeadlines()` | ✅ per-item | ✅ AppKeys.corruptedDump |
-| `CountdownView.load()` | ❌ AA-b | ❌ AA-b |
+| `CountdownView.load()` | ✅ per-item + notes-elágazás | ✅ notes esetén |
 
 ### Banner státusz
 | View | Banner | Dismiss |
