@@ -1,29 +1,30 @@
 # countdownApp — handoff a következő chat-hez
 
-## LEGFRISSEBB (Session P — 2026-08-12, audit-szinkron)
+## LEGFRISSEBB (Session P — 2026-08-12, LEZÁRVA — commit `cb1623a`)
 
-**Állapot ellenőrizve és VERIFIED a forráskód alapján (Filesystem MCP-n keresztül,
-`/Users/ArrayOfLilly/tools/countdownApp/countdownApp/countdownApp/` alatt):**
+**Session P teljes egészében lezárva.** User visszaigazolta: build OK, exportálva és
+használatban. Git commit megtörtént (`cb1623a`, 7 fájl, +331/-62 sor):
+`countdownApp-handoff.md`, `progress.md`, `AddCountdownSheet.swift`, `CalculateView.swift`,
+`ColorPickerSheet.swift`, `CountdownDetailView.swift`, `SharedEditorComponents.swift`.
 
-Session P mai 5 fixe mind implementálva van a kódban:
+Mai 5 fix mind implementálva és commitolva:
 - BUG-WIDTH-CALC (`CalculateView.swift` — saveSheetContent + deadlineDetailContent)
 - BUG-WIDTH-COLOR (`ColorPickerSheet.swift`)
 - BUG-WIDTH-ADD (`AddCountdownSheet.swift`)
 - BUG-DELETE-CONFIRM (`CountdownDetailView.swift` — `showDeleteConfirm` + `.alert`)
 - BUG-COLOR-NODISMISS (`ColorPickerSheet.swift` — X gomb)
 
-**Mind a 4 audit dokumentum (`/Users/ArrayOfLilly/tools/countdownApp/docs/`) frissítve
-van a mai fixekhez** — ellenőrizve, a `duplication-audit.md` §11, `magic-numbers-audit.md`
-§11 és `srp-audit.md` "Post-fix findings — Session P (BUG-WIDTH-CALC/...)" szekciói mind
-készen vannak a lemezen. `codable-audit.md` nem érintett (helyesen). `progress.md`
-frissítve, hogy ezt tükrözze (korábban a checklist-en nem szerepelt, csak a fájlokban
-volt kész — dokumentációs lemaradás, most szinkronban).
+Mind a 4 audit dokumentum (`/Users/ArrayOfLilly/tools/countdownApp/docs/`) frissítve
+van a mai fixekhez — lásd `duplication-audit.md` §11, `magic-numbers-audit.md` §11,
+`srp-audit.md` "Post-fix findings — Session P" szekció. Ezek a docs/ mappában vannak,
+külön git repo-ban (nem részei a mai commitnak) — ha üzleti szabály ellenkezőt nem mond,
+külön commitolandók a docs repo-ban, ha van ilyen.
 
-**Hátralévő teendő (session limit miatt nem történt meg):**
-- [ ] Build ellenőrzés Xcode-ban (saveSheet + detailSheet + colorPicker + addSheet
-  egyike sem lóg ki az ablakból semmilyen ablakméretnél)
-- [ ] Git commit — Session P TELJES: rename + popover width fix + BUG-WIDTH-CALC/COLOR/ADD
-  + BUG-DELETE-CONFIRM + BUG-COLOR-NODISMISS + mind a 4 audit fájl frissítése egy commitban
+**Untracked fájlok, szándékosan NEM commitolva:** `countdownApp/.contextgen_session.json`,
+`pi-session-2026-08-11T22-15-11-777Z_...html` — session-artifact fájlok, ha törlendők
+ vagy .gitignore-ba kellenek, következő session dönt.
+
+**Következő session szabadon választhat feladatot** — nincs nyitott teendő Session P-ből.
 
 **Nyitott audit-témák (SESSION_HANDOFF.md, docs/ mappa) — nem ehhez a session-höz tartozik,
 későbbi audit-pipeline munka:** Performance (#5), AppTheme/CSS-szinkron (#6), State Management (#7),

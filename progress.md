@@ -48,8 +48,8 @@
 - [x] Audit 3 (magic-numbers-audit.md) §11 — 11A (5 fájl sheet-width clamp literáljai), 11B (ColorPickerSheet X gomb literálok), 11C (showDeleteConfirm alert string-ek)
 - [x] Audit 4 (srp-audit.md) — "Post-fix findings — Session P (BUG-WIDTH-CALC/COLOR/ADD/DELETE-CONFIRM/COLOR-NODISMISS)" szekció: CV-SRP-7/8, CPS-SRP-1, ACS-SRP-1 + frissített summary tábla
 - [x] Audit 1 (codable-audit.md) — nem érintett, egyik mai fix sem nyúl adatmodellhez (ellenőrizve, nincs teendő)
-- [ ] Build ellenőrzés (saveSheet + detailSheet + colorPicker + addSheet nem lóg ki az ablakon)
-- [ ] Git commit (Session P teljes: rename + popover width + BUG-WIDTH-CALC/COLOR/ADD + BUG-DELETE-CONFIRM + BUG-COLOR-NODISMISS + mind a 4 audit frissítés)
+- [x] Build ellenőrzés (saveSheet + detailSheet + colorPicker + addSheet nem lóg ki az ablakon) — USER VISSZAIGAZOLTA: exportálva, használatban
+- [x] Git commit (Session P teljes: rename + popover width + BUG-WIDTH-CALC/COLOR/ADD + BUG-DELETE-CONFIRM + BUG-COLOR-NODISMISS + mind a 4 audit frissítés) — `cb1623a`
 
 ---
 
