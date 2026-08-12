@@ -13,10 +13,23 @@
 
 import SwiftUI
 import CoreText
+import AppKit
+
+// MARK: - App delegate
+
+@MainActor
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationWillTerminate(_ notification: Notification) {
+        UserDefaults.standard.synchronize()
+    }
+}
+
+// MARK: - App entry point
 
 @main
 struct countdownAppApp: App {
 
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var sunService = SunTimesService()
 
     init() {

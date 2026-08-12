@@ -94,6 +94,10 @@ private struct FocusedNSTextField: NSViewRepresentable {
             self.onCommit = onCommit
         }
 
+        deinit {
+            NotificationCenter.default.removeObserver(self)
+        }
+
         func controlTextDidBeginEditing(_ obj: Notification) {
             isEditing = true
             // Set subtle white selection for active editing.

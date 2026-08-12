@@ -30,6 +30,9 @@ struct CalculateView: View {
     @AppStorage(AppKeys.calculateToDate)      private var toInterval:   Double = Date().timeIntervalSince1970
     @AppStorage(AppKeys.calculateDisplayMode) private var displayMode: String = "days"
 
+    // Recovery banner
+    @State private var corruptedFragments: [String] = []
+
     // SUN-1-B: hover trigger state for sun popover
     @State private var showSunPopover = false
     @State private var hoverTask: DispatchWorkItem?
@@ -150,9 +153,70 @@ struct CalculateView: View {
                 .padding(.bottom, 40)
             }
         }
-        .onAppear { loadDeadlines() }
+        .overlay(alignment: .top) {
+            if !corruptedFragments.isEmpty {
+                corruptionBanner
+            }
+        }
+        .onAppear {
+            loadDeadlines()
+            corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
+        }
         .sheet(isPresented: $showSaveSheet) { saveSheetContent }
         .sheet(item: $selectedDeadline) { deadline in deadlineDetailContent(deadline) }
+    }
+
+    // MARK: - Corruption banner
+
+    private var corruptionBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(AppTheme.background)
+                .font(.system(size: 14, weight: .semibold))
+
+            Text("\(corruptedFragments.count) item\(corruptedFragments.count == 1 ? "" : "s") could not be loaded")
+                .font(AppTheme.alienLeague(13))
+                .foregroundStyle(AppTheme.background)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button("Copy raw data") {
+                let json = "[\(corruptedFragments.joined(separator: ",\n"))]"
+                if let prettyData = try? JSONSerialization.data(
+                    withJSONObject: JSONSerialization.jsonObject(with: Data(json.utf8)),
+                    options: [.prettyPrinted, .sortedKeys]
+                ), let prettyString = String(data: prettyData, encoding: .utf8) {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(prettyString, forType: .string)
+                } else {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(json, forType: .string)
+                }
+            }
+            .buttonStyle(.plain)
+            .focusable(false)
+            .font(AppTheme.alienLeague(12))
+            .foregroundStyle(AppTheme.calculateBackground)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(AppTheme.background.opacity(0.85))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+
+            Button("Dismiss") {
+                UserDefaults.standard.removeObject(forKey: AppKeys.corruptedDump)
+                corruptedFragments = []
+            }
+            .buttonStyle(.plain)
+            .focusable(false)
+            .font(AppTheme.alienLeague(12))
+            .foregroundStyle(AppTheme.background.opacity(0.7))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Color.white.opacity(0.08))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+        .background(Color(red: 0x8B/255, green: 0x0/255, blue: 0x0/255).opacity(0.75))
     }
 
     // MARK: - NOW button

@@ -23,18 +23,11 @@
 - **Z session kész**: Codable model fix (`Snippet`, `NamedDeadline`, `CountdownItem.id`), `AppKeys` bevezetve minden persistence path-on
 - **AA-a session kész**: Per-item recovery infrastruktúra — `Snippet.load()` + `CalculateView.loadDeadlines()` + `AppKeys.appendCorruptFragments`
 - **AA-b session kész**: `CountdownView.load()` per-item recovery + notes-alapú elágazás
+- **AB session kész**: Banner UI (mindhárom view) + `FocusedNSTextField.Coordinator` deinit fix + `countdownAppApp.swift` lifecycle hook
 
 ---
 
 ## Következő session feladata
-
-### AB — Recovery UI + lifecycle
-
-- Banner UI a három érintett view-ban (`SnippetsView`, `CalculateView`, `CountdownView`)
-  - "N item could not be loaded" + **"Copy raw data"** gomb (pretty-printed JSON a vágólapra)
-  - Explicit Dismiss gomb — törli `AppKeys.corruptedDump` kulcsot
-- `FocusedNSTextField.Coordinator` — `deinit { NotificationCenter.default.removeObserver(self) }`
-- `countdownAppApp.swift` — `NSApplicationDelegateAdaptor` + `applicationWillTerminate` → `synchronize()`
 
 ### Amber döntés (F-6)
 
@@ -67,9 +60,9 @@ git commit -m "Session Z+AA-a: Codable fix + per-item recovery infrastruktúra (
 ### Banner státusz
 | View | Banner | Dismiss |
 |------|--------|---------|
-| `SnippetsView` | ❌ AB session | ❌ AB session |
-| `CalculateView` | ❌ AB session | ❌ AB session |
-| `CountdownView` | ❌ AB session | ❌ AB session |
+| `SnippetsView` | ✅ kész | ✅ kész |
+| `CalculateView` | ✅ kész | ✅ kész |
+| `CountdownView` | ✅ kész | ✅ kész |
 
 ---
 

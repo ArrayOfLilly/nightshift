@@ -60,6 +60,9 @@ struct CountdownView: View {
     // Used to detect which items just expired when crossingTask fires.
     @State private var previousActiveIDs: Set<UUID> = []
 
+    // Recovery banner
+    @State private var corruptedFragments: [String] = []
+
     private let storageKey   = AppKeys.countdownItems
     private let freeOrderKey = AppKeys.freeSlotOrder
 
@@ -68,6 +71,9 @@ struct CountdownView: View {
             ZStack {
                 AppTheme.background.ignoresSafeArea()
                 VStack(spacing: 0) {
+                    if !corruptedFragments.isEmpty {
+                        corruptionBanner
+                    }
                     itemList
                     addButton
                 }
@@ -92,6 +98,7 @@ struct CountdownView: View {
             load()
             loadFreeOrder()
             rebuildCache()
+            corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
         }
         .onChange(of: items)     { save(); rebuildCache() }
         .onChange(of: freeOrder) { rebuildCache() }
@@ -181,6 +188,59 @@ struct CountdownView: View {
                 await MainActor.run { rebuildCache(now: Date(), playExpirySounds: true) }
             }
         }
+    }
+
+    // MARK: - Corruption banner
+
+    private var corruptionBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(AppTheme.background)
+                .font(.system(size: 14, weight: .semibold))
+
+            Text("\(corruptedFragments.count) item\(corruptedFragments.count == 1 ? "" : "s") could not be loaded")
+                .font(AppTheme.alienLeague(13))
+                .foregroundStyle(AppTheme.background)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button("Copy raw data") {
+                let json = "[\(corruptedFragments.joined(separator: ",\n"))]"
+                if let prettyData = try? JSONSerialization.data(
+                    withJSONObject: JSONSerialization.jsonObject(with: Data(json.utf8)),
+                    options: [.prettyPrinted, .sortedKeys]
+                ), let prettyString = String(data: prettyData, encoding: .utf8) {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(prettyString, forType: .string)
+                } else {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(json, forType: .string)
+                }
+            }
+            .buttonStyle(.plain)
+            .focusable(false)
+            .font(AppTheme.alienLeague(12))
+            .foregroundStyle(AppTheme.dark)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(AppTheme.background.opacity(0.85))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+
+            Button("Dismiss") {
+                UserDefaults.standard.removeObject(forKey: AppKeys.corruptedDump)
+                corruptedFragments = []
+            }
+            .buttonStyle(.plain)
+            .focusable(false)
+            .font(AppTheme.alienLeague(12))
+            .foregroundStyle(AppTheme.background.opacity(0.7))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(AppTheme.dark.opacity(0.2))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+        .background(Color(red: 0x4A/255, green: 0x0/255, blue: 0x0/255).opacity(0.85))
     }
 
     // MARK: - Subviews

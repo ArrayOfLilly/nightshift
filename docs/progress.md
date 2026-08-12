@@ -1,5 +1,26 @@
 # countdownApp — Progress
 
+## Session AB — 2026-08-13 (Recovery Banner UI + lifecycle fixes)
+
+### Session AB — LEZÁRVA
+- [x] **Task 2** — `FocusedNSTextField.Coordinator` deinit fix (`CountdownDetailView.swift`)
+  - `deinit { NotificationCenter.default.removeObserver(self) }` hozzáadva a `Coordinator`-hoz
+  - Fix: NC-1..4 observer leak — zombie Coordinator-ok többé nem futtatnak `onCommit()`-ot ablakváltás után
+- [x] **Task 3** — `countdownAppApp.swift` lifecycle hook
+  - `AppDelegate: NSObject, NSApplicationDelegate` bevezetve (`@MainActor final class`)
+  - `@NSApplicationDelegateAdaptor(AppDelegate.self)` az `App` struct-ban
+  - `applicationWillTerminate` → `UserDefaults.standard.synchronize()`
+- [x] **Task 1** — Banner UI mindhárom érintett view-ban
+  - `@State private var corruptedFragments: [String]` — lokális state, `.onAppear`-ban töltve
+  - `corruptionBanner` private property: ikon + "N item(s) could not be loaded" + "Copy raw data" + "Dismiss"
+  - "Copy raw data": pretty-printed JSON vágólapra (`NSPasteboard`), fallback: raw string
+  - "Dismiss": törli `AppKeys.corruptedDump`-ot, `corruptedFragments = []`
+  - `SnippetsView`: banner a `VStack` tetején (headerBar előtt)
+  - `CalculateView`: banner `.overlay(alignment: .top)` — ScrollView miatt overlay pattern
+  - `CountdownView`: banner a `VStack` tetején (itemList előtt)
+  - Banner szín: `CountdownView` → dark sötétvörös (`#4A0000` 85%), többi → `#8B0000` 75%
+- [ ] Git commit (Session Z+AA-a+AA-b+AB összevonva, PENDING)
+
 ## Session AA-b — 2026-08-12 (CountdownView.load() per-item recovery + notes-elágazás)
 
 ### Session AA-b — LEZÁRVA
