@@ -13,8 +13,18 @@ enum AppTheme {
 
     // MARK: - Colors
 
-    /// Warm amber background (the dominant color in the reference design).
-    /// Hex: #F5A623. Also exposed as `amberHex` for CSS/WebView use.
+    /// Warm amber background — the dominant color of the original Python Pomodoro tutorial app
+    /// that this project is ported from. The color palette (amber, dark brown, purple tomato)
+    /// was sampled directly from that app's reference design (timer_-_origin.png).
+    ///
+    /// Two amber candidates were evaluated side-by-side:
+    ///   #E5A020 — original "Spooky Tomato" amber, sampled from the Python app's background.
+    ///             Slightly darker and more mustard-toned.
+    ///   #F5A623 — CSS amber already in use in markdownCSS (WKWebView rendered content).
+    ///             Brighter, cleaner gold; preferred after visual comparison.
+    ///
+    /// Decision: #F5A623 wins. Original kept below for historical reference.
+    // static let background = Color(red: 0xE5/255, green: 0xA0/255, blue: 0x20/255) // original Spooky Tomato amber
     static let background         = Color(red: 0xF5/255, green: 0xA6/255, blue: 0x23/255)
     /// Hex string version of `background` — used in markdownCSS so WebView amber matches SwiftUI.
     static let amberHex           = "#F5A623"
