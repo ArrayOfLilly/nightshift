@@ -1,14 +1,15 @@
 # countdownApp — Progress
 
-## Session AD — 2026-08-13 (Manual — data recovery szekció)
+## Session AD — 2026-08-13 (Manual — data recovery szekció + image groups)
 
 ### Session AD — LEZÁRVA
 - [x] Amber döntés: már lezárva (AA-a session, commit `2dd8900`) — handoff elavult szekciója törölve
-- [x] `countdownApp-manual.md` — "Data Recovery" szekció hozzáadva a Tips elé
-  - 18 (Calculate), 18b (Countdown), 18c (Snippets) screenshotok beillesztve
-  - Recovery banner viselkedés leírva: megjelenés feltétele, Copy Raw Data, Dismiss
-  - Note: mi történik az itemekkel (nem töltődnek be, Dismiss utáni állapot)
-- [x] Git commit: `946fc91`
+- [x] `countdownApp-manual.md` — "Data Recovery" szekció hozzáadva (18/18b/18c screenshotok)
+- [x] `manual_build.py` — `SCREENSHOTS_DIR` fix (abszolút path), `<!-- group -->` parser + `.img-group` CSS
+- [x] 9 image group beillesztve a manualba (2 képes és 3 képes csoportok)
+- [x] 03b standalone + 03c+03d pair (modal sheets olvashatóság)
+- [x] 11+12 group, felesleges `---` törölve a Snippets előtt
+- [x] Git commitok: `946fc91`, `7656791`, `e427e0c`, `e6acc75`, `5888c03`, `6642535`
 
 ---
 

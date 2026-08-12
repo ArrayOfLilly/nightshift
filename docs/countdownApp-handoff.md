@@ -17,7 +17,7 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `d94a372` (AC session docs), AD commit következik
+- Git: **naprakész** — legutóbbi commit `6642535` (AD session)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
@@ -25,7 +25,7 @@
 - **AA-b session**: `CountdownView.load()` per-item recovery + notes-elágazás
 - **AB session**: Banner UI (mindhárom view) + `FocusedNSTextField.Coordinator` deinit (NC-1..4 fix) + `AppDelegate` lifecycle hook
 - **AC session**: DEBUG Cmd+Shift+D trigger — commit `e2c3666`
-- **AD session**: Manual Data Recovery szekció — 18/18b/18c screenshotok beillesztve, szöveg megírva
+- **AD session**: Manual Data Recovery szekció + image groups — `manual_build.py` group parser, 9 group a manualban, 03b/03c+03d 2+1 layout, path fix
 
 ---
 
