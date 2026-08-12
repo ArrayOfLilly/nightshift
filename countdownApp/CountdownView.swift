@@ -100,6 +100,11 @@ struct CountdownView: View {
             rebuildCache()
             corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
         }
+        #if DEBUG
+        .onReceive(NotificationCenter.default.publisher(for: DebugNotifications.injectCorruptBanner)) { _ in
+            corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
+        }
+        #endif
         .onChange(of: items)     { save(); rebuildCache() }
         .onChange(of: freeOrder) { rebuildCache() }
     }

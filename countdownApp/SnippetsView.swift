@@ -61,6 +61,11 @@ struct SnippetsView: View {
             snippets = Snippet.load()
             corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
         }
+        #if DEBUG
+        .onReceive(NotificationCenter.default.publisher(for: DebugNotifications.injectCorruptBanner)) { _ in
+            corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
+        }
+        #endif
         .alert("Rename project", isPresented: $showRenameAlert) {
             TextField("Project name", text: $renameText)
             Button("Rename") { renameProject(from: projectToRename, to: renameText) }

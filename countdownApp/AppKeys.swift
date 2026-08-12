@@ -41,3 +41,14 @@ enum AppKeys {
         defaults.set(current, forKey: corruptedDump)
     }
 }
+
+#if DEBUG
+// MARK: - Debug notifications
+
+/// NotificationCenter names used only in DEBUG builds.
+/// Broadcast by the Cmd+Shift+D menu action; observed by the three banner views
+/// to reload corruptedFragments without requiring a full app restart.
+enum DebugNotifications {
+    static let injectCorruptBanner = Notification.Name("dev.countdownApp.debug.injectCorruptBanner")
+}
+#endif

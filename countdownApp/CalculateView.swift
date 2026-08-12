@@ -162,6 +162,11 @@ struct CalculateView: View {
             loadDeadlines()
             corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
         }
+        #if DEBUG
+        .onReceive(NotificationCenter.default.publisher(for: DebugNotifications.injectCorruptBanner)) { _ in
+            corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
+        }
+        #endif
         .sheet(isPresented: $showSaveSheet) { saveSheetContent }
         .sheet(item: $selectedDeadline) { deadline in deadlineDetailContent(deadline) }
     }
