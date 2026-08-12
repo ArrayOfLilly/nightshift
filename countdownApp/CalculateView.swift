@@ -35,7 +35,7 @@ struct CalculateView: View {
 
     // SUN-1-B: hover trigger state for sun popover
     @State private var showSunPopover = false
-    @State private var hoverTask: DispatchWorkItem?
+    @State private var hoverTask: Task<Void, Never>?
     @State private var todaySunTimes: SunTimes? = nil
 
     // CALC-SAVE: named deadlines
@@ -135,9 +135,11 @@ struct CalculateView: View {
                         .onHover { inside in
                             hoverTask?.cancel()
                             if inside {
-                                let task = DispatchWorkItem { showSunPopover = true }
-                                hoverTask = task
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: task)
+                                hoverTask = Task {
+                                    try? await Task.sleep(for: .milliseconds(200))
+                                    guard !Task.isCancelled else { return }
+                                    showSunPopover = true
+                                }
                             } else {
                                 showSunPopover = false
                             }

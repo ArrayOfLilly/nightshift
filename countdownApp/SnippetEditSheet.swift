@@ -157,6 +157,7 @@ struct SnippetEditSheet: View {
         // accept `minHeight:` in the same call.
         .frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: sheetMinHeight)
         .onAppear { updateSheetWidth() }
+        .onDisappear { commitSave() }
         .focusable(false)
         .alert("Delete snippet?", isPresented: $showDeleteAlert) {
             Button("Cancel", role: .cancel) { }
@@ -185,7 +186,10 @@ struct SnippetEditSheet: View {
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(snippetBody, forType: .string)
                         copyFeedback = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { copyFeedback = false }
+                        Task {
+                            try? await Task.sleep(for: .milliseconds(1000))
+                            copyFeedback = false
+                        }
                     }
                     headerButton(icon: isEditing ? "checkmark" : "pencil") { isEditing.toggle() }
                     if onDelete != nil {
