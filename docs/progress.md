@@ -551,6 +551,22 @@ G kategória lezárul.
 
 ---
 
+## Session AU — 2026-08-13 (WindowHelpers magic number tokenizálás)
+
+### Session AU — LEZÁRVA
+- [x] **Window tokenek** — `AppTheme.swift` `// MARK: - Window` szekció bővítve:
+  - `windowSheetMargin: CGFloat = 24` — margin default a `WindowHelpers` függvényekhez
+  - `windowFallbackWidth: CGFloat = 600` — width fallback ha a főablak nem elérhető
+  - `windowFallbackHeight: CGFloat = 800` — height fallback ha a főablak nem elérhető
+- [x] **WindowHelpers.swift** — `margin` és `fallback` default paraméterek `AppTheme` tokenekre cserélve
+- [x] **Elavult `max` értékek javítva** — 3 call site ahol a `max` meghaladta vagy nem tükrözte a főablak korlátját:
+  - `SnippetEditSheet`: `max: 900` → `AppTheme.windowMaxWidth`, height `max: 680` → `600`; komment frissítve
+  - `NotesSheet`: `max: 900` → `AppTheme.windowMaxWidth`; komment frissítve
+  - `AddCountdownSheet`: `max: 560` → `AppTheme.windowMaxWidth`
+- [ ] Git commit: PENDING
+
+---
+
 ## Session AQ+AR+AP+AS — 2026-08-13 (D-5)
 
 ### Session AS — LEZÁRVA

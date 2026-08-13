@@ -19,8 +19,8 @@ enum WindowHelpers {
     static func windowConstrainedWidth(
         min: CGFloat,
         max: CGFloat,
-        margin: CGFloat = 24,
-        fallback: CGFloat = 600
+        margin: CGFloat = AppTheme.windowSheetMargin,
+        fallback: CGFloat = AppTheme.windowFallbackWidth
     ) -> CGFloat {
         let width = NSApp.mainWindow?.frame.width
             ?? NSApp.windows.first(where: { $0.isVisible && $0.title == "countdownApp" })?.frame.width
@@ -33,8 +33,8 @@ enum WindowHelpers {
     static func windowConstrainedHeight(
         min: CGFloat,
         max: CGFloat,
-        margin: CGFloat = 24,
-        fallback: CGFloat = 800
+        margin: CGFloat = AppTheme.windowSheetMargin,
+        fallback: CGFloat = AppTheme.windowFallbackHeight
     ) -> CGFloat {
         let height = NSApp.mainWindow?.frame.height
             ?? NSApp.windows.first(where: { $0.isVisible && $0.title == "countdownApp" })?.frame.height

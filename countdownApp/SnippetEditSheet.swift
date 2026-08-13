@@ -281,12 +281,12 @@ struct SnippetEditSheet: View {
 
     /// Reads the presenting (main) window's current width and derives the
     /// sheet width from it: window width minus `windowMargin`, clamped to
-    /// [450, 900]. `NSApp.mainWindow` is used rather than `keyWindow`
+    /// [450, AppTheme.windowMaxWidth]. `NSApp.mainWindow` is used rather than `keyWindow`
     /// because once the sheet is presented, the sheet's own child window
     /// can become key — the underlying content window stays main.
     private func updateSheetSize() {
-        sheetWidth = WindowHelpers.windowConstrainedWidth(min: 450, max: 900)
-        sheetHeight = WindowHelpers.windowConstrainedHeight(min: 400, max: 680)
+        sheetWidth = WindowHelpers.windowConstrainedWidth(min: 450, max: AppTheme.windowMaxWidth)
+        sheetHeight = WindowHelpers.windowConstrainedHeight(min: 400, max: 600)
     }
 
     // MARK: - Persistence

@@ -85,7 +85,7 @@ struct AddCountdownSheet: View {
         }
         .frame(minWidth: sheetWidth, maxWidth: sheetWidth)
         .onAppear {
-            sheetWidth = WindowHelpers.windowConstrainedWidth(min: 380, max: 560)
+            sheetWidth = WindowHelpers.windowConstrainedWidth(min: 380, max: AppTheme.windowMaxWidth)
         }
     }
 

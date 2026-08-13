@@ -97,6 +97,12 @@ enum AppTheme {
     /// Maximum main window width — keeps steppers and list rows from spreading out on wide displays
     /// Reference: MBP M4 14" at 1800×1169; app fills ~500–520pt of the available space comfortably
     static let windowMaxWidth: CGFloat = 520
+    /// Margin subtracted from the window dimension so sheets never overhang the window edges
+    static let windowSheetMargin: CGFloat = 24
+    /// Fallback sheet width used when the main window cannot be resolved
+    static let windowFallbackWidth: CGFloat = 600
+    /// Fallback sheet height used when the main window cannot be resolved
+    static let windowFallbackHeight: CGFloat = 800
 
     // MARK: - Gradients
 

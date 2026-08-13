@@ -62,8 +62,9 @@
 
 ## Következő session feladata
 
-- **UX-1** — ✅ KÉSZ: `AppTheme.windowMinWidth/windowMaxWidth` tokenek + `ContentView` frame — git commit PENDING
+- **AU session** — ✅ KÉSZ: `AppTheme` 3 új Window token (`windowSheetMargin`, `windowFallbackWidth`, `windowFallbackHeight`); `WindowHelpers` default paraméterek tokenekre; 3 call site `max` érték javítva (`SnippetEditSheet` 900→windowMaxWidth + height 680→600, `NotesSheet` 900→windowMaxWidth, `AddCountdownSheet` 560→windowMaxWidth) — git commit PENDING
 - **D-1** — `CountdownDetailView` logika kiemelése — egyeztetéssel
+- **D-2** — `CountdownViewModel` — D-1 után ítéljük meg
 
 ---
 
