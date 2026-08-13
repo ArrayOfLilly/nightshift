@@ -155,6 +155,13 @@ on the right that switches between:
 **Copying the label:** tap the dark pill to copy the label text to the clipboard.
 The pill briefly shows "COPIED" as confirmation.
 
+**Note indicator:** if a slot has notes attached, a small eye icon appears in the label
+pill to the right of the label text. The icon disappears while "COPIED" is shown.
+
+![Countdown list – entry row with a note indicator](../../screenshots/05e CountDown View - Existing note.png)
+
+*The orange eye icon indicates the slot has notes. Open the detail view and tap the note button to view or edit them.*
+
 ### Adding a countdown
 
 Tap the **+ ADD** button at the bottom of the list. A sheet opens with a label field
@@ -276,6 +283,19 @@ A confirmation dialog appears; click **Delete** to confirm or **Cancel** to abor
 *When there are no notes yet, a placeholder is shown. Tap it to jump straight into Editor mode.*
 <!-- /group -->
 
+#### Closing with unsaved changes
+
+If you close the Notes sheet with the **✕ button** while there are unsaved edits,
+a confirmation dialog appears:
+
+- **Quit without saving** — discards the changes and closes the sheet.
+- **Save and quit** — saves the current text and closes.
+- **Cancel** — returns to the sheet without closing.
+
+![Notes sheet – unsaved changes confirmation dialog](../../screenshots/11b CountDown Detail View - Note Editor - Confirm Exit.png)
+
+*The prompt only appears when there are unsaved changes. Closing a clean sheet dismisses it immediately.*
+
 ## Snippets
 
 The Snippets tab is a standalone library of reusable text snippets, independent of
@@ -348,6 +368,19 @@ The **Delete** button in the editor header removes the snippet permanently after
 ![Snippet delete confirmation dialog](../../screenshots/17 Snippet Edtor - Delete.png)
 
 *A confirmation dialog appears before a snippet is permanently deleted.*
+
+#### Closing with unsaved changes
+
+If you close the snippet editor with the **✕ button** while there are unsaved edits,
+a confirmation dialog appears:
+
+- **Quit without saving** — discards the changes and closes the editor.
+- **Save and quit** — saves and closes.
+- **Cancel** — returns to the editor.
+
+![Snippet editor – unsaved changes confirmation dialog](../../screenshots/17 Snippet Edtor - Exit.png)
+
+*The prompt only appears when there are unsaved changes. Closing a clean editor dismisses it immediately.*
 
 ---
 
