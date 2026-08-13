@@ -27,6 +27,15 @@
 //  capped at 680 and floored at 400, so short displays scroll/fit instead
 //  of clipping.
 //
+//  Save/dismiss logic (Session AZ):
+//    Checkmark (EDIT mode): commitSave() + switches to VIEW mode (no dismiss).
+//    Pencil (VIEW mode): switches to EDIT mode.
+//    X button — clean state (no field differs from original): dismisses immediately.
+//    X button — dirty state (any field differs): confirm alert with three options:
+//      "Cancel" stays in sheet; "Quit without saving" discards and dismisses;
+//      "Save and quit" calls commitSave() then dismisses.
+//    Dirty baseline: originalTitle/originalProject/originalBody captured at init.
+//
 
 import SwiftUI
 import AppKit
@@ -110,8 +119,11 @@ struct SnippetEditSheet: View {
     @State private var project:     String
     @State private var snippetBody: String
 
-    @State private var isEditing       = true
-    @State private var showDeleteConfirm = false
+    @State private var isEditing              = true
+    @State private var showDeleteConfirm      = false
+    @State private var showDismissConfirm     = false
+    /// Set to false before a discard-dismiss so .onDisappear does not auto-save.
+    @State private var shouldSaveOnDisappear  = true
     // FIX: sheet width was a fixed maxWidth: 900, which could exceed the
     // actual window width when the window is narrower than 900pt (the
     // sheet then visibly overhangs both edges). Now computed from the
@@ -119,6 +131,10 @@ struct SnippetEditSheet: View {
     // margin narrower than the window.
     @State private var sheetWidth: CGFloat = 700
 
+    /// Baseline values captured at init time; used to detect dirty state for the X dismiss guard.
+    private let originalTitle:   String
+    private let originalProject: String
+    private let originalBody:    String
 
     init(snippet: Snippet?,
          existingProjects: [String],
@@ -128,10 +144,20 @@ struct SnippetEditSheet: View {
         self.existingProjects = existingProjects
         self.onSave           = onSave
         self.onDelete         = onDelete
-        _title       = State(initialValue: snippet?.title   ?? "")
-        _project     = State(initialValue: snippet?.project ?? "")
-        _snippetBody = State(initialValue: snippet?.body    ?? "")
-        _isEditing   = State(initialValue: snippet == nil || (snippet?.body ?? "").isEmpty)
+        let t = snippet?.title   ?? ""
+        let p = snippet?.project ?? ""
+        let b = snippet?.body    ?? ""
+        _title       = State(initialValue: t)
+        _project     = State(initialValue: p)
+        _snippetBody = State(initialValue: b)
+        _isEditing   = State(initialValue: snippet == nil || b.isEmpty)
+        originalTitle   = t
+        originalProject = p
+        originalBody    = b
+    }
+
+    private var isDirty: Bool {
+        title != originalTitle || project != originalProject || snippetBody != originalBody
     }
 
     // G-2: sheet height was a fixed 680, which clipped on short displays.
@@ -162,7 +188,7 @@ struct SnippetEditSheet: View {
         // accept `minHeight:` in the same call.
         .frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: sheetHeight)
         .onAppear { updateSheetSize() }
-        .onDisappear { commitSave() }
+        .onDisappear { if shouldSaveOnDisappear { commitSave() } }
         .focusable(false)
         .alert("Delete snippet?", isPresented: $showDeleteConfirm) {
             Button("Cancel", role: .cancel) { }
@@ -172,6 +198,16 @@ struct SnippetEditSheet: View {
             }
         } message: {
             Text("This cannot be undone.")
+        }
+        .alert("Unsaved changes", isPresented: $showDismissConfirm) {
+            Button("Cancel", role: .cancel) { }
+            Button("Quit without saving", role: .destructive) {
+                shouldSaveOnDisappear = false
+                dismiss()
+            }
+            Button("Save and quit") { commitSave(); dismiss() }
+        } message: {
+            Text("You have unsaved changes. What would you like to do?")
         }
     }
 
@@ -199,13 +235,13 @@ struct SnippetEditSheet: View {
                             .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                     headerButton(icon: isEditing ? "checkmark" : "pencil",
-                                 label: isEditing ? "Done editing" : "Edit snippet") { isEditing.toggle() }
+                                 label: isEditing ? "Done editing" : "Edit snippet") { commitEdit() }
                     if onDelete != nil {
                         headerButton(icon: "trash", label: "Delete snippet") { showDeleteConfirm = true }
                     }
                 }
                 Rectangle().fill(Color.white.opacity(AppTheme.alpha12)).frame(width: 1, height: 22).padding(.horizontal, 6)
-                headerButton(icon: "xmark", label: "Close") { commitSave(); dismiss() }
+                headerButton(icon: "xmark", label: "Close") { handleDismiss() }
             }
             .padding(.bottom, 12)
 
@@ -287,6 +323,32 @@ struct SnippetEditSheet: View {
     private func updateSheetSize() {
         sheetWidth = WindowHelpers.windowConstrainedWidth(min: 450, max: AppTheme.windowMaxWidth)
         sheetHeight = WindowHelpers.windowConstrainedHeight(min: 400, max: 600)
+    }
+
+    // MARK: - Actions
+
+    /// Checkmark button (EDIT mode): save current state and switch to VIEW mode.
+    /// Pencil button (VIEW mode): switch to EDIT mode.
+    private func commitEdit() {
+        guard isEditing else {
+            isEditing = true
+            return
+        }
+        commitSave()
+        isEditing = false
+    }
+
+    /// X button: dismiss immediately if clean, show confirm alert if dirty.
+    /// Clean path sets shouldSaveOnDisappear = false — the user explicitly
+    /// chose to close without requesting a save, so .onDisappear should not
+    /// auto-save either (though in the clean case there is nothing to save anyway).
+    private func handleDismiss() {
+        if isDirty {
+            showDismissConfirm = true
+        } else {
+            shouldSaveOnDisappear = false
+            dismiss()
+        }
     }
 
     // MARK: - Persistence

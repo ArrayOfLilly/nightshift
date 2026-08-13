@@ -1,5 +1,68 @@
 # countdownApp — Progress
 
+## Session AY — 2026-08-13 (tervezés + egyeztetés, nincs implementáció)
+
+### Session AY — LEZÁRVA
+- [x] Három téma egyeztetve, implementáció külön sessionokba halasztva:
+  1. **Inline HTML/CSS string literálok** — döntés folyamatban (következő session előtt)
+  2. **Mappastruktúra** — fájlrendszer szintű mappák (nem Xcode virtuális groupok); struktúra tervezés következő session
+  3. **Bug: pipa ment / X csak dismiss** — `NotesSheet` + `SnippetEditSheet`:
+     - Pipa: ment + dismiss (EDIT módban)
+     - X: dirty state esetén confirm alert ("Quit without saving" / "Cancel" / "Save and quit"); tiszta state esetén egyszerű dismiss
+     - Dirty: NotesSheet → `draft != notes`; SnippetEditSheet → bármely mező (`title`, `project`, `snippetBody`) eltér az eredetitől
+- Nincs git commit (dokumentáció-only session)
+
+**Következő session:** mappastruktúra implementáció VAGY pipa/X bug fix — egyeztetés alapján
+
+---
+
+## Session AX — 2026-08-13 (refactor-plan szinkronizálás)
+
+### Session AX — LEZÁRVA
+- [x] `refactor-plan.md` teljes felülírás: minden finding bejelölve kész, T1–T5 tervezési kérdések lezárva
+  - F-3, F-9, G-5/Csoport 3 korábban `TODO`/`NYITOTT` volt a planban, git szerint mind commitolva
+  - UX-1 és D-1 (FocusedNSTextField SRP) bejegyezve mint "Egyéb lezárt findingek"
+  - Státusz: `TELJES — minden finding lezárva ✅`
+- [x] Git commit: `c3eb562`
+
+**Következő session:** új fejlesztési irány — egyeztetés alapján
+
+---
+
+## Session AW — 2026-08-13 (D-2 lezárása — nem szükséges)
+
+### Session AW — LEZÁRVA
+- [x] **D-2** — `CountdownViewModel` bevezetésének megítélése:
+  - D-5 és D-1 után a View-ban maradó felelősségek mind View-természetűek:
+    sheet state koordináció (`showColorPicker`, `showNotes`, `showDeleteConfirm`),
+    `showRemaining` toggle, `localDeadline` mirror (stepper visual feedback),
+    `isEditing` inline label szerkesztés, `component(_:)` thin cal wrapper,
+    `adjust(_:by:)` View-szinkronizáció (domain logika D-5-ben kiemelve),
+    `timeDisplay(at:maxWidth:)` + `deadlineStepper` pure rendering
+  - Domain logika nem maradt a View-ban — D-2 eredeti motivációja megszűnt
+  - ViewModel bevezetése AI slop lenne: nincs legalább két konkrét használati hely,
+    és a View elég kis és fókuszált
+  - **D-2 → nem szükséges** — D kategória lezárva ✅
+- [x] `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
+- Nincs git commit (dokumentáció-only session, kódváltozás nélkül)
+
+**D kategória státusz:** D-4 ✅, D-3 ✅, D-5 ✅, D-1 ✅, D-2 → nem szükséges — **D kategória LEZÁRVA ✅**
+
+---
+
+## Session AV — 2026-08-13 (D-1 FocusedNSTextField kiemelés)
+
+### Session AV — LEZÁRVA
+- [x] **D-1** — `FocusedNSTextField` kiemelése saját fájlba (SRP):
+  - `FocusedNSTextField.swift` új fájl; láthatóság `private` → `internal` (egész app egy module)
+  - `CountdownDetailView.swift` — `FocusedNSTextField` blokk eltávolítva (~110 sor); fejléc-komment frissítve (`FocusedNSTextField.swift`-re hivatkozik)
+  - Build OK
+- [x] Git commit: `01e652f`
+
+**Következő session:** D-2 szükségességének megítélése — egyeztetéssel
+
+---
+
 ## Session AU — 2026-08-13 (UX-1 egyeztetés + implementáció)
 
 ### Session AU — LEZÁRVA
@@ -9,9 +72,7 @@
   - `AppTheme.swift` — új `// MARK: - Window` szekció: `windowMinWidth = 460`, `windowMaxWidth = 520`
   - `ContentView.swift` — `.frame(minWidth: 460)` → `.frame(minWidth: AppTheme.windowMinWidth, maxWidth: AppTheme.windowMaxWidth)`
 - [x] progress.md + handoff.md frissítve
-- [ ] Git commit: PENDING
-
-**Következő session:** D-1 (`CountdownDetailView` kiemelés) — egyeztetéssel
+- [x] Git commit: `37b1674` (AT session-ben együtt committolva)
 
 ---
 

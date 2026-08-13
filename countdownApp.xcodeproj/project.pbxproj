@@ -29,9 +29,22 @@
 		AB699A233025257100A7F242 /* countdownAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = countdownAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AB0EFBDA302E333D0067FA71 /* Exceptions for "countdownApp" folder in "countdownApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				.contextgen_session.json,
+			);
+			target = AB699A0B3025257000A7F242 /* countdownApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AB699A0E3025257000A7F242 /* countdownApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AB0EFBDA302E333D0067FA71 /* Exceptions for "countdownApp" folder in "countdownApp" target */,
+			);
 			path = countdownApp;
 			sourceTree = "<group>";
 		};

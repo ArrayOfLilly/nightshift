@@ -17,7 +17,7 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `963f387` (AI session, G-5 Csoport 3, G kategória lezárva)
+- Git: **naprakész** — legutóbbi commit `01e652f` (AV session, D-1 FocusedNSTextField kiemelés)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
@@ -57,14 +57,27 @@
   F-7: `CalculateView.calcSaveGradient` `Color(red: 0x59/255, ...)` → `AppTheme.freeColors[7].opacity(0.35)`;
   F-8: `SnippetEditSheet.ProjectField` body bg → `AppTheme.freeColors[10]`, suggestionList bg → `AppTheme.freeColors[6]`;
   F-1: `WindowHelpers.swift` új fájl (`enum WindowHelpers`, `windowConstrainedWidth` + `windowConstrainedHeight`), mind az 5 call site migrálva (NotesSheet, SnippetEditSheet, CalculateView, ColorPickerSheet, AddCountdownSheet); `SnippetEditSheet.windowMargin` property eltávolítva. Git commit: `4fd8eef`
+- **AU session**: UX-1 — `AppTheme.windowMinWidth = 460`, `windowMaxWidth = 520`; `ContentView` frame constraint frissítve; git commit `37b1674`
+- **AV session**: D-1 — `FocusedNSTextField.swift` új fájl; `CountdownDetailView.swift` ~110 sor (FocusedNSTextField blokk) eltávolítva; git commit `01e652f`
 
 ---
 
 ## Következő session feladata
 
-- **AU session** — ✅ KÉSZ: `AppTheme` 3 új Window token (`windowSheetMargin`, `windowFallbackWidth`, `windowFallbackHeight`); `WindowHelpers` default paraméterek tokenekre; 3 call site `max` érték javítva (`SnippetEditSheet` 900→windowMaxWidth + height 680→600, `NotesSheet` 900→windowMaxWidth, `AddCountdownSheet` 560→windowMaxWidth) — git commit PENDING
-- **D-1** — `CountdownDetailView` logika kiemelése — egyeztetéssel
-- **D-2** — `CountdownViewModel` — D-1 után ítéljük meg
+**AY session egyeztetés eredménye (nincs implementáció, nincs commit):**
+
+1. **Inline HTML/CSS string literálok** (`SharedEditorComponents.swift` `markdownCSS`) — **döntés lezárva:**
+   - `markdown-template.html` + `markdown-style.css` → új bundle resource-ok
+   - CSS változó: `var(--theme-amber)` (nem Swift interpoláció)
+   - Swift oldal: bundle olvasás + `String.replacingOccurrences` placeholder csere (`{{THEME_AMBER}}`, `{{FONT_FACE_CSS}}`, `{{MARKDOWN_CSS}}`, `{{MARKED_JS}}`, `{{ESCAPED_MARKDOWN}}`)
+   - Builder nincs
+   - `AppTheme.amberHex` szinkron megmarad
+   - Érintett: `SharedEditorComponents.swift` + 2 új fájl; `marked.min.js` marad ahol van
+2. **Mappastruktúra** — fájlrendszer szintű mappák (nem Xcode virtuális groupok); struktúra tervezés + implementáció külön session
+3. **Bug: pipa ment / X csak dismiss** (`NotesSheet`, `SnippetEditSheet`) — egyeztetés lezárva, implementáció következő session:
+   - Pipa: ment + dismiss (EDIT módban)
+   - X: dirty state → confirm alert ("Quit without saving" / "Cancel" / "Save and quit"); tiszta state → egyszerű dismiss
+   - Dirty definíció: NotesSheet: `draft != notes`; SnippetEditSheet: bármely mező (`title`, `project`, `snippetBody`) eltér az eredetitől
 
 ---
 
@@ -170,6 +183,9 @@ countdownAppApp.swift
 - **Motiváció:** fejleszthetőség + olvashatóság (nem testability-első)
 - **Sorrend:** D-4 → D-3 → D-5 → D-1 → D-2
 - **D-3 irány:** static load/save a modell fájlokban (Snippet-minta) — CountdownItem, NamedDeadline
-- **D-2 megjegyzés:** szükségességét D-3 után újra ítéljük — lehet hogy a maradék logika már elég kis méretű
-- **D-4 ✅ KÉSZ** (AP session)
-- **Következő:** D-3 — static load/save metódusok `CountdownItem` + `NamedDeadline` modell fájlokba
+- **D-2 döntés (AW session):** nem szükséges — D-3+D-5+D-1 után domain logika nincs a View-ban;
+  a maradó felelősségek (sheet state, toggle, localDeadline mirror, isEditing, thin wrapperek, pure rendering)
+  mind View-természetűek; ViewModel két konkrét használati hely nélkül AI slop lenne
+- **D-4 ✅ KÉSZ** (AP session) | **D-3 ✅ KÉSZ** (AQ session) | **D-5 ✅ KÉSZ** (AS session)
+- **D-1 ✅ KÉSZ** (AV session) | **D-2 → nem szükséges** (AW session)
+- **D kategória LEZÁRVA ✅**

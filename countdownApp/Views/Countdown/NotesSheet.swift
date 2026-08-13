@@ -13,6 +13,15 @@
 //  Copy button: copies raw markdown to NSPasteboard, 1 s checkmark feedback.
 //  Trash button: clears notes string after confirmation alert.
 //
+//  Save/dismiss logic:
+//    Checkmark (EDIT mode): flushes draft → notes, switches to VIEW mode (no dismiss).
+//    X button — clean state (draft == notes): dismisses immediately.
+//    X button — dirty state (draft != notes): confirm alert with three options:
+//      "Cancel" stays in sheet; "Quit without saving" discards and dismisses;
+//      "Save and quit" flushes draft → notes then dismisses.
+//    Debounce is cancelled and flushed before the dirty check to avoid false positives
+//    from the 500 ms write window.
+//
 //  DESIGN (Session H): Sheet is fixed height, no JS-driven resize.
 //  Empty / EDIT mode: 360pt. VIEW mode with content: 520pt.
 //  MarkdownWebView fills available area and scrolls internally.
@@ -28,10 +37,11 @@ struct NotesSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     /// Local buffer for EDIT mode. Flushed to the `notes` @Binding with a debounce.
-    @State private var draft:            String = ""
-    @State private var debounceTask:     Task<Void, Never>? = nil
-    @State private var isEditing         = false
-    @State private var showDeleteConfirm = false
+    @State private var draft:             String = ""
+    @State private var debounceTask:      Task<Void, Never>? = nil
+    @State private var isEditing          = false
+    @State private var showDeleteConfirm  = false
+    @State private var showDismissConfirm = false
     // FIX (Session N, ported from SnippetEditSheet): sheet width now tracks
     // the real window width instead of a static maxWidth: 900, so it can
     // never overhang the window edges when the window is narrower than 900pt.
@@ -72,6 +82,13 @@ struct NotesSheet: View {
         } message: {
             Text("This clears the notes for this slot. This cannot be undone.")
         }
+        .alert("Unsaved changes", isPresented: $showDismissConfirm) {
+            Button("Cancel", role: .cancel) { }
+            Button("Quit without saving", role: .destructive) { dismiss() }
+            Button("Save and quit") { notes = draft; dismiss() }
+        } message: {
+            Text("You have unsaved changes. What would you like to do?")
+        }
     }
 
     // MARK: - Header
@@ -97,11 +114,11 @@ struct NotesSheet: View {
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                 }
                 headerButton(icon: isEditing ? "checkmark" : "pencil",
-                             label: isEditing ? "Done editing" : "Edit notes") { isEditing.toggle() }
+                             label: isEditing ? "Done editing" : "Edit notes") { commitEdit() }
                 headerButton(icon: "trash", label: "Delete notes") { showDeleteConfirm = true }
             }
             Rectangle().fill(Color.white.opacity(AppTheme.alpha12)).frame(width: 1, height: 22).padding(.horizontal, 6)
-            headerButton(icon: "xmark", label: "Close") { dismiss() }
+            headerButton(icon: "xmark", label: "Close") { handleDismiss() }
         }
         .padding(.horizontal, 24)
         .padding(.top, 22)
@@ -159,6 +176,32 @@ struct NotesSheet: View {
         } else {
             MarkdownWebView(markdown: notes)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    // MARK: - Actions
+
+    /// Checkmark button: flush draft to notes binding and switch to VIEW mode.
+    /// Pencil button: switch to EDIT mode.
+    private func commitEdit() {
+        guard isEditing else {
+            isEditing = true
+            return
+        }
+        debounceTask?.cancel()
+        notes = draft
+        isEditing = false
+    }
+
+    /// X button: flush debounce first to avoid false dirty positives from the
+    /// 500 ms write window, then dismiss immediately if clean or show confirm if dirty.
+    private func handleDismiss() {
+        debounceTask?.cancel()
+        debounceTask = nil
+        if draft == notes {
+            dismiss()
+        } else {
+            showDismissConfirm = true
         }
     }
 
