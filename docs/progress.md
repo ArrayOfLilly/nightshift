@@ -1,5 +1,30 @@
 # countdownApp — Progress
 
+## Session AL — 2026-08-13 (F-7, F-8, F-1, E-1 scope fix)
+
+### Session AL — LEZÁRVA
+- [x] **E-1 scope pontosítás** — `CountdownDetailView` kihagyva (copyFeedback AJ session óta CopyButton saját state-je,
+  csak `isEditing` maradt → enum nem indokolt); scope: csak `CalculateView`. `refactor-plan.md` frissítve.
+- [x] **F-7** — `CalculateView.calcSaveGradient`: `Color(red: 0x59/255, green: 0x3C/255, blue: 0x73/255).opacity(0.35)`
+  → `AppTheme.freeColors[7].opacity(0.35)`; fejléc komment + CALC-SAVE komment frissítve
+- [x] **F-8** — `SnippetEditSheet.ProjectField`:
+  - body background `Color(red: 0x86/255, ...)` → `AppTheme.freeColors[10]`
+  - `suggestionList` background `Color(red: 0x52/255, ...)` → `AppTheme.freeColors[6]`
+- [x] **F-1** — `WindowHelpers.swift` új fájl (`enum WindowHelpers`):
+  - `windowConstrainedWidth(min:max:margin:fallback:) -> CGFloat`
+  - `windowConstrainedHeight(min:max:margin:fallback:) -> CGFloat`
+  - Mind az 5 call site migrálva:
+    - `NotesSheet.updateSheetWidth()` → helper [450, 900]
+    - `SnippetEditSheet.updateSheetSize()` → helper width [450, 900] + height [400, 680]; `windowMargin` property eltávolítva
+    - `CalculateView.updateSheetWidth()` → helper [300, 520]
+    - `ColorPickerSheet.onAppear` → helper [300, 420]
+    - `AddCountdownSheet.onAppear` → helper [380, 560]
+- [ ] Git commit: PENDING
+
+**Következő session:** E-1 (`CalculateView` Boolean sprawl → `enum CalculationModalState`) — egyeztetés alapján
+
+---
+
 ## Session AJ — 2026-08-13 (F-2 copy button + F-5 opacity + B-2 maradék)
 
 ### Session AJ — LEZÁRVA

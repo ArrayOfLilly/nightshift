@@ -64,7 +64,7 @@ private struct ProjectField: View {
             }
         }
         .frame(height: 28)
-        .background(Color(red: 0x86/255, green: 0x54/255, blue: 0x86/255))
+        .background(AppTheme.freeColors[10])
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
@@ -91,7 +91,7 @@ private struct ProjectField: View {
             }
         }
         .frame(minWidth: 320)
-        .background(Color(red: 0x52/255, green: 0x35/255, blue: 0x54/255))
+        .background(AppTheme.freeColors[6])
     }
 }
 
@@ -144,8 +144,6 @@ struct SnippetEditSheet: View {
     /// implied (this value is the *total* width subtracted, i.e. applied
     /// once against the full window width — window is always wider than
     /// the sheet by at least this much).
-    private let windowMargin: CGFloat = 24
-
     var body: some View {
         ZStack {
             AppTheme.background.ignoresSafeArea()
@@ -287,12 +285,8 @@ struct SnippetEditSheet: View {
     /// because once the sheet is presented, the sheet's own child window
     /// can become key — the underlying content window stays main.
     private func updateSheetSize() {
-        let window = NSApp.mainWindow
-            ?? NSApp.windows.first(where: { $0.isVisible && $0.title == "countdownApp" })
-        let windowWidth = window?.frame.width ?? 900
-        let windowHeight = window?.frame.height ?? 680
-        sheetWidth = min(900, max(450, windowWidth - windowMargin))
-        sheetHeight = min(680, max(400, windowHeight - windowMargin))
+        sheetWidth = WindowHelpers.windowConstrainedWidth(min: 450, max: 900)
+        sheetHeight = WindowHelpers.windowConstrainedHeight(min: 400, max: 680)
     }
 
     // MARK: - Persistence

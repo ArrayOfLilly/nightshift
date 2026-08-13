@@ -36,7 +36,6 @@ struct NotesSheet: View {
     // the real window width instead of a static maxWidth: 900, so it can
     // never overhang the window edges when the window is narrower than 900pt.
     @State private var sheetWidth: CGFloat = 700
-    private let windowMargin: CGFloat = 24
 
     var body: some View {
         ZStack {
@@ -171,9 +170,6 @@ struct NotesSheet: View {
     /// because once the sheet is presented, the sheet's own child window
     /// can become key — the underlying content window stays main.
     private func updateSheetWidth() {
-        let windowWidth = NSApp.mainWindow?.frame.width
-            ?? NSApp.windows.first(where: { $0.isVisible && $0.title == "countdownApp" })?.frame.width
-            ?? 900
-        sheetWidth = min(900, max(450, windowWidth - windowMargin))
+        sheetWidth = WindowHelpers.windowConstrainedWidth(min: 450, max: 900)
     }
 }

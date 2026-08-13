@@ -47,18 +47,21 @@
   E-4: `FocusedNSTextField` font+color → `makeNSView`-ba, `updateNSView` csak stringValue (1Hz AppKit pass megszűnt);
   E-2: `loadDeadlines` `onDismiss`-ben mindkét CalculateView sheet-en;
   F-10: `showDeleteAlert` → `showDeleteConfirm` (SnippetEditSheet), `showDeleteProjectAlert` → `showDeleteProjectConfirm` (SnippetsView). Git commit: `550afe9`
+- **AL session**: AppTheme tokenek + WindowHelpers —
+  F-7: `CalculateView.calcSaveGradient` `Color(red: 0x59/255, ...)` → `AppTheme.freeColors[7].opacity(0.35)`;
+  F-8: `SnippetEditSheet.ProjectField` body bg → `AppTheme.freeColors[10]`, suggestionList bg → `AppTheme.freeColors[6]`;
+  F-1: `WindowHelpers.swift` új fájl (`enum WindowHelpers`, `windowConstrainedWidth` + `windowConstrainedHeight`), mind az 5 call site migrálva (NotesSheet, SnippetEditSheet, CalculateView, ColorPickerSheet, AddCountdownSheet); `SnippetEditSheet.windowMargin` property eltávolítva. Git commit: `4fd8eef`
 
 ---
 
 ## Következő session feladata
 
-- **E és F kategóriák** (`refactor-plan.md`) — nyitott findingek:
-  - F-1 (`updateSheetWidth` shared helper, 5 impl), F-3 (`componentStepper` unifikáció), F-7/F-8 (`AppTheme` tokenek)
-  - E-1 (Boolean sprawl → enum)
-  - **F-2 ✅ KÉSZ** (AJ session), **F-4 ✅ KÉSZ** (AK session), **F-5 ✅ KÉSZ** (AJ session side-fix), **F-6 ✅ KÉSZ** (AA-a session)
-  - **E-2 ✅ KÉSZ** (AK session), **E-4 ✅ KÉSZ** (AK session), **F-10 ✅ KÉSZ** (AK session)
-  - F-9 (magic numbers) — külön session (nagy volumen)
-- refactor-plan.md-ben E-3 és F-6 már "KÉSZ"-ként jelölve (nem kell frissíteni)
+- **E-1** — `CalculateView` Boolean sprawl → `enum CalculationModalState` — egyeztetés alapján (közepes)
+- **F-3** — `componentStepper` 3 impl → shared `ComponentStepper` view, LongPress egységesítve — önálló session (nagy)
+- **F-9** — magic numbers (corner radii, opacity) — külön session (nagy volumen)
+- **F-1 ✅ KÉSZ** (AL session), **F-7 ✅ KÉSZ** (AL session), **F-8 ✅ KÉSZ** (AL session)
+- **F-2 ✅ KÉSZ** (AJ session), **F-4 ✅ KÉSZ** (AK session), **F-5 ✅ KÉSZ** (AJ session side-fix), **F-6 ✅ KÉSZ** (AA-a session)
+- **E-2 ✅ KÉSZ** (AK session), **E-4 ✅ KÉSZ** (AK session), **F-10 ✅ KÉSZ** (AK session)
 - Manual PDF újragenerálása (`manual_build.py` futtatása) ha szükséges
 
 ---
@@ -113,6 +116,7 @@ CountdownView.swift
 LongPressStepperButton.swift
 NamedDeadline.swift
 NotesSheet.swift
+WindowHelpers.swift
 SharedEditorComponents.swift
 Snippet.swift
 SnippetEditSheet.swift

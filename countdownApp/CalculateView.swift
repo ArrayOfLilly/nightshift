@@ -10,7 +10,7 @@
 //  CALC-SAVE: Named deadline persistence — SAVE button stores the current TO date with a name.
 //
 //  CALC-SAVE design language (save sheet + detail sheet + list popover):
-//  - Background: LinearGradient from purple #593C73 @ 35% opacity (top) → AppTheme.calculateBackground (25% down).
+//  - Background: LinearGradient from AppTheme.freeColors[7] @ 35% opacity (top) → AppTheme.calculateBackground (25% down).
 //  - Header: alienLeagueBold title in AppTheme.background (amber); date subtitle in white 55% opacity.
 //  - Dividers: Color.white.opacity(0.08), full width minus horizontal padding.
 //  - Buttons: amber-fill SAVE/LOAD (dark text), grey CANCEL (white 50% text, white 7% bg), trash (white 10% bg).
@@ -427,13 +427,13 @@ struct CalculateView: View {
     }
 
     // MARK: - CALC-SAVE: Shared gradient background helper
-    // Purple #593C73 @ 35% opacity fades into calculateBackground by 25% of the view height.
+    // AppTheme.freeColors[7] @ 35% opacity fades into calculateBackground by 25% of the view height.
     // Used by the list popover, save sheet, and detail sheet for visual consistency.
 
     private var calcSaveGradient: LinearGradient {
         LinearGradient(
             stops: [
-                .init(color: Color(red: 0x59/255, green: 0x3C/255, blue: 0x73/255).opacity(0.35), location: 0),
+                .init(color: AppTheme.freeColors[7].opacity(0.35), location: 0),
                 .init(color: AppTheme.calculateBackground, location: 0.25),
             ],
             startPoint: .top,
@@ -757,11 +757,7 @@ struct CalculateView: View {
     // clamps to [300, 520], subtracts windowMargin so the sheet never overflows the window.
 
     private func updateSheetWidth() {
-        let windowMargin: CGFloat = 24
-        let windowWidth = NSApp.mainWindow?.frame.width
-            ?? NSApp.windows.first(where: { $0.isVisible })?.frame.width
-            ?? 600
-        sheetWidth = max(300, min(520, windowWidth - windowMargin))
+        sheetWidth = WindowHelpers.windowConstrainedWidth(min: 300, max: 520)
     }
 
     // MARK: - CALC-SAVE: Persistence

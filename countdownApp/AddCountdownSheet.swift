@@ -85,11 +85,7 @@ struct AddCountdownSheet: View {
         }
         .frame(minWidth: sheetWidth, maxWidth: sheetWidth)
         .onAppear {
-            let windowMargin: CGFloat = 24
-            let windowWidth = NSApp.mainWindow?.frame.width
-                ?? NSApp.windows.first(where: { $0.isVisible })?.frame.width
-                ?? 600
-            sheetWidth = max(380, min(560, windowWidth - windowMargin))
+            sheetWidth = WindowHelpers.windowConstrainedWidth(min: 380, max: 560)
         }
     }
 

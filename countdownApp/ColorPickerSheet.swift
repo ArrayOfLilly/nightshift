@@ -67,11 +67,7 @@ struct ColorPickerSheet: View {
         .background(AppTheme.background.ignoresSafeArea())
         .frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: 260)
         .onAppear {
-            let windowMargin: CGFloat = 24
-            let windowWidth = NSApp.mainWindow?.frame.width
-                ?? NSApp.windows.first(where: { $0.isVisible })?.frame.width
-                ?? 600
-            sheetWidth = max(300, min(420, windowWidth - windowMargin))
+            sheetWidth = WindowHelpers.windowConstrainedWidth(min: 300, max: 420)
         }
     }
 

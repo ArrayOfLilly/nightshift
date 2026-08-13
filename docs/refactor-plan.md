@@ -144,7 +144,9 @@ előtt kötelező fix.
 ### E-1: `@State` Boolean sprawl — mutually exclusive állapotok külön flag-ekkel
 - `CalculateView`: `showSaveSheet` + `showDeadlineListPopover` + `selectedDeadline`
   → javasolt: `enum CalculationModalState`
-- `CountdownDetailView`: `copyFeedback` + `isEditing` → javasolt: `enum LabelInteraction`
+- ~~`CountdownDetailView`: `copyFeedback` + `isEditing` → `enum LabelInteraction`~~
+  Az AJ session óta `copyFeedback` a `CopyButton` saját state-je — `CountdownDetailView`-ban
+  már csak `isEditing` maradt, enum bevezetése nem indokolt. Scope: csak `CalculateView`.
 - **Hatás:** lehetetlen state kombinációk kompilációs hibák helyett runtime bugok
 
 ### E-2: `CalculateView.namedDeadlines` — stale read, nincs refresh ha tab switch — ✅ KÉSZ (AK session)
@@ -160,9 +162,10 @@ előtt kötelező fix.
 
 ## F — ALACSONY: Duplication és Magic Numbers
 
-### F-1: `updateSheetWidth()` — 5 implementáció, 3 különböző clamp tartomány
-- `NotesSheet`, `SnippetEditSheet`, `CalculateView`, `ColorPickerSheet`, `AddCountdownSheet`
-- **Fix:** `windowConstrainedWidth(min:max:margin:fallback:) -> CGFloat` shared helper
+### F-1: `updateSheetWidth()` — 5 implementáció, 3 különböző clamp tartomány — ✅ KÉSZ (AL session)
+- `WindowHelpers.swift` új fájl: `windowConstrainedWidth(min:max:margin:fallback:)` + `windowConstrainedHeight(min:max:margin:fallback:)`
+- Mind az 5 call site (`NotesSheet`, `SnippetEditSheet`, `CalculateView`, `ColorPickerSheet`, `AddCountdownSheet`) helper-re migrálva
+- `SnippetEditSheet.updateSheetSize()` width+height is helperrel
 
 ### F-2: Copy-to-clipboard block — ✅ KÉSZ (AJ session)
 - `CopyButton.swift` — `struct CopyButton<Label: View>`, `@ViewBuilder label: (Bool) -> Label`
@@ -181,9 +184,13 @@ előtt kötelező fix.
 ### F-6: `markdownCSS` — `#F5A623` nem egyezik `AppTheme.background` (#E5A020) amberrel — ✅ KÉSZ (AA-a session)
 - `AppTheme.background` → `#F5A623`, `amberHex` szinkron kulcs bevezetve, `markdownCSS` computed var lett, commit `2dd8900`
 
-### F-7: `#593C73` purple gradient — 3 helyen re-encoded RGB, `AppTheme.freeColors[7]` kellene
+### F-7: `#593C73` purple gradient — ✅ KÉSZ (AL session)
+- `CalculateView.calcSaveGradient`: `Color(red: 0x59/255, ...)` → `AppTheme.freeColors[7].opacity(0.35)`
+- Header komment frissítve
 
-### F-8: `SnippetEditSheet` ProjectField/popover colors — `freeColors[10/6]` re-encoded RGB
+### F-8: `SnippetEditSheet` ProjectField/popover colors — ✅ KÉSZ (AL session)
+- `ProjectField` body background: `Color(red: 0x86/255, ...)` → `AppTheme.freeColors[10]`
+- `suggestionList` background: `Color(red: 0x52/255, ...)` → `AppTheme.freeColors[6]`
 
 ### F-9: Magic corner radii (26 instance, 7 fájl), opacity értékek (35+ instance) → `AppTheme` tokenek
 
