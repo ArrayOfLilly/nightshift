@@ -92,6 +92,22 @@ a delete action-höz)
 
 ---
 
+## BUG-NOTESDISMISS-1: NotesSheet X gomb ment szó nélkül, nem követi a SnippetEditSheet dirty-check mintát 🔴
+
+Az AZ sessionben a `SnippetEditSheet`-ben implementált pipa/X viselkedés (X gomb: dirty állapotban
+confirm alert “Cancel” / “Quit without saving” / “Save and quit”, tiszta állapotban egyszerű dismiss)
+nem került át a `NotesSheet`-be — ott az X továbbra is szó nélkül menti és bezárja a lapot, ahelyett
+hogy ugyanazt a dirty-check + confirm alert logikát követné.
+
+Megjegyzés: a `progress.md` BA session bejegyzése tévesen állította, hogy a `NotesSheet` már helyesen
+implementálva volt (“nem érintett, már helyes volt”) — ezt a következő sessionben felül kell vizsgálni
+a tényleges kód alapján, nem a korábbi feljegyzés alapján.
+
+**Státusz:** NYITOTT — implementáció külön session (a `SnippetEditSheet.handleDismiss()` mintáját kell
+átültetni a `NotesSheet`-be)
+
+---
+
 ## ENH-DEFERRED-1: Deferred taskok dokumentálása (lokalizáció, Settings, About, Help) 🟢
 
 Több deferred téma nincs formálisan dokumentálva:

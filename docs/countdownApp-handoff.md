@@ -94,6 +94,9 @@
    fix 500pt, nem átméretezhető — egyeztetés szükséges melyik irány
 6. **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása: lokalizáció, UI nyelv, input nyelv/locale-ok külön
    kezelése; ehhez Settings menü + About + Help menü (még egyik sincs megvalósítva)
+7. **BUG-NOTESDISMISS-1** 🔴 — `NotesSheet` X gombja szó nélkül ment+dismiss, nem követi a `SnippetEditSheet`
+   (AZ session) dirty-check + confirm alert mintáját — felhasználó jelezte utólag, a BA session tévesen
+   állította késznek
 
 ---
 

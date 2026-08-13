@@ -23,10 +23,17 @@
   ablakszélesség 520→600pt felülvizsgálat, alternatíva fix 500pt), `ENH-DEFERRED-1` (lokalizáció +
   Settings/About/Help menü deferred dokumentálása); `UX-1` státusz ✅ KÉSZ-re javítva (ténylegesen
   implementálva volt AU sessionben, buglist.md ezt nem tükrözte)
-- Git commit: ebben a sessionben, dokumentáció-only
+- Git commit: `d612afe`, `9c9010f`
 
-**Következő session:** a 6 új buglist bejegyzés közül egy vagy több egyeztetése + implementációja
-(prioritás: BUG-TRASH-1 és BUG-DETAILDELETE-1 🔴 kritikusak, először ezeket érdemes vizsgálni)
+**Utólagos kiegészítés (ugyanaz a session, folytatás a felhasználó újabb visszajelzése után):**
+- [x] `BUG-NOTESDISMISS-1` 🔴 felvéve `docs/buglist.md`-be — a `NotesSheet` X gombja továbbra is szó
+  nélkül ment+dismiss, NEM követi a `SnippetEditSheet` (AZ session) dirty-check + confirm alert mintáját.
+  Ez ellentmond a BA session bejegyzésének, amely tévesen állította, hogy a `NotesSheet` már helyes —
+  a következő sessionben a tényleges kódot kell ellenőrizni, nem a korábbi feljegyzést készpénznek venni
+- [x] `countdownApp-handoff.md` “Következő session feladata” listája bővítve 7. pontként
+
+**Következő session:** prioritás felülvizsgálva — `BUG-TRASH-1`, `BUG-DETAILDELETE-1`, `BUG-NOTESDISMISS-1`
+mind 🔴 kritikus használhatósági hibák, elsőként ezek közül érdemes választani
 
 ---
 
