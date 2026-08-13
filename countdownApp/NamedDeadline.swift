@@ -40,3 +40,40 @@ struct NamedDeadline: Identifiable, Codable {
         createdAt = try c.decodeIfPresent(Date.self,   forKey: .createdAt) ?? Date()
     }
 }
+
+// MARK: - Persistence
+
+extension NamedDeadline {
+
+    /// Load all saved deadlines from UserDefaults.
+    ///
+    /// Per-item recovery: one corrupt element does not wipe the entire list.
+    /// Failed elements are captured as raw JSON strings and forwarded to
+    /// `AppKeys.appendCorruptFragments`.
+    static func load() -> [NamedDeadline] {
+        guard let data = UserDefaults.standard.data(forKey: AppKeys.namedDeadlines) else { return [] }
+        guard let rawArray = (try? JSONSerialization.jsonObject(with: data)) as? [Any] else { return [] }
+
+        var deadlines: [NamedDeadline] = []
+        var corruptFragments: [String] = []
+
+        for element in rawArray {
+            guard let elementData = try? JSONSerialization.data(withJSONObject: element) else { continue }
+            do {
+                deadlines.append(try JSONDecoder().decode(NamedDeadline.self, from: elementData))
+            } catch {
+                if let fragment = String(data: elementData, encoding: .utf8) {
+                    corruptFragments.append(fragment)
+                }
+            }
+        }
+
+        AppKeys.appendCorruptFragments(corruptFragments)
+        return deadlines
+    }
+
+    static func save(_ deadlines: [NamedDeadline]) {
+        guard let data = try? JSONEncoder().encode(deadlines) else { return }
+        UserDefaults.standard.set(data, forKey: AppKeys.namedDeadlines)
+    }
+}

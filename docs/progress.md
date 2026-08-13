@@ -480,7 +480,7 @@ G kategória lezárul.
   - `CalculateView` — eltávolítva: `isRenamingDeadline`, `renameDraft`, `showDeleteDeadlineConfirm` @State-ek;
     `deadlineDetailContent()` @ViewBuilder func; `calcSaveGradient` private var;
     sheet switch case frissítve: `DeadlineDetailSheet(deadline:onLoad:onDelete:onRename:)`
-- [ ] Git commit: PENDING
+- [x] Git commit: `d46824d`
 
 **Következő session:** D-3
 

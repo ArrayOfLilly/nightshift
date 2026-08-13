@@ -171,7 +171,7 @@ struct CalculateView: View {
             }
         }
         .onAppear {
-            loadDeadlines()
+            namedDeadlines = NamedDeadline.load()
             corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
         }
         #if DEBUG
@@ -182,7 +182,7 @@ struct CalculateView: View {
         // E-1: single .sheet(item:) on CalculationModal — impossible to open saveSheet and
         //      deadlineDetail simultaneously (was: two separate .sheet modifiers).
         // E-2: onDismiss: loadDeadlines keeps namedDeadlines fresh after any sheet dismissal.
-        .sheet(item: $activeModal, onDismiss: loadDeadlines) { modal in
+        .sheet(item: $activeModal, onDismiss: { namedDeadlines = NamedDeadline.load() }) { modal in
             switch modal {
             case .saveSheet:
                 saveSheetContent
@@ -195,13 +195,13 @@ struct CalculateView: View {
                     },
                     onDelete: { d in
                         namedDeadlines.removeAll { $0.id == d.id }
-                        saveDeadlines()
+                        NamedDeadline.save(namedDeadlines)
                         activeModal = nil
                     },
                     onRename: { d, newTitle in
                         if let idx = namedDeadlines.firstIndex(where: { $0.id == d.id }) {
                             namedDeadlines[idx].title = newTitle
-                            saveDeadlines()
+                            NamedDeadline.save(namedDeadlines)
                         }
                     }
                 )
@@ -594,42 +594,10 @@ struct CalculateView: View {
 
     // MARK: - CALC-SAVE: Persistence
 
-    private func loadDeadlines() {
-        guard let data = UserDefaults.standard.data(forKey: AppKeys.namedDeadlines) else { return }
-
-        // Per-item recovery: parse as a raw JSON array so one corrupt deadline
-        // does not wipe the entire list. Failed items are captured as raw JSON
-        // strings and accumulated in AppKeys.corruptedDump.
-        guard let rawArray = (try? JSONSerialization.jsonObject(with: data)) as? [Any] else { return }
-
-        var deadlines: [NamedDeadline] = []
-        var corruptFragments: [String] = []
-
-        for element in rawArray {
-            guard let elementData = try? JSONSerialization.data(withJSONObject: element) else { continue }
-            do {
-                deadlines.append(try JSONDecoder().decode(NamedDeadline.self, from: elementData))
-            } catch {
-                if let fragment = String(data: elementData, encoding: .utf8) {
-                    corruptFragments.append(fragment)
-                }
-            }
-        }
-
-        AppKeys.appendCorruptFragments(corruptFragments)
-        namedDeadlines = deadlines
-    }
-
-    private func saveDeadlines() {
-        if let data = try? JSONEncoder().encode(namedDeadlines) {
-            UserDefaults.standard.set(data, forKey: AppKeys.namedDeadlines)
-        }
-    }
-
     private func addNamedDeadline(title: String) {
         let nd = NamedDeadline(title: title, date: snapToMinute(toDate))
         namedDeadlines.insert(nd, at: 0)   // newest first
-        saveDeadlines()
+        NamedDeadline.save(namedDeadlines)
     }
 
     // MARK: - Computed

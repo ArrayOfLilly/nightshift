@@ -95,3 +95,42 @@ struct CountdownItem: Identifiable, Codable, Equatable, Hashable {
         Formatters.deadline.string(from: deadline)
     }
 }
+
+// MARK: - Persistence
+
+extension CountdownItem {
+
+    /// Load all countdown items from UserDefaults.
+    ///
+    /// Per-item recovery: one corrupt element does not wipe the entire collection.
+    /// `dumpPolicy` decides whether a corrupt raw element is forwarded to
+    /// `AppKeys.appendCorruptFragments` (true) or silently dropped (false).
+    /// The default dumps everything; callers with domain knowledge (e.g. CountdownView
+    /// checks for a non-empty `notes` field) pass a narrower predicate.
+    static func load(dumpPolicy: (Any) -> Bool = { _ in true }) -> [CountdownItem] {
+        guard let data = UserDefaults.standard.data(forKey: AppKeys.countdownItems) else { return [] }
+        guard let rawArray = (try? JSONSerialization.jsonObject(with: data)) as? [Any] else { return [] }
+
+        var items: [CountdownItem] = []
+        var corruptFragments: [String] = []
+
+        for element in rawArray {
+            guard let elementData = try? JSONSerialization.data(withJSONObject: element) else { continue }
+            do {
+                items.append(try JSONDecoder().decode(CountdownItem.self, from: elementData))
+            } catch {
+                if dumpPolicy(element), let fragment = String(data: elementData, encoding: .utf8) {
+                    corruptFragments.append(fragment)
+                }
+            }
+        }
+
+        AppKeys.appendCorruptFragments(corruptFragments)
+        return items
+    }
+
+    static func save(_ items: [CountdownItem]) {
+        guard let data = try? JSONEncoder().encode(items) else { return }
+        UserDefaults.standard.set(data, forKey: AppKeys.countdownItems)
+    }
+}
