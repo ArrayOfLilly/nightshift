@@ -58,7 +58,7 @@ struct NotesSheet: View {
             draft = notes
             updateSheetWidth()
         }
-        .onChange(of: draft) { newValue in
+        .onChange(of: draft) { _, newValue in
             debounceTask?.cancel()
             debounceTask = Task {
                 try? await Task.sleep(for: .milliseconds(500))

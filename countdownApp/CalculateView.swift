@@ -274,81 +274,56 @@ struct CalculateView: View {
     @ViewBuilder
     private func dateStepper(date: Binding<Date>) -> some View {
         HStack(spacing: 10) {
-            componentStepper(
+            ComponentStepper(
                 label: "YEAR",
                 unit: "year",
                 value: String(cal.component(.year,   from: date.wrappedValue)),
                 onInc: { adjustDate(date, .year,   by:  1) },
-                onDec: { adjustDate(date, .year,   by: -1) }
+                onDec: { adjustDate(date, .year,   by: -1) },
+                foregroundColor: AppTheme.background,
+                backgroundColor: Color.white.opacity(0.12)
             )
-            componentStepper(
+            ComponentStepper(
                 label: "MON",
                 unit: "month",
                 value: Formatters.monthAbbrev.string(from: date.wrappedValue).uppercased(),
                 onInc: { adjustDate(date, .month,  by:  1) },
-                onDec: { adjustDate(date, .month,  by: -1) }
+                onDec: { adjustDate(date, .month,  by: -1) },
+                foregroundColor: AppTheme.background,
+                backgroundColor: Color.white.opacity(0.12)
             )
-            componentStepper(
+            ComponentStepper(
                 label: "DAY",
                 unit: "day",
                 value: String(format: "%02d", cal.component(.day,    from: date.wrappedValue)),
                 onInc: { adjustDate(date, .day,    by:  1) },
-                onDec: { adjustDate(date, .day,    by: -1) }
+                onDec: { adjustDate(date, .day,    by: -1) },
+                foregroundColor: AppTheme.background,
+                backgroundColor: Color.white.opacity(0.12)
             )
-            componentStepper(
+            ComponentStepper(
                 label: "HOUR",
                 unit: "hour",
                 value: String(format: "%02d", cal.component(.hour,   from: date.wrappedValue)),
                 onInc: { adjustDate(date, .hour,   by:  1) },
-                onDec: { adjustDate(date, .hour,   by: -1) }
+                onDec: { adjustDate(date, .hour,   by: -1) },
+                foregroundColor: AppTheme.background,
+                backgroundColor: Color.white.opacity(0.12)
             )
-            componentStepper(
+            ComponentStepper(
                 label: "MIN",
                 unit: "minute",
                 value: String(format: "%02d", cal.component(.minute, from: date.wrappedValue)),
                 onInc: { adjustDate(date, .minute, by:  1) },
-                onDec: { adjustDate(date, .minute, by: -1) }
+                onDec: { adjustDate(date, .minute, by: -1) },
+                foregroundColor: AppTheme.background,
+                backgroundColor: Color.white.opacity(0.12)
             )
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
         .background(Color.white.opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-
-    @ViewBuilder
-    private func componentStepper(
-        label: String,
-        unit: String,
-        value: String,
-        onInc: @escaping () -> Void,
-        onDec: @escaping () -> Void
-    ) -> some View {
-        VStack(spacing: 4) {
-            Text(label)
-                .font(AppTheme.alienLeague(10))
-                .foregroundStyle(Color.white.opacity(0.6))
-            LongPressStepperButton(
-                systemImage: "chevron.up",
-                action: onInc,
-                foregroundColor: AppTheme.background,
-                backgroundColor: Color.white.opacity(0.12),
-                accessibilityLabel: "Increase \(unit)"
-            )
-            Text(value)
-                .font(AppTheme.alienLeagueBold(15))
-                .foregroundStyle(AppTheme.background)
-                .frame(minWidth: 36)
-                .multilineTextAlignment(.center)
-            LongPressStepperButton(
-                systemImage: "chevron.down",
-                action: onDec,
-                foregroundColor: AppTheme.background,
-                backgroundColor: Color.white.opacity(0.12),
-                accessibilityLabel: "Decrease \(unit)"
-            )
-        }
-        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Result display

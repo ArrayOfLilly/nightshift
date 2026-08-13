@@ -1,5 +1,20 @@
 # countdownApp — Progress
 
+## Session AN — 2026-08-13 (F-3 shared ComponentStepper)
+
+### Session AN — LEZÁRVA
+- [x] **F-3** — `componentStepper` 3 implementáció → shared `ComponentStepper` struct:
+  - `ComponentStepper.swift` új fájl: `label`, `unit`, `value`, `onInc`, `onDec` + `foregroundColor` (default: `AppTheme.dark`) + `backgroundColor` (default: `AppTheme.dark.opacity(0.12)`)
+  - `LongPressStepperButton` mindkét irányban — `AddCountdownSheet` bugfix: plain `Button` → `LongPressStepperButton` (nyomvatartásos léptetés helyreállítva)
+  - `CountdownDetailView`: `private func componentStepper` törölve, 5 call site → `ComponentStepper(...)` (default színek, nincs override)
+  - `CalculateView`: `private func componentStepper` törölve, 5 call site → `ComponentStepper(...)` + `foregroundColor: AppTheme.background, backgroundColor: Color.white.opacity(0.12)` override
+  - `AddCountdownSheet`: `private func componentStepper` törölve (plain Button eltávolítva), 5 call site → `ComponentStepper(...)` (default színek, nincs override)
+- [ ] Git commit: PENDING
+
+**Következő session:** F-9 (magic numbers — corner radii, opacity) vagy egyéb egyeztetés alapján
+
+---
+
 ## Session AM — 2026-08-13 (E-1 CalculationModal enum)
 
 ### Session AM — LEZARVA

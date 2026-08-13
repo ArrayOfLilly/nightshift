@@ -93,35 +93,35 @@ struct AddCountdownSheet: View {
 
     private var deadlineStepper: some View {
         HStack(spacing: 10) {
-            componentStepper(
+            ComponentStepper(
                 label: "YEAR",
                 unit: "year",
                 value: String(cal.component(.year, from: deadline)),
                 onInc: { adjust(.year,   by:  1) },
                 onDec: { adjust(.year,   by: -1) }
             )
-            componentStepper(
+            ComponentStepper(
                 label: "MON",
                 unit: "month",
                 value: Formatters.monthAbbrev.string(from: deadline).uppercased(),
                 onInc: { adjust(.month,  by:  1) },
                 onDec: { adjust(.month,  by: -1) }
             )
-            componentStepper(
+            ComponentStepper(
                 label: "DAY",
                 unit: "day",
                 value: String(format: "%02d", cal.component(.day,    from: deadline)),
                 onInc: { adjust(.day,    by:  1) },
                 onDec: { adjust(.day,    by: -1) }
             )
-            componentStepper(
+            ComponentStepper(
                 label: "HOUR",
                 unit: "hour",
                 value: String(format: "%02d", cal.component(.hour,   from: deadline)),
                 onInc: { adjust(.hour,   by:  1) },
                 onDec: { adjust(.hour,   by: -1) }
             )
-            componentStepper(
+            ComponentStepper(
                 label: "MIN",
                 unit: "minute",
                 value: String(format: "%02d", cal.component(.minute, from: deadline)),
@@ -133,49 +133,6 @@ struct AddCountdownSheet: View {
         .padding(.vertical, 14)
         .background(AppTheme.dark.opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-
-    @ViewBuilder
-    private func componentStepper(
-        label: String,
-        unit: String,
-        value: String,
-        onInc: @escaping () -> Void,
-        onDec: @escaping () -> Void
-    ) -> some View {
-        VStack(spacing: 4) {
-            Text(label)
-                .font(AppTheme.alienLeague(10))
-                .foregroundStyle(AppTheme.dark.opacity(0.6))
-            Button(action: onInc) {
-                Image(systemName: "chevron.up")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(AppTheme.dark)
-                    .frame(width: 32, height: 22)
-                    .background(AppTheme.dark.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
-            }
-            .buttonStyle(.plain)
-            .focusable(false)
-            .accessibilityLabel("Increase \(unit)")
-            Text(value)
-                .font(AppTheme.alienLeagueBold(15))
-                .foregroundStyle(AppTheme.dark)
-                .frame(minWidth: 36)
-                .multilineTextAlignment(.center)
-            Button(action: onDec) {
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(AppTheme.dark)
-                    .frame(width: 32, height: 22)
-                    .background(AppTheme.dark.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
-            }
-            .buttonStyle(.plain)
-            .focusable(false)
-            .accessibilityLabel("Decrease \(unit)")
-        }
-        .frame(maxWidth: .infinity)
     }
 
     private func adjust(_ c: Calendar.Component, by value: Int) {

@@ -47,6 +47,7 @@
   E-4: `FocusedNSTextField` font+color → `makeNSView`-ba, `updateNSView` csak stringValue (1Hz AppKit pass megszűnt);
   E-2: `loadDeadlines` `onDismiss`-ben mindkét CalculateView sheet-en;
   F-10: `showDeleteAlert` → `showDeleteConfirm` (SnippetEditSheet), `showDeleteProjectAlert` → `showDeleteProjectConfirm` (SnippetsView). Git commit: `550afe9`
+- **AN session**: F-3 — `ComponentStepper.swift` új fájl (shared struct); `CountdownDetailView`, `CalculateView`, `AddCountdownSheet` — `private func componentStepper` törölve, 15 call site migrálva; `AddCountdownSheet` bugfix: plain `Button` → `LongPressStepperButton`. Git commit: TODO
 - **AM session**: E-1 — `CalculationModal` enum: `showSaveSheet: Bool` + `selectedDeadline: NamedDeadline?` eltavolitva;
   `private enum CalculationModal: Identifiable` (nested, `case saveSheet` + `case deadlineDetail(NamedDeadline)`);
   `activeModal: CalculationModal? = nil` egyetlen state; ket `.sheet` modifier egysitve;
@@ -62,7 +63,7 @@
 ## Következő session feladata
 
 - **E-1 ✅ KÉSZ** (AM session)
-- **F-3** — `componentStepper` 3 impl → shared `ComponentStepper` view, LongPress egységesítve — önálló session (nagy)
+- **F-3 ✅ KÉSZ** (AN session)
 - **F-9** — magic numbers (corner radii, opacity) — külön session (nagy volumen)
 - **F-1 ✅ KÉSZ** (AL session), **F-7 ✅ KÉSZ** (AL session), **F-8 ✅ KÉSZ** (AL session)
 - **F-2 ✅ KÉSZ** (AJ session), **F-4 ✅ KÉSZ** (AK session), **F-5 ✅ KÉSZ** (AJ session side-fix), **F-6 ✅ KÉSZ** (AA-a session)
@@ -109,6 +110,7 @@
 ```
 AddCountdownSheet.swift
 AppKeys.swift
+ComponentStepper.swift
 AppTheme.swift
 Formatters.swift
 CalculateView.swift
