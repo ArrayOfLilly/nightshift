@@ -53,6 +53,29 @@ A felhasználó visszajelzése szerint a tényleges ablak szélesség 500–520p
 
 ---
 
+## BUG-CHECKMARKDIRTY-1: SnippetEditSheet checkmark mentése után az X mégis confirm alertet mutat 🔴
+
+Meglévő snippet szerkesztése: szöveg módosítása → checkmark (menti, VIEW módba vált) → X (bezárás) —
+az X ennek ellenére felteszi a “Quit without saving / Save and quit / Cancel” confirm alertet, holott a
+checkmark már elmentette a változást és nem kéne újra rákérdeznie.
+
+**Valószínű root cause (AZ session implementáció alapján):** `originalTitle`/`originalProject`/`originalBody`
+`let` property-k, csak `init`-ben beállítva (dirty baseline). A checkmark (`commitEdit()`) menti a
+szöveget és `isEditing = false`-ra vált, de az `original*` baseline-t NEM frissíti — így az `isDirty`
+computed var továbbra is `true`-t ad, mert a jelenlegi érték még mindig eltér az init-kori originaltól.
+Ezért az utána következő X (`handleDismiss()`) feleslegesen dirty-nek látja az állapotot.
+
+**Ellenőrzés a következő sessionben:** meg kell nézni, hogy a `commitEdit()` (checkmark ág) frissíti-e
+az `original*` értékeket mentés után — ha nem, ezt kell pótolni (pl. `original* = current*` a `commitSave()`
+hívása után, checkmark ágban). Megjegyzés: mivel az `original*` jelenleg `let`, ehhez `var`-ra kell váltani
+— ez adatmodell-érintő változás, a Claude.md szabálya szerint egyeztetés szükséges implementáció előtt.
+Hasonló root cause-t érdemes megnézni a `NotesSheet`-ben is (lásd `BUG-NOTESDISMISS-1` — ott más a hiba,
+de a dirty-tracking mechanizmus rokon).
+
+**Státusz:** ✅ KÉSZ — BC session: `let` → `var` az `original*` property-ken; `commitEdit()` checkmark ágában `originalTitle/Project/Body = title/project/snippetBody` refresh a `commitSave()` után.
+
+---
+
 ## BUG-MANUAL-1: Manual frissítése a bezárási metódus változása miatt 🟡
 
 Az AZ sessionben implementált pipa/X viselkedés (`NotesSheet` + `SnippetEditSheet` — pipa: ment+dismiss,
@@ -107,8 +130,8 @@ Megjegyzés: a `progress.md` BA session bejegyzése tévesen állította, hogy a
 implementálva volt (“nem érintett, már helyes volt”) — ezt a következő sessionben felül kell vizsgálni
 a tényleges kód alapján, nem a korábbi feljegyzés alapján.
 
-**Státusz:** NYITOTT — implementáció külön session (a `SnippetEditSheet.handleDismiss()` mintáját kell
-átültetni a `NotesSheet`-be)
+**Státusz:** ✅ KÉSZ — BC session: debounce eltávolítva; `originalNotes` baseline (`.onAppear` +
+`commitEdit()` refresh); `handleDismiss()` `draft == originalNotes`; "Quit without saving" visszaállít.
 
 ---
 

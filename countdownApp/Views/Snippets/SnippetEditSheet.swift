@@ -27,14 +27,15 @@
 //  capped at 680 and floored at 400, so short displays scroll/fit instead
 //  of clipping.
 //
-//  Save/dismiss logic (Session AZ):
-//    Checkmark (EDIT mode): commitSave() + switches to VIEW mode (no dismiss).
+//  Save/dismiss logic (Session AZ + BUG-CHECKMARKDIRTY-1 fix):
+//    Checkmark (EDIT mode): commitSave() + refreshes dirty baseline + switches to VIEW mode.
 //    Pencil (VIEW mode): switches to EDIT mode.
 //    X button — clean state (no field differs from original): dismisses immediately.
 //    X button — dirty state (any field differs): confirm alert with three options:
 //      "Cancel" stays in sheet; "Quit without saving" discards and dismisses;
 //      "Save and quit" calls commitSave() then dismisses.
-//    Dirty baseline: originalTitle/originalProject/originalBody captured at init.
+//    Dirty baseline: originalTitle/originalProject/originalBody — var so commitEdit() can
+//    refresh them after saving, ensuring a subsequent X sees clean state.
 //
 
 import SwiftUI
@@ -131,10 +132,11 @@ struct SnippetEditSheet: View {
     // margin narrower than the window.
     @State private var sheetWidth: CGFloat = 700
 
-    /// Baseline values captured at init time; used to detect dirty state for the X dismiss guard.
-    private let originalTitle:   String
-    private let originalProject: String
-    private let originalBody:    String
+    /// Baseline values captured at init time; var so commitEdit() can refresh them after an
+    /// explicit save (checkmark), ensuring a subsequent X sees a clean state.
+    private var originalTitle:   String
+    private var originalProject: String
+    private var originalBody:    String
 
     init(snippet: Snippet?,
          existingProjects: [String],
@@ -327,7 +329,8 @@ struct SnippetEditSheet: View {
 
     // MARK: - Actions
 
-    /// Checkmark button (EDIT mode): save current state and switch to VIEW mode.
+    /// Checkmark button (EDIT mode): save current state, refresh dirty baseline, switch to VIEW mode.
+    /// Refreshing the baseline ensures a subsequent X sees clean state (BUG-CHECKMARKDIRTY-1).
     /// Pencil button (VIEW mode): switch to EDIT mode.
     private func commitEdit() {
         guard isEditing else {
@@ -335,6 +338,9 @@ struct SnippetEditSheet: View {
             return
         }
         commitSave()
+        originalTitle   = title
+        originalProject = project
+        originalBody    = snippetBody
         isEditing = false
     }
 

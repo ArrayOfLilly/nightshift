@@ -7,20 +7,20 @@
 //
 //  MarkdownWebView and PlainTextEditor live in SharedEditorComponents.swift.
 //
-//  EDIT mode uses a local `draft` @State buffer. Changes are flushed to the `notes`
-//  @Binding (and thus to UserDefaults) with a ~500 ms debounce to avoid per-keystroke
-//  JSON encode + disk write of the entire items array. See SharedEditorComponents for editor details.
+//  EDIT mode uses a local `draft` @State buffer — avoids per-keystroke writes to the
+//  @Binding / UserDefaults. Flushed explicitly on checkmark or "Save and quit".
 //  Copy button: copies raw markdown to NSPasteboard, 1 s checkmark feedback.
 //  Trash button: clears notes string after confirmation alert.
 //
-//  Save/dismiss logic:
-//    Checkmark (EDIT mode): flushes draft → notes, switches to VIEW mode (no dismiss).
-//    X button — clean state (draft == notes): dismisses immediately.
-//    X button — dirty state (draft != notes): confirm alert with three options:
-//      "Cancel" stays in sheet; "Quit without saving" discards and dismisses;
-//      "Save and quit" flushes draft → notes then dismisses.
-//    Debounce is cancelled and flushed before the dirty check to avoid false positives
-//    from the 500 ms write window.
+//  Save/dismiss logic (UX unification with SnippetEditSheet):
+//    No debounce auto-save — draft buffer is sufficient to avoid per-keystroke writes.
+//    Checkmark (EDIT mode): notes = draft + refreshes originalNotes baseline + VIEW mode.
+//    X button — clean state (draft == originalNotes): dismisses immediately.
+//    X button — dirty state (draft != originalNotes): confirm alert with three options:
+//      "Cancel" stays in sheet; "Quit without saving" restores notes = originalNotes + dismisses;
+//      "Save and quit" notes = draft then dismisses.
+//    originalNotes baseline is set on appear and refreshed after every explicit save (checkmark),
+//    mirroring the SnippetEditSheet pattern (BUG-CHECKMARKDIRTY-1 / BUG-NOTESDISMISS-1).
 //
 //  DESIGN (Session H): Sheet is fixed height, no JS-driven resize.
 //  Empty / EDIT mode: 360pt. VIEW mode with content: 520pt.
@@ -36,9 +36,10 @@ struct NotesSheet: View {
     @Binding var notes: String
     @Environment(\.dismiss) private var dismiss
 
-    /// Local buffer for EDIT mode. Flushed to the `notes` @Binding with a debounce.
+    /// Local buffer for EDIT mode. Flushed explicitly on checkmark or "Save and quit".
     @State private var draft:             String = ""
-    @State private var debounceTask:      Task<Void, Never>? = nil
+    /// Baseline captured on appear and after every explicit save; dirty check compares against this.
+    @State private var originalNotes:     String = ""
     @State private var isEditing          = false
     @State private var showDeleteConfirm  = false
     @State private var showDismissConfirm = false
@@ -66,25 +67,18 @@ struct NotesSheet: View {
         .frame(minWidth: sheetWidth, maxWidth: sheetWidth, minHeight: 520)
         .onAppear {
             draft = notes
+            originalNotes = notes
             updateSheetWidth()
-        }
-        .onChange(of: draft) { _, newValue in
-            debounceTask?.cancel()
-            debounceTask = Task {
-                try? await Task.sleep(for: .milliseconds(500))
-                guard !Task.isCancelled else { return }
-                notes = newValue
-            }
         }
         .alert("Delete all notes?", isPresented: $showDeleteConfirm) {
             Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) { notes = ""; draft = "" }
+            Button("Delete", role: .destructive) { notes = ""; draft = ""; originalNotes = "" }
         } message: {
             Text("This clears the notes for this slot. This cannot be undone.")
         }
         .alert("Unsaved changes", isPresented: $showDismissConfirm) {
             Button("Cancel", role: .cancel) { }
-            Button("Quit without saving", role: .destructive) { dismiss() }
+            Button("Quit without saving", role: .destructive) { notes = originalNotes; dismiss() }
             Button("Save and quit") { notes = draft; dismiss() }
         } message: {
             Text("You have unsaved changes. What would you like to do?")
@@ -181,24 +175,22 @@ struct NotesSheet: View {
 
     // MARK: - Actions
 
-    /// Checkmark button: flush draft to notes binding and switch to VIEW mode.
+    /// Checkmark button: flush draft → notes, refresh dirty baseline, switch to VIEW mode.
+    /// Refreshing originalNotes ensures a subsequent X sees clean state.
     /// Pencil button: switch to EDIT mode.
     private func commitEdit() {
         guard isEditing else {
             isEditing = true
             return
         }
-        debounceTask?.cancel()
         notes = draft
+        originalNotes = draft
         isEditing = false
     }
 
-    /// X button: flush debounce first to avoid false dirty positives from the
-    /// 500 ms write window, then dismiss immediately if clean or show confirm if dirty.
+    /// X button: dismiss immediately if clean (draft == originalNotes), confirm alert if dirty.
     private func handleDismiss() {
-        debounceTask?.cancel()
-        debounceTask = nil
-        if draft == notes {
+        if draft == originalNotes {
             dismiss()
         } else {
             showDismissConfirm = true

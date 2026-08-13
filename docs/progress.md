@@ -1,5 +1,28 @@
 # countdownApp — Progress
 
+## Session BC — 2026-08-13 (BUG-CHECKMARKDIRTY-1 + BUG-NOTESDISMISS-1)
+
+### Session BC — LEZÁRVA
+- [x] Claude.md, progress.md, countdownApp-handoff.md, buglist.md elolvasva
+- [x] `SnippetEditSheet.swift` + `NotesSheet.swift` elolvasva — root cause megerősítve
+- [x] **BUG-CHECKMARKDIRTY-1** — `SnippetEditSheet`: `let` → `var` az `originalTitle/Project/Body`
+  property-ken; `commitEdit()` checkmark ágában `originalTitle = title` / `originalProject = project` /
+  `originalBody = snippetBody` refresh a `commitSave()` után — X ezután clean state-et lát, nem mutat
+  felesleges confirm alertet
+- [x] **BUG-NOTESDISMISS-1 + NotesSheet UX egységesítés** — `NotesSheet`: debounce (`debounceTask` state +
+  `.onChange(of: draft)` blokk) eltávolítva; `originalNotes: String` state hozzáadva; `.onAppear`
+  `originalNotes = notes` baseline; `commitEdit()` checkmark ágában `originalNotes = draft` refresh;
+  `handleDismiss()` `draft == originalNotes` check (volt: `draft == notes`); "Quit without saving"
+  `notes = originalNotes` visszaállítással; delete alert `originalNotes = ""` reset
+- [x] `docs/buglist.md` — BUG-CHECKMARKDIRTY-1 és BUG-NOTESDISMISS-1 ✅ KÉSZ státuszra frissítve
+- [x] `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
+- Git commit: PENDING
+
+**Következő session:** BUG-TRASH-1 🔴 (editor trash visszateszi a törölt snippetet) vagy
+BUG-DETAILDELETE-1 🔴 (CountdownDetailView törlés után nem navigál vissza) — egyeztetés alapján
+
+---
+
 ## Session BB — 2026-08-13 (pending commit hash-ek rendezése + mappastruktúra ellenőrzés + buglist bővítés)
 
 ### Session BB — LEZÁRVA

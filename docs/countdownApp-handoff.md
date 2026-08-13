@@ -17,8 +17,7 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `d612afe` (BB session, dokumentáció-only: pending commit hash-ek
-  rendezése, mappastruktúra ellenőrzés, 6 új buglist bejegyzés)
+- Git: **naprakész** — legutóbbi commit BC session (BUG-CHECKMARKDIRTY-1 + BUG-NOTESDISMISS-1 fix, PENDING hash)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
@@ -60,6 +59,9 @@
   F-1: `WindowHelpers.swift` új fájl (`enum WindowHelpers`, `windowConstrainedWidth` + `windowConstrainedHeight`), mind az 5 call site migrálva (NotesSheet, SnippetEditSheet, CalculateView, ColorPickerSheet, AddCountdownSheet); `SnippetEditSheet.windowMargin` property eltávolítva. Git commit: `ca4445a`
 - **AU session**: UX-1 — `AppTheme.windowMinWidth = 460`, `windowMaxWidth = 520`; `ContentView` frame constraint frissítve; git commit `37b1674`
 - **AV session**: D-1 — `FocusedNSTextField.swift` új fájl; `CountdownDetailView.swift` ~110 sor (FocusedNSTextField blokk) eltávolítva; git commit `01e652f`
+- **BC session**: BUG-CHECKMARKDIRTY-1 + BUG-NOTESDISMISS-1 — `SnippetEditSheet`: `let` → `var` az
+  `original*` property-ken, `commitEdit()` baseline refresh; `NotesSheet`: debounce eltávolítva,
+  `originalNotes` baseline bevezetve, `handleDismiss()` egységesítve — mindkét sheet X viselkedése azonos.
 - **AY session**: Nyitott teendők #1 — inline HTML/CSS kiemelés `SharedEditorComponents.swift`-ből:
   `resources/markdown-template.html` + `resources/markdown-style.css` új bundle resource-ok (placeholder csere
   + `var(--theme-amber)`); globális `markdownCSS` var törölve; `reload(_:into:)` bundle-ből olvas +
@@ -88,19 +90,18 @@ a manual (`BUG-MANUAL-1`) MINDIG UTOLSÓ, mert screenshotjai csak a végleges UI
    auto-save/onDisappear interakció gyanús)
 2. **BUG-DETAILDELETE-1** 🔴 — `CountdownDetailView`-n item törlésekor a sheet/nav nem csukódik be automatikusan;
    a felhasználó egy már nem létező item részletein marad — törlés után vissza kell navigálni `CountdownView`-ra
-3. **BUG-NOTESDISMISS-1** 🔴 — `NotesSheet` X gombja szó nélkül ment+dismiss, nem követi a `SnippetEditSheet`
-   (AZ session) dirty-check + confirm alert mintáját — felhasználó jelezte utólag, a BA session tévesen
-   állította késznek
-4. **ENH-NOTEBADGE-1** 🟢 — vizuális jelzés a countdown itemen, ha van hozzá note: pici badge a név mögött,
+3. ~~**BUG-NOTESDISMISS-1**~~ ✅ KÉSZ (BC session) — debounce eltávolítva, `originalNotes` baseline, X viselkedés egységes
+4. ~~**BUG-CHECKMARKDIRTY-1**~~ ✅ KÉSZ (BC session) — `let` → `var`, `commitEdit()` baseline refresh
+5. **ENH-NOTEBADGE-1** 🟢 — vizuális jelzés a countdown itemen, ha van hozzá note: pici badge a név mögött,
    szín **orangered** (lezárva, új `AppTheme` token szükséges), forma (dot/szem-ikon/note-ikon) még nyitott —
    ez a manual előtt valósítandó meg (lásd függőség lent)
-5. **UX-2** 🟡 — főablak max szélesség 520pt → 600pt (UX-1/AU session döntésének felülvizsgálata); alternatíva:
+6. **UX-2** 🟡 — főablak max szélesség 520pt → 600pt (UX-1/AU session döntésének felülvizsgálata); alternatíva:
    fix 500pt, nem átméretezhető — egyeztetés szükséges melyik irány
-6. **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik, megírandó
-7. **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása: lokalizáció, UI nyelv, input nyelv/locale-ok külön
+7. **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik, megírandó
+8. **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása: lokalizáció, UI nyelv, input nyelv/locale-ok külön
    kezelése; ehhez Settings menü + About + Help menü (még egyik sincs megvalósítva)
-8. **BUG-MANUAL-1** 🟡 — UTOLSÓKÉNT: manual frissítése a bezárási metódus (pipa/X) változása miatt
-   (AZ session) + `ENH-NOTEBADGE-1` és minden más UI-t érintő változás eredménye — screenshotok
+9. **BUG-MANUAL-1** 🟡 — UTOLSÓKÉNT: manual frissítése a bezárási metódus (pipa/X) változása miatt
+   (AZ + BC session) + `ENH-NOTEBADGE-1` és minden más UI-t érintő változás eredménye — screenshotok
    csak akkor készüljenek, ha a fenti pontok már készen vannak
 
 ---
