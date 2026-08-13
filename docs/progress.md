@@ -1,5 +1,28 @@
 # countdownApp — Progress
 
+## Session AQ — 2026-08-13 (D-3 static load/save)
+
+### Session AQ — LEZÁRVA
+- [x] **D-3** — static load/save metódusok a modell fájlokban:
+  - `CountdownItem.swift` — `extension Persistence`: `static func load(dumpPolicy: (Any) -> Bool = { _ in true }) -> [CountdownItem]` + `static func save(_ items:)`;
+    `dumpPolicy` closure: a hívó dönt, melyik corrupt elem kerül dump-ba — `CountdownView` a notes-predikátumot adja át, az összes többi caller az alapértelmezett (mindig dump)
+  - `NamedDeadline.swift` — `extension Persistence`: `static func load() -> [NamedDeadline]` + `static func save(_ deadlines:)`;
+    Snippet-minta: per-item recovery, corrupt fragmentek → `AppKeys.appendCorruptFragments`
+  - `CountdownView.swift` — `private func save()` + `private func load()` törölve;
+    `.onAppear`: `items = CountdownItem.load { notes-predikátum }`;
+    `.onChange(of: items)`: `CountdownItem.save(items)`;
+    `storageKey` property törölve (már nem kell)
+  - `CalculateView.swift` — `private func loadDeadlines()` + `private func saveDeadlines()` törölve;
+    `.onAppear`: `namedDeadlines = NamedDeadline.load()`;
+    `onDismiss` closure: `namedDeadlines = NamedDeadline.load()`;
+    `onDelete`/`onRename`: `NamedDeadline.save(namedDeadlines)`;
+    `addNamedDeadline`: `NamedDeadline.save(namedDeadlines)`
+- [x] Git commit: `c2570aa`
+
+**Következő session:** D-5, D-1, D-2 — egyeztetéssel
+
+---
+
 ## Session AN — 2026-08-13 (F-3 shared ComponentStepper)
 
 ### Session AN — LEZÁRVA

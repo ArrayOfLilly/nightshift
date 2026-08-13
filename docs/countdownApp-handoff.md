@@ -63,6 +63,7 @@
 ## Következő session feladata
 
 - **D-4 ✅ KÉSZ** (AP session)
+- **D-3 ✅ KÉSZ** (AQ session)
 - **E-1 ✅ KÉSZ** (AM session)
 - **F-3 ✅ KÉSZ** (AN session)
 - **F-9 ✅ KÉSZ** (AO session)
@@ -136,7 +137,12 @@ countdownAppApp.swift
 ```
 - **AO session**: F-9 — `AppTheme` corner radii tokenek (`radiusSmall/Medium/Large`), alpha tokenek (`alpha08`…`alpha90`); 14 fájl érintett; CSS border-radius értékek (markdownCSS) érintetlenek. Git commit: TODO
 - **AP session**: D-4 — `DeadlineDetailSheet.swift` új fájl; `AppTheme.calcSaveGradient` új token;
-  `CalculateView`: `isRenamingDeadline`/`renameDraft`/`showDeleteDeadlineConfirm` state-ek + `deadlineDetailContent()` func + `calcSaveGradient` private var eltávolítva. Git commit: TODO
+  `CalculateView`: `isRenamingDeadline`/`renameDraft`/`showDeleteDeadlineConfirm` state-ek + `deadlineDetailContent()` func + `calcSaveGradient` private var eltávolítva. Git commit: `d46824d`
+- **AQ session**: D-3 — static load/save a modell fájlokban:
+  `CountdownItem.swift` + `NamedDeadline.swift`: `extension Persistence` (load/save static metódusok, Snippet-minta);
+  `CountdownItem.load(dumpPolicy:)`: closure param a notes-alapú corrupt dump döntéshez;
+  `CountdownView`: `save()`/`load()` private func + `storageKey` eltávolítva, call site-ok direkt static hívásokra;
+  `CalculateView`: `loadDeadlines()`/`saveDeadlines()` eltávolítva, call site-ok direkt static hívásokra. Git commit: `c2570aa`
 
 ## D kategória — sorrend és döntések
 
