@@ -7,12 +7,8 @@
 //  Reached via NavigationLink from CountdownView.
 //  Deadline is editable via component steppers (year/month/day/hour/minute).
 //
-//  Label editing uses FocusedNSTextField (NSViewRepresentable) instead of SwiftUI
-//  TextField + @FocusState. @FocusState inside a NavigationLink destination on macOS
-//  causes FocusBridge to attempt first-responder assignment before the view is
-//  attached to a window, producing a KeyViewProxy/window-mismatch crash on every
-//  render pass (toggle, TimelineView tick, etc.). NSTextField manages its own
-//  first-responder lifecycle through AppKit and does not go through FocusBridge.
+//  Label editing uses FocusedNSTextField (FocusedNSTextField.swift) — see that
+//  file for the rationale (AppKit first-responder vs. SwiftUI FocusBridge crash).
 //
 //  SOUND-1: Sound toggle button added to the bottom button row (all slot types).
 //  speaker.wave.2.fill when enabled, speaker.slash.fill when disabled.
@@ -34,116 +30,6 @@
 
 import SwiftUI
 import AppKit
-
-// MARK: - NSViewRepresentable label text field
-
-/// A plain NSTextField wrapper that:
-/// - matches the Alien League Bold 36pt / kerning-4 / dark-0.8 style
-/// - requests first responder via the AppKit window directly (no SwiftUI FocusBridge)
-/// - calls `onCommit` on Return key or focus loss
-private struct FocusedNSTextField: NSViewRepresentable {
-
-    @Binding var text: String
-    var onCommit: () -> Void
-
-    func makeNSView(context: Context) -> NSTextField {
-        let tf = NSTextField()
-        tf.delegate = context.coordinator
-        tf.isBordered = false
-        tf.isBezeled = false
-        tf.drawsBackground = false
-        tf.focusRingType = .none
-        tf.lineBreakMode = .byTruncatingTail
-        tf.maximumNumberOfLines = 1
-        // Font and color are static — set once here so updateNSView (called
-        // on every TimelineView tick) does not recreate NSFont each second.
-        if let font = NSFont(name: "AlienLeagueBold", size: 36)
-            ?? NSFont(name: "Alien League Bold", size: 36) {
-            tf.font = font
-        } else {
-            tf.font = NSFont.boldSystemFont(ofSize: 36)
-        }
-        tf.textColor = NSColor(AppTheme.dark).withAlphaComponent(0.8)
-        // Suppress the grey inactive-selection highlight by using a fully
-        // transparent selection background. The active selection uses a subtle
-        // white tint so it is still legible while editing.
-        NotificationCenter.default.addObserver(
-            context.coordinator,
-            selector: #selector(Coordinator.windowDidResignKey(_:)),
-            name: NSWindow.didResignKeyNotification,
-            object: nil
-        )
-        return tf
-    }
-
-    func updateNSView(_ nsView: NSTextField, context: Context) {
-        if !context.coordinator.isEditing {
-            nsView.stringValue = text
-        }
-        // Font and color are set once in makeNSView; no work needed here.
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text, onCommit: onCommit)
-    }
-
-    final class Coordinator: NSObject, NSTextFieldDelegate {
-        @Binding var text: String
-        var onCommit: () -> Void
-        var isEditing: Bool = false
-
-        init(text: Binding<String>, onCommit: @escaping () -> Void) {
-            _text = text
-            self.onCommit = onCommit
-        }
-
-        deinit {
-            NotificationCenter.default.removeObserver(self)
-        }
-
-        func controlTextDidBeginEditing(_ obj: Notification) {
-            isEditing = true
-            // Set subtle white selection for active editing.
-            if let tv = (obj.object as? NSTextField)?.currentEditor() as? NSTextView {
-                tv.selectedTextAttributes = [
-                    .backgroundColor: NSColor.white.withAlphaComponent(0.25),
-                    .foregroundColor: NSColor(AppTheme.dark).withAlphaComponent(0.8)
-                ]
-            }
-        }
-
-        @objc func windowDidResignKey(_ notification: Notification) {
-            // When the window loses focus, clear any lingering selection highlight.
-            isEditing = false
-            onCommit()
-        }
-
-        func controlTextDidChange(_ obj: Notification) {
-            guard let tf = obj.object as? NSTextField else { return }
-            text = tf.stringValue
-        }
-
-        func controlTextDidEndEditing(_ obj: Notification) {
-            isEditing = false
-            // Clear selection so the inactive highlight does not remain visible
-            // when the window loses focus mid-edit.
-            if let tf = obj.object as? NSTextField {
-                tf.currentEditor()?.selectedRange = NSRange(location: 0, length: 0)
-            }
-            onCommit()
-        }
-
-        func control(_ control: NSControl, textView: NSTextView,
-                     doCommandBy selector: Selector) -> Bool {
-            if selector == #selector(NSResponder.insertNewline(_:)) {
-                onCommit()
-                control.window?.makeFirstResponder(nil)
-                return true
-            }
-            return false
-        }
-    }
-}
 
 // MARK: - CountdownDetailView
 

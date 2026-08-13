@@ -563,7 +563,7 @@ G kategória lezárul.
   - `SnippetEditSheet`: `max: 900` → `AppTheme.windowMaxWidth`, height `max: 680` → `600`; komment frissítve
   - `NotesSheet`: `max: 900` → `AppTheme.windowMaxWidth`; komment frissítve
   - `AddCountdownSheet`: `max: 560` → `AppTheme.windowMaxWidth`
-- [ ] Git commit: PENDING
+- [x] Git commit: `4bbe75e`
 
 ---
 
