@@ -88,7 +88,7 @@ struct CountdownView: View {
                     let id = item.id
                     items.removeAll { $0.id == id }
                     freeOrder.removeAll { $0 == id }
-                    save()
+                    CountdownItem.save(items)
                     saveFreeOrder()
                 }
             }

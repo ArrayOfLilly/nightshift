@@ -1,5 +1,18 @@
 # countdownApp — Progress
 
+## Session AR — 2026-08-13 (D-3 bugfix: stale save() call)
+
+### Session AR — LEZÁRVA
+- [x] **D-3 bugfix** — `CountdownView.swift:91` `Cannot find 'save' in scope`:
+  - `.navigationDestination` delete callback-jében `save()` hívás maradt a D-3 refaktor után,
+    ahol a `private func save()` törlésre került
+  - Fix: `save()` → `CountdownItem.save(items)` (egy sor, surgical edit_block)
+- [x] Git commit: PENDING
+
+**Következő session:** D-5, D-1, D-2 — egyeztetéssel
+
+---
+
 ## Session AQ — 2026-08-13 (D-3 static load/save)
 
 ### Session AQ — LEZÁRVA
