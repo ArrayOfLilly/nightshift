@@ -60,7 +60,11 @@ struct MarkdownWebView: NSViewRepresentable {
                      ?? Bundle.main.url(forResource: "marked.umd", withExtension: "js")
         let fontFaceCSS = mozillaHeadlineFontFaceCSS() + robotoFlexFontFaceCSS()
         guard let markedURL,
-              let markedJS = try? String(contentsOf: markedURL, encoding: .utf8)
+              let templateURL = Bundle.main.url(forResource: "markdown-template", withExtension: "html"),
+              let cssURL = Bundle.main.url(forResource: "markdown-style", withExtension: "css"),
+              let markedJS = try? String(contentsOf: markedURL, encoding: .utf8),
+              let templateHTML = try? String(contentsOf: templateURL, encoding: .utf8),
+              let markdownCSS = try? String(contentsOf: cssURL, encoding: .utf8)
         else {
             let escaped = raw
                 .replacingOccurrences(of: "&", with: "&amp;")
@@ -76,13 +80,12 @@ struct MarkdownWebView: NSViewRepresentable {
             .replacingOccurrences(of: "`", with: "\\`")
             .replacingOccurrences(of: "${", with: "\\${")
             .replacingOccurrences(of: "</script>", with: "<\\/script>")
-        let html = """
-        <!DOCTYPE html><html><head><meta charset="utf-8">
-        <style>\(fontFaceCSS)\(markdownCSS)</style></head><body>
-        <script>\(markedJS)</script>
-        <script>document.body.innerHTML = marked.parse(`\(escaped)`);</script>
-        </body></html>
-        """
+        let html = templateHTML
+            .replacingOccurrences(of: "{{THEME_AMBER}}", with: AppTheme.amberHex)
+            .replacingOccurrences(of: "{{FONT_FACE_CSS}}", with: fontFaceCSS)
+            .replacingOccurrences(of: "{{MARKDOWN_CSS}}", with: markdownCSS)
+            .replacingOccurrences(of: "{{MARKED_JS}}", with: markedJS)
+            .replacingOccurrences(of: "{{ESCAPED_MARKDOWN}}", with: escaped)
         wv.loadHTMLString(html, baseURL: Bundle.main.bundleURL)
     }
 
@@ -126,46 +129,18 @@ struct MarkdownWebView: NSViewRepresentable {
                                            withTemplate: "<mark>$1</mark>")
     }
 
+    /// Minimal inline fallback — used only when a required bundle resource
+    /// (marked.min.js, markdown-template.html, or markdown-style.css) failed to
+    /// load. Deliberately not the full markdownCSS from the bundle: if the bundle
+    /// itself is the problem, we can't rely on reading more files from it.
     private func fallbackHTML(_ body: String, fontFaceCSS: String = "") -> String {
-        "<html><head><style>\(fontFaceCSS)\(markdownCSS)</style></head><body><p>\(body)</p></body></html>"
+        """
+        <html><head><style>\(fontFaceCSS)
+        body { background: #060503; color: rgba(255,255,255,0.85); \
+        font-family: 'Mozilla Headline', 'Helvetica Neue', sans-serif; padding: 20px 24px 40px; }
+        </style></head><body><p>\(body)</p></body></html>
+        """
     }
-}
-
-// MARK: - Shared CSS (used by both NotesSheet and SnippetEditSheet)
-
-// Computed so that AppTheme.amberHex is the single source of truth for amber in CSS.
-// rgba(245,166,35,…) in the mark rule is intentionally kept literal — it carries opacity
-// and has no direct AppTheme equivalent.
-var markdownCSS: String {
-"""
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-    background: #060503;
-    color: rgba(255,255,255,0.85);
-    font-family: 'Mozilla Headline', 'Helvetica Neue', sans-serif;
-    font-size: 14px;
-    line-height: 1.65;
-    padding: 20px 24px 40px;
-}
-h1, h2, h3 {
-    color: \(AppTheme.amberHex);
-    font-family: 'AlienLeagueBold', 'Alien League Bold', system-ui;
-    margin-top: 1.2em; margin-bottom: 0.4em; letter-spacing: 1px;
-}
-h1 { font-size: 20px; } h2 { font-size: 16px; } h3 { font-size: 14px; }
-p { margin-bottom: 0.8em; }
-ul, ol { padding-left: 1.4em; margin-bottom: 0.8em; }
-li { margin-bottom: 0.2em; }
-code { background: rgba(255,255,255,0.08); border-radius: 4px; padding: 1px 5px; font-size: 12px; color: \(AppTheme.amberHex); font-family: 'Menlo', 'Monaco', 'Courier New', monospace; }
-pre { background: rgba(255,255,255,0.07); border-left: 3px solid \(AppTheme.amberHex); border-radius: 6px;
-      padding: 12px 14px; overflow-x: auto; margin-bottom: 0.9em; }
-pre code { background: none; padding: 0; color: \(AppTheme.amberHex); font-family: 'Menlo', 'Monaco', 'Courier New', monospace; }
-mark { background: rgba(245,166,35,0.35); color: #fff; border-radius: 3px; padding: 0 3px; }
-table { border-collapse: collapse; width: 100%; margin-bottom: 0.9em; }
-th, td { border: 1px solid rgba(255,255,255,0.18); padding: 6px 10px; text-align: left; }
-tr:nth-child(even) { background: rgba(255,255,255,0.04); }
-a { color: \(AppTheme.amberHex); }
-"""
 }
 
 // MARK: - PlainTextEditor

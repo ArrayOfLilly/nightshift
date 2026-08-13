@@ -59,25 +59,30 @@
   F-1: `WindowHelpers.swift` új fájl (`enum WindowHelpers`, `windowConstrainedWidth` + `windowConstrainedHeight`), mind az 5 call site migrálva (NotesSheet, SnippetEditSheet, CalculateView, ColorPickerSheet, AddCountdownSheet); `SnippetEditSheet.windowMargin` property eltávolítva. Git commit: `4fd8eef`
 - **AU session**: UX-1 — `AppTheme.windowMinWidth = 460`, `windowMaxWidth = 520`; `ContentView` frame constraint frissítve; git commit `37b1674`
 - **AV session**: D-1 — `FocusedNSTextField.swift` új fájl; `CountdownDetailView.swift` ~110 sor (FocusedNSTextField blokk) eltávolítva; git commit `01e652f`
+- **AY session**: Nyitott teendők #1 — inline HTML/CSS kiemelés `SharedEditorComponents.swift`-ből:
+  `resources/markdown-template.html` + `resources/markdown-style.css` új bundle resource-ok (placeholder csere
+  + `var(--theme-amber)`); globális `markdownCSS` var törölve; `reload(_:into:)` bundle-ből olvas +
+  `replacingOccurrences` placeholder-cserével; `fallbackHTML` inline minimál CSS-re cserélve.
+  Project file-system-synchronized group, nincs `.pbxproj` szerkesztés szükséges. **Build NINCS ellenőrizve**
+  ebben a sessionben. Git commit: PENDING
 
 ---
 
 ## Következő session feladata
 
-**AY session egyeztetés eredménye (nincs implementáció, nincs commit):**
+**AY session (inline HTML/CSS kiemelés) — implementáció kész, build ELLENŐRZÉS PENDING:**
+- `resources/markdown-template.html` + `resources/markdown-style.css` létrehozva; `SharedEditorComponents.swift`
+  `reload(_:into:)` + `fallbackHTML` frissítve; globális `markdownCSS` var törölve. Részletek: progress.md AY.
+- **Első lépés a következő sessionben: Xcode build futtatása** — MCP-n keresztül nem volt elérhető build
+  ebben a sessionben, úgyhogy a bundle resource betöltés (fájlnév egyezés, placeholder csere) nincs
+  ténylegesen verifikálva. Ha OK: git commit. Ha hiba: fix ugyanebben a sessionben.
 
-1. **Inline HTML/CSS string literálok** (`SharedEditorComponents.swift` `markdownCSS`) — **döntés lezárva:**
-   - `markdown-template.html` + `markdown-style.css` → új bundle resource-ok
-   - CSS változó: `var(--theme-amber)` (nem Swift interpoláció)
-   - Swift oldal: bundle olvasás + `String.replacingOccurrences` placeholder csere (`{{THEME_AMBER}}`, `{{FONT_FACE_CSS}}`, `{{MARKDOWN_CSS}}`, `{{MARKED_JS}}`, `{{ESCAPED_MARKDOWN}}`)
-   - Builder nincs
-   - `AppTheme.amberHex` szinkron megmarad
-   - Érintett: `SharedEditorComponents.swift` + 2 új fájl; `marked.min.js` marad ahol van
-2. **Mappastruktúra** — fájlrendszer szintű mappák (nem Xcode virtuális groupok); struktúra tervezés + implementáció külön session
-3. **Bug: pipa ment / X csak dismiss** (`NotesSheet`, `SnippetEditSheet`) — egyeztetés lezárva, implementáció következő session:
-   - Pipa: ment + dismiss (EDIT módban)
-   - X: dirty state → confirm alert ("Quit without saving" / "Cancel" / "Save and quit"); tiszta state → egyszerű dismiss
-   - Dirty definíció: NotesSheet: `draft != notes`; SnippetEditSheet: bármely mező (`title`, `project`, `snippetBody`) eltér az eredetitől
+**Nyitott teendők (egyeztetés szükséges, sorrend meghatározandó):**
+
+1. **Mappastruktúra** — fájlrendszer szintű mappák (nem Xcode virtuális groupok); struktúra tervezés + implementáció külön session.
+   Megjegyzés: a `countdownApp/countdownApp/` alatt már léteznek alkönyvtárak (`App/`, `Components/`, `Models/`,
+   `Services/`, `Theme/`, `Views/`, `resources/`) — ez a fenti pont már részben megtörtént korábbi sessionben;
+   pontosítandó hogy mi maradt hátra.
 
 ---
 

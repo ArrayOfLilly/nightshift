@@ -1,5 +1,38 @@
 # countdownApp — Progress
 
+## Session BA — 2026-08-13 (ellenőrzés + dokumentáció szinkronizálás)
+
+### Session BA — LEZÁRVA
+- [x] Claude.md, progress.md, countdownApp-handoff.md elolvasva
+- [x] `NotesSheet.swift` + `SnippetEditSheet.swift` elolvasva — az AZ session implementációja teljes és helyes:
+  - `NotesSheet`: `handleDismiss()` debounce flush + dirty check + alert; `commitEdit()` flush + VIEW mód; alert: "Cancel" / "Quit without saving" / "Save and quit" ✅
+  - `SnippetEditSheet`: `originalTitle`/`originalProject`/`originalBody` `let` property-k; `isDirty` computed var; `shouldSaveOnDisappear` guard; `handleDismiss()` + `commitEdit()` azonos minta ✅
+- [x] Kódváltozás: **nincs** — feladat már implementálva volt az AZ sessionban
+- [x] `countdownApp-handoff.md` frissítve: "Következő session feladata" szekció az AZ lezárását tükrözi
+- Nincs git commit (dokumentáció-only session, kódváltozás nélkül)
+
+**Következő session:** Inline HTML/CSS string literálok (`SharedEditorComponents.swift`) VAGY mappastruktúra — egyeztetés alapján
+
+---
+
+## Session AZ — 2026-08-13 (SnippetEditSheet editor button behavior)
+
+### Session AZ — LEZÁRVA
+- [x] **SnippetEditSheet** — pipa/X viselkedés implementálva:
+  - `originalTitle`, `originalProject`, `originalBody` — `let` property-k, dirty baseline az `init`-ben
+  - `isDirty` — computed var: bármely mező eltér az originaltól
+  - `shouldSaveOnDisappear` — `@State`, false-ra állítva discard-dismiss előtt (megelőzi az `.onDisappear` auto-save-et)
+  - `commitEdit()` — checkmark (EDIT): `commitSave()` + `isEditing = false`; pencil (VIEW): `isEditing = true`
+  - `handleDismiss()` — clean: `shouldSaveOnDisappear = false` + `dismiss()`; dirty: `showDismissConfirm = true`
+  - `showDismissConfirm` alert: "Cancel" / "Quit without saving" (`shouldSaveOnDisappear=false` + dismiss) / "Save and quit"
+  - Fejléc komment frissítve (Session AZ save/dismiss logic dokumentálva)
+- [x] **NotesSheet** — nem érintett, már helyes volt (C-2/AF session: debounce, handleDismiss, showDismissConfirm alert)
+- [x] Git commit: `1124b32` (a commit egyben tartalmazza a korábban uncommitted mappastruktúra rename-eket is)
+
+**Következő session:** Inline HTML/CSS string literálok (`SharedEditorComponents.swift`) VAGY mappastruktúra Xcode projektfájl frissítés — egyeztetés alapján
+
+---
+
 ## Session AY — 2026-08-13 (tervezés + egyeztetés, nincs implementáció)
 
 ### Session AY — LEZÁRVA
@@ -639,3 +672,51 @@ G kategória lezárul.
   - View-kban nulla domain/business logika vagy dátumszámítás nem maradt; `cal` property megmaradt a `component(_:)` helper miatt (query, nem mutáció)
 - [ ] Git commit: PENDING
 
+
+## Session AY — 2026-08-13 (Inline HTML/CSS kiemelés — Nyitott teendők #1)
+
+### Session AY — LEZÁRVA
+- [x] **Nyitott teendők #1** — `SharedEditorComponents.swift` inline HTML/CSS string literálok kiemelve:
+  - `resources/markdown-template.html` — új bundle resource, `{{THEME_AMBER}}`, `{{FONT_FACE_CSS}}`,
+    `{{MARKDOWN_CSS}}`, `{{MARKED_JS}}`, `{{ESCAPED_MARKDOWN}}` placeholder-ekkel; `:root { --theme-amber }`
+  - `resources/markdown-style.css` — új bundle resource, teljes markdown CSS kiemelve; `var(--theme-amber)`
+    a korábbi Swift-interpolált `\(AppTheme.amberHex)` helyett (rgba(245,166,35,…) a `mark`-ban literál marad)
+  - `SharedEditorComponents.swift`:
+    - globális `markdownCSS` computed var törölve
+    - `reload(_:into:)` guard bővítve `templateURL`/`cssURL`/`templateHTML`/`markdownCSS` (local let) betöltéssel;
+      HTML összeállítás `templateHTML.replacingOccurrences` placeholder-cserével (Swift oldal 0 HTML/CSS)
+    - `fallbackHTML(_:fontFaceCSS:)` — inline minimál CSS-re cserélve (nem a bundle markdown-style.css-ből olvas,
+      mert ez a path pont a bundle-olvasási hiba esete)
+  - Project: file-system-synchronized group (`countdownApp.xcodeproj` — `FileSystemSynchronizedRootGroup`),
+    a `resources/` mappába rakott új fájlok automatikusan bundle resource-ok, nincs `.pbxproj` szerkesztés
+  - Build: NEM futtatva ebben a sessionben (nincs hozzáférés Xcode buildhez az MCP-n keresztül) — **következő
+    session elején ellenőrizendő**
+- [x] Build OK, CSS bundle betöltés működik
+- [x] Git commit: `TBD` (lásd session végi commit)
+
+**Következő session:** Nyitott teendők #2 (mappastruktúra) — egyeztetéssel kezd
+
+---
+
+## Session AY (folyt.) — build hiba fix: CODE_SIGN_ENTITLEMENTS stale path
+
+- [x] Build hiba: `countdownApp.entitlements could not be opened` — a `.pbxproj`-ban
+  `CODE_SIGN_ENTITLEMENTS = countdownApp/countdownApp.entitlements` maradt egy korábbi session
+  óta, miközben a fájl ténylegesen `countdownApp/App/countdownApp.entitlements`-be lett átmozgatva
+  (mappastruktúra-rendezés, project-file-sync group nem szinkronizálja az explicit build setting path-okat)
+- [x] Fix: `CODE_SIGN_ENTITLEMENTS` mindkét configban (Debug + Release) →
+  `countdownApp/App/countdownApp.entitlements` — fájl a helyén marad, path frissítve hozzá
+  (nem a gyökérbe mozgatás, mert az App/ szervezés szándékos volt)
+- [ ] Git commit: PENDING (ugyanabba a commitba mehet az AY session többi változtatásával)
+
+---
+
+## Session AY (folyt. 2) — window resize bug fix: .windowResizability(.contentSize)
+
+- [x] Hiba: ablak natív macOS resize (pl. Fill & Arrange menü) hatására jóval `AppTheme.windowMaxWidth`
+  (520pt) fölé nőtt; a `ContentView.frame(maxWidth:)` csak a SwiftUI tartalmat korlátozta, magát az
+  NSWindow-t nem — üres terület maradt a keskeny tartalom mellett
+- [x] Fix: `countdownAppApp.swift` — `.windowResizability(.contentSize)` hozzáadva a `WindowGroup`
+  Scene-hez; az ablak átméretezhető tartománya mostantól a `ContentView` `frame(minWidth:maxWidth:)`-jéből
+  származik, fizikailag nem nőhet 520pt fölé
+- [ ] Git commit: PENDING (ugyanabba a commitba mehet az AY session többi változtatásával)

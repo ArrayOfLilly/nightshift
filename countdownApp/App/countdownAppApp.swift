@@ -45,6 +45,7 @@ struct countdownAppApp: App {
             ContentView()
                 .environmentObject(sunService)
         }
+        .windowResizability(.contentSize)
         #if DEBUG
         .commands {
             CommandMenu("Debug") {
