@@ -8,7 +8,7 @@
 - [x] `docs/buglist.md` új fájl — UX-1 bejegyzés (max-szélesség korlátok hiánya):
   főablak, componentStepper-ek, CountdownRowView sorok, SnippetsView sorok, popupok egyenkénti audit
 - [x] progress.md + handoff.md frissítve
-- [ ] Git commit: PENDING
+- [x] Git commit: `37b1674`
 
 **Következő session:** D-1 (`CountdownDetailView` kiemelés) — egyeztetéssel, vagy UX-1 implementáció (egyeztetés után)
 
