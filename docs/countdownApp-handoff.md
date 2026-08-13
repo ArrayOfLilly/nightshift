@@ -47,6 +47,11 @@
   E-4: `FocusedNSTextField` font+color → `makeNSView`-ba, `updateNSView` csak stringValue (1Hz AppKit pass megszűnt);
   E-2: `loadDeadlines` `onDismiss`-ben mindkét CalculateView sheet-en;
   F-10: `showDeleteAlert` → `showDeleteConfirm` (SnippetEditSheet), `showDeleteProjectAlert` → `showDeleteProjectConfirm` (SnippetsView). Git commit: `550afe9`
+- **AM session**: E-1 — `CalculationModal` enum: `showSaveSheet: Bool` + `selectedDeadline: NamedDeadline?` eltavolitva;
+  `private enum CalculationModal: Identifiable` (nested, `case saveSheet` + `case deadlineDetail(NamedDeadline)`);
+  `activeModal: CalculationModal? = nil` egyetlen state; ket `.sheet` modifier egysitve;
+  7 call site migralva. `isRenamingDeadline` marad (D-4), `showDeleteDeadlineConfirm` marad (`.alert` kenyszer).
+  Build OK. Git commit: TODO
 - **AL session**: AppTheme tokenek + WindowHelpers —
   F-7: `CalculateView.calcSaveGradient` `Color(red: 0x59/255, ...)` → `AppTheme.freeColors[7].opacity(0.35)`;
   F-8: `SnippetEditSheet.ProjectField` body bg → `AppTheme.freeColors[10]`, suggestionList bg → `AppTheme.freeColors[6]`;
@@ -56,7 +61,7 @@
 
 ## Következő session feladata
 
-- **E-1** — `CalculateView` Boolean sprawl → `enum CalculationModalState` — egyeztetés alapján (közepes)
+- **E-1 ✅ KÉSZ** (AM session)
 - **F-3** — `componentStepper` 3 impl → shared `ComponentStepper` view, LongPress egységesítve — önálló session (nagy)
 - **F-9** — magic numbers (corner radii, opacity) — külön session (nagy volumen)
 - **F-1 ✅ KÉSZ** (AL session), **F-7 ✅ KÉSZ** (AL session), **F-8 ✅ KÉSZ** (AL session)

@@ -38,13 +38,26 @@ struct CalculateView: View {
     @State private var hoverTask: Task<Void, Never>?
     @State private var todaySunTimes: SunTimes? = nil
 
+    // CALC-SAVE: modal state — enum prevents simultaneous saveSheet + deadlineDetail presentation.
+    // isRenamingDeadline is sub-state within deadlineDetail; deferred to D-4 (DeadlineDetailSheet struct).
+    private enum CalculationModal: Identifiable {
+        case saveSheet
+        case deadlineDetail(NamedDeadline)
+
+        var id: String {
+            switch self {
+            case .saveSheet:                    return "saveSheet"
+            case .deadlineDetail(let deadline): return "deadlineDetail-\(deadline.id)"
+            }
+        }
+    }
+
     // CALC-SAVE: named deadlines
-    @State private var namedDeadlines:          [NamedDeadline] = []
-    @State private var showSaveSheet:           Bool            = false
-    @State private var saveTitleDraft:          String          = ""
-    @State private var showDeadlineListPopover: Bool            = false
-    @State private var selectedDeadline:        NamedDeadline?  = nil
-    @State private var isRenamingDeadline:      Bool            = false
+    @State private var namedDeadlines:          [NamedDeadline]  = []
+    @State private var activeModal:             CalculationModal? = nil
+    @State private var saveTitleDraft:          String            = ""
+    @State private var showDeadlineListPopover: Bool              = false
+    @State private var isRenamingDeadline:      Bool              = false
     @State private var renameDraft:             String          = ""
     @State private var showDeleteDeadlineConfirm: Bool          = false
     @State private var popoverWidth:            CGFloat         = 280
@@ -169,9 +182,17 @@ struct CalculateView: View {
             corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
         }
         #endif
-        // E-2: reload after each sheet dismissal so the deadline list is never stale.
-        .sheet(isPresented: $showSaveSheet, onDismiss: loadDeadlines) { saveSheetContent }
-        .sheet(item: $selectedDeadline, onDismiss: loadDeadlines) { deadline in deadlineDetailContent(deadline) }
+        // E-1: single .sheet(item:) on CalculationModal — impossible to open saveSheet and
+        //      deadlineDetail simultaneously (was: two separate .sheet modifiers).
+        // E-2: onDismiss: loadDeadlines keeps namedDeadlines fresh after any sheet dismissal.
+        .sheet(item: $activeModal, onDismiss: loadDeadlines) { modal in
+            switch modal {
+            case .saveSheet:
+                saveSheetContent
+            case .deadlineDetail(let deadline):
+                deadlineDetailContent(deadline)
+            }
+        }
     }
 
     // MARK: - Corruption banner
@@ -379,7 +400,7 @@ struct CalculateView: View {
         HStack(spacing: 0) {
             Button {
                 saveTitleDraft = ""
-                showSaveSheet = true
+                activeModal = .saveSheet
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: "bookmark.fill")
@@ -466,7 +487,7 @@ struct CalculateView: View {
                 ForEach(namedDeadlines) { deadline in
                     Button {
                         showDeadlineListPopover = false
-                        DispatchQueue.main.async { selectedDeadline = deadline }
+                        DispatchQueue.main.async { activeModal = .deadlineDetail(deadline) }
                     } label: {
                         HStack(alignment: .center, spacing: 6) {
                             Text(deadline.title)
@@ -553,7 +574,7 @@ struct CalculateView: View {
                 HStack(spacing: 12) {
                     Spacer()
                     Button("CANCEL") {
-                        showSaveSheet = false
+                        activeModal = nil
                     }
                     .buttonStyle(.plain)
                     .focusable(false)
@@ -567,7 +588,7 @@ struct CalculateView: View {
                     Button("SAVE") {
                         let trimmed = saveTitleDraft.trimmingCharacters(in: .whitespaces)
                         if !trimmed.isEmpty { addNamedDeadline(title: trimmed) }
-                        showSaveSheet = false
+                        activeModal = nil
                     }
                     .buttonStyle(.plain)
                     .focusable(false)
@@ -626,7 +647,7 @@ struct CalculateView: View {
                 }
                 .frame(maxWidth: .infinity)
 
-                Button { selectedDeadline = nil } label: {
+                Button { activeModal = nil } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(Color.white.opacity(0.5))
@@ -687,7 +708,7 @@ struct CalculateView: View {
                 HStack(spacing: 16) {
                     Button {
                         toInterval = deadline.date.timeIntervalSince1970
-                        selectedDeadline = nil
+                        activeModal = nil
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "arrow.down.to.line")
@@ -736,7 +757,7 @@ struct CalculateView: View {
                         Button("Delete", role: .destructive) {
                             namedDeadlines.removeAll { $0.id == deadline.id }
                             saveDeadlines()
-                            selectedDeadline = nil
+                            activeModal = nil
                         }
                         Button("Cancel", role: .cancel) { }
                     } message: {

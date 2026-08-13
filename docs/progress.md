@@ -1,5 +1,25 @@
 # countdownApp — Progress
 
+## Session AM — 2026-08-13 (E-1 CalculationModal enum)
+
+### Session AM — LEZARVA
+- [x] **E-1** — `CalculateView` Boolean sprawl enum-ra:
+  - `showSaveSheet: Bool` + `selectedDeadline: NamedDeadline?` eltavolitva
+  - `private enum CalculationModal: Identifiable` bevezetve (nested, `CalculateView`-on belul):
+    `case saveSheet`, `case deadlineDetail(NamedDeadline)`, `var id: String`
+  - `@State private var activeModal: CalculationModal? = nil` egyetlen state
+  - Ket `.sheet` modifier egysitve: `.sheet(item: $activeModal, onDismiss: loadDeadlines)`
+  - 7 call site migralva: saveButton, deadlineListPopoverContent gomb,
+    saveSheetContent CANCEL + SAVE, deadlineDetailContent xmark + LOAD AS TO + delete alert
+  - `isRenamingDeadline` marad (D-4-re halasztva); `showDeleteDeadlineConfirm` marad
+    (`.alert(isPresented:)` technikai kenyszer)
+  - Build OK
+- [ ] Git commit: PENDING
+
+**Kovetkezo session:** F-3 (`componentStepper` 3 impl shared `ComponentStepper` view)
+
+---
+
 ## Session AL — 2026-08-13 (F-7, F-8, F-1, E-1 scope fix)
 
 ### Session AL — LEZÁRVA
