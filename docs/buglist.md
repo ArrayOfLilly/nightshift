@@ -105,7 +105,8 @@ recovery infrastruktúra, hogyan fejlesztünk egy új feature-t) — jelenleg cs
 Az editorban (`SnippetEditSheet` feltételezhetően, pontosítandó) a trash gomb látszólag törli a snippetet,
 de a törlés után visszakerül (feltehetően auto-save / `.onDisappear` / dirty-state interakció miatt).
 
-**Státusz:** NYITOTT — root cause vizsgálat szükséges (melyik view pontosan, mi írja vissza), implementáció külön session
+**Státusz:** ✅ KÉSZ — BE session: `shouldSaveOnDisappear = false` a delete alert destructive ágában,
+`.onDisappear` nem hívja `commitSave()`-t törlés után. Git commit: `6dfb0ab`
 
 ---
 

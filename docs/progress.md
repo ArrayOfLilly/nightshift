@@ -803,3 +803,17 @@ G kategória lezárul.
 
 **Következő session:** BUG-TRASH-1 🔴 (editor trash visszateszi a törölt snippetet) vagy
 ENH-NOTEBADGE-1 🟢 (note badge a countdown itemen) — egyeztetés alapján
+
+---
+
+## Session BE — 2026-08-13 (BUG-TRASH-1)
+
+### Session BE — LEZÁRVA
+- [x] `SnippetEditSheet.swift` elolvasva — root cause azonnal megvolt
+- [x] **BUG-TRASH-1** — delete alert destructive ágában `shouldSaveOnDisappear = false` hozzáadva
+  a `onDelete?(id)` + `dismiss()` elé; `.onDisappear` így nem hívja `commitSave()`-t törlés után
+  (azonos minta mint a "Quit without saving" ág)
+- [x] Build OK, git commit: `6dfb0ab`
+- [x] docs frissítve
+
+**Következő session:** ENH-NOTEBADGE-1 🟢 vagy UX-2 🟡 — egyeztetés alapján

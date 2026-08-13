@@ -88,9 +88,8 @@
 **Buglist — 8 bejegyzés (`docs/buglist.md`), mind egyeztetésre vár implementáció előtt — fontos sorrend:
 a manual (`BUG-MANUAL-1`) MINDIG UTOLSÓ, mert screenshotjai csak a végleges UI állapotot tükrözhetik:**
 
-1. **BUG-TRASH-1** 🔴 — SnippetEditSheet/NotesSheet editor trash gombja nem törli véglegesen a snippetet:
-   törli, majd visszateszi — pontos root cause a következő sessionben vizsgálandó (trash handler + esetleges
-   auto-save/onDisappear interakció gyanús)
+1. ~~**BUG-TRASH-1**~~ ✅ KÉSZ (BE session) — `shouldSaveOnDisappear = false` a delete alert destructive
+   ágában; `.onDisappear` nem hívja `commitSave()`-t törlés után. Git commit: `6dfb0ab`
 2. ~~**BUG-DETAILDELETE-1**~~ ✅ KÉSZ (BD session) — `@Environment(\.dismiss)` + `dismiss()` a delete alert
    destructive ágában; navigáció visszaugrik `CountdownView`-ra törlés után. Git commit: `485e363`
 3. ~~**BUG-NOTESDISMISS-1**~~ ✅ KÉSZ (BC session) — debounce eltávolítva, `originalNotes` baseline, X viselkedés egységes
