@@ -17,7 +17,7 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `e6aa819` (BF session: ENH-NOTEBADGE-1 + UX-2)
+- Git: **naprakész** — legutóbbi commit `515aa7e` (BF session: ENH-NOTEBADGE-1 + UX-2 + BUG-MANUAL-1)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
@@ -65,9 +65,11 @@
 - **BC session**: BUG-CHECKMARKDIRTY-1 + BUG-NOTESDISMISS-1 — `SnippetEditSheet`: `let` → `var` az
   `original*` property-ken, `commitEdit()` baseline refresh; `NotesSheet`: debounce eltávolítva,
   `originalNotes` baseline bevezetve, `handleDismiss()` egységesítve — mindkét sheet X viselkedése azonos.
-- **BF session**: ENH-NOTEBADGE-1 + UX-2 — `AppTheme.noteIndicator` token (orangered);
-  `CountdownRowView` label box-ban `note.text` SF Symbol badge (`if !item.notes.isEmpty`, size 10, `.accessibilityHidden(true)`);
-  `AppTheme.windowMaxWidth` 520 → 600 (UX-2, comment frissítve). `ContentView` érintetlen.
+- **BF session**: ENH-NOTEBADGE-1 + UX-2 + BUG-MANUAL-1 — `AppTheme.noteIndicator` token (narancssárga);
+  `CountdownRowView` `eye.fill` badge (`!copyFeedback && !item.notes.isEmpty`);
+  `AppTheme.windowMaxWidth` 520 → 600; manual: `05e` + eye badge leírás, `11b` + Notes unsaved-changes
+  szekció, `17 Exit` + Snippets unsaved-changes szekció; HTML regenerálva.
+  Git commit: `e6aa819` + `d1ce48c` + `515aa7e`
 - **AY session**: Nyitott teendők #1 — inline HTML/CSS kiemelés `SharedEditorComponents.swift`-ből:
   `resources/markdown-template.html` + `resources/markdown-style.css` új bundle resource-ok (placeholder csere
   + `var(--theme-amber)`); globális `markdownCSS` var törölve; `reload(_:into:)` bundle-ből olvas +
@@ -102,9 +104,9 @@ a manual (`BUG-MANUAL-1`) MINDIG UTOLSÓ, mert screenshotjai csak a végleges UI
 7. **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik, megírandó
 8. **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása: lokalizáció, UI nyelv, input nyelv/locale-ok külön
    kezelése; ehhez Settings menü + About + Help menü (még egyik sincs megvalósítva)
-9. **BUG-MANUAL-1** 🟡 — UTOLSÓKÉNT: manual frissítése a bezárási metódus (pipa/X) változása miatt
-   (AZ + BC session) + `ENH-NOTEBADGE-1` és minden más UI-t érintő változás eredménye — screenshotok
-   csak akkor készüljenek, ha a fenti pontok már készen vannak
+9. ~~**BUG-MANUAL-1**~~ ✅ KÉSZ (BF session) — `05e` + eye badge, `11b` + Notes unsaved-changes, `17 Exit` + Snippets unsaved-changes; HTML regenerálva. Git: `515aa7e`
+
+**Buglist tiszta** — nyitott: ENH-DEVDOCS-1 🟡, ENH-DEFERRED-1 🟢 (nem bugok, dokumentáció/deferred)
 
 ---
 

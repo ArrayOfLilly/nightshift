@@ -1,22 +1,25 @@
 # countdownApp — Progress
 
-## Session BF — 2026-08-13 (ENH-NOTEBADGE-1 + UX-2)
+## Session BF — 2026-08-13 (ENH-NOTEBADGE-1 + UX-2 + BUG-MANUAL-1)
 
 ### Session BF — LEZÁRVA
 - [x] Claude.md, progress.md, countdownApp-handoff.md elolvasva
 - [x] `CountdownRowView.swift` + `AppTheme.swift` + `CountdownItem.swift` elolvasva
-- [x] **ENH-NOTEBADGE-1** — `AppTheme.noteIndicator` token (orangered, `Color(red:1.0, green:0.27, blue:0.0)`)
-  hozzáadva a Colors szekcióhoz; `CountdownRowView` label box `HStack`-jébe `note.text` SF Symbol ikon
-  (`system(size: 10, weight: .medium)`, `AppTheme.noteIndicator`), `if !item.notes.isEmpty` feltétellel,
-  `.accessibilityHidden(true)` (a label szövege már tartalmaz elegendő screen reader kontextust)
-- [x] **UX-2** — `AppTheme.windowMaxWidth` 520 → 600; comment frissítve (UX-2 hivatkozás);
-  `ContentView` érintetlen — már `AppTheme.windowMaxWidth` tokent használ (AU session)
+- [x] **ENH-NOTEBADGE-1** — `AppTheme.noteIndicator` token (orangered → polish: narancssárgára);
+  `CountdownRowView` label box `HStack`-jébe `eye.fill` SF Symbol ikon (`system(size: 10, weight: .medium)`,
+  `AppTheme.noteIndicator`), `!copyFeedback && !item.notes.isEmpty` feltétellel, `.accessibilityHidden(true)`
+- [x] **UX-2** — `AppTheme.windowMaxWidth` 520 → 600; comment frissítve; `ContentView` érintetlen
+- [x] **Badge polish** — `note.text` → `eye.fill`; szín `green: 0.27 → 0.45` (narancsosabb); copy alatt eltűnik
+- [x] **BUG-MANUAL-1** — manual frissítve:
+  - `05e` + eye badge leírás az "Active entry row" szekcióba
+  - `11b` + "Closing with unsaved changes" szekció a Notes részbe
+  - `17 Snippet Edtor - Exit.png` + "Closing with unsaved changes" szekció a Snippets részbe
+  - `manual_build.py` újrafuttatva → HTML regenerálva
 - [x] `docs/buglist.md` — ENH-NOTEBADGE-1 és UX-2 ✅ KÉSZ státuszra frissítve
 - [x] `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
-- Git commit: `e6aa819` + polish `d1ce48c` (eye.fill, narancsosabb szín, copy alatt eltűnik)
+- Git commit: `e6aa819` (badge+UX-2) + `d1ce48c` (badge polish) + `515aa7e` (manual)
 
-**Következő session:** BUG-MANUAL-1 🟡 (manual frissítése — screenshot + szöveg, ez az utolsó nyitott
-UI-t érintő feladat)
+**Következő session:** ENH-DEVDOCS-1 🟡 vagy ENH-DEFERRED-1 🟢 — buglist tiszta, csak ezek maradtak
 
 ---
 
