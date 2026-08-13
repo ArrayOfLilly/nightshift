@@ -43,7 +43,7 @@ struct CountdownRowView: View {
                 .padding(.vertical, 2)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(AppTheme.dark)
-                .clipShape(RoundedRectangle(cornerRadius: 5))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
                 .simultaneousGesture(TapGesture().onEnded {
                     let trimmed = item.label.trimmingCharacters(in: .whitespaces)
                     #if os(macOS)
@@ -62,15 +62,15 @@ struct CountdownRowView: View {
                 if expired {
                     Text("FREE ✓")
                         .font(AppTheme.alienLeagueBold(13))
-                        .foregroundStyle(Color.white.opacity(0.9))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha90))
                 } else {
                     Button { item.showRemaining.toggle() } label: {
                         Image(systemName: item.showRemaining ? "calendar" : "clock")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(AppTheme.dark.opacity(0.85))
+                            .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha90))
                             .frame(width: 42, height: 28)
-                            .background(Color.white.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: 7))
+                            .background(Color.white.opacity(AppTheme.alpha12))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                     .buttonStyle(.plain)
                     .focusable(false)
@@ -90,7 +90,7 @@ struct CountdownRowView: View {
                 } else {
                     Text(item.deadlineFormatted)
                         .font(AppTheme.alienLeague(20))
-                        .foregroundStyle(AppTheme.dark.opacity(0.9))
+                        .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha90))
                         .lineLimit(1)
                         .padding(.leading, 4)
                 }
@@ -98,9 +98,9 @@ struct CountdownRowView: View {
         }
         .padding(16)
         .background(accentColor)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusLarge))
         .shadow(
-            color: expired ? itemFreeColor.opacity(0.55) : .clear,
+            color: expired ? itemFreeColor.opacity(AppTheme.alpha60) : .clear,
             radius: 10, x: 0, y: 0
         )
     }

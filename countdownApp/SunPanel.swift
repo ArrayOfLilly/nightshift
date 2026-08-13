@@ -40,7 +40,7 @@ struct SunPanel: View {
         .background(
             LinearGradient(
                 stops: [
-                    .init(color: Color(red: 0x59/255, green: 0x3C/255, blue: 0x73/255).opacity(0.35), location: 0),
+                    .init(color: Color(red: 0x59/255, green: 0x3C/255, blue: 0x73/255).opacity(AppTheme.alpha35), location: 0),
                     .init(color: AppTheme.calculateBackground, location: 0.25),
                 ],
                 startPoint: .top,
@@ -195,7 +195,7 @@ struct SunPanel: View {
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
             .font(AppTheme.alienLeague(11))
-            .foregroundStyle(Color.white.opacity(0.5))
+            .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
             .padding(.bottom, 2)
     }
 
@@ -204,7 +204,7 @@ struct SunPanel: View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             Text(label)
                 .font(AppTheme.alienLeague(12))
-                .foregroundStyle(Color.white.opacity(0.5))
+                .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
             Spacer()
             Text(timeString(date))
                 .font(AppTheme.alienLeagueBold(15))
@@ -217,7 +217,7 @@ struct SunPanel: View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             Text(label)
                 .font(AppTheme.alienLeague(12))
-                .foregroundStyle(Color.white.opacity(0.5))
+                .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
             Spacer()
             Text(value)
                 .font(AppTheme.alienLeagueBold(13))
@@ -231,7 +231,7 @@ struct SunPanel: View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             Text(label)
                 .font(AppTheme.alienLeague(12))
-                .foregroundStyle(Color.white.opacity(0.5))
+                .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
             Spacer()
             Text("\(timeString(window.begin))–\(timeString(window.end))")
                 .font(AppTheme.alienLeagueBold(13))
@@ -243,13 +243,13 @@ struct SunPanel: View {
 
     private var sectionDivider: some View {
         Rectangle()
-            .fill(Color.white.opacity(0.08))
+            .fill(Color.white.opacity(AppTheme.alpha08))
             .frame(width: 1)
     }
 
     private var fullDivider: some View {
         Rectangle()
-            .fill(Color.white.opacity(0.08))
+            .fill(Color.white.opacity(AppTheme.alpha08))
             .frame(height: 1)
             .padding(.horizontal, 20)
     }

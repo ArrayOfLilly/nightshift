@@ -64,7 +64,7 @@
 
 - **E-1 ✅ KÉSZ** (AM session)
 - **F-3 ✅ KÉSZ** (AN session)
-- **F-9** — magic numbers (corner radii, opacity) — külön session (nagy volumen)
+- **F-9 ✅ KÉSZ** (AO session)
 - **F-1 ✅ KÉSZ** (AL session), **F-7 ✅ KÉSZ** (AL session), **F-8 ✅ KÉSZ** (AL session)
 - **F-2 ✅ KÉSZ** (AJ session), **F-4 ✅ KÉSZ** (AK session), **F-5 ✅ KÉSZ** (AJ session side-fix), **F-6 ✅ KÉSZ** (AA-a session)
 - **E-2 ✅ KÉSZ** (AK session), **E-4 ✅ KÉSZ** (AK session), **F-10 ✅ KÉSZ** (AK session)
@@ -133,3 +133,4 @@ SunTimes.swift
 SunTimesService.swift
 countdownAppApp.swift
 ```
+- **AO session**: F-9 — `AppTheme` corner radii tokenek (`radiusSmall/Medium/Large`), alpha tokenek (`alpha08`…`alpha90`); 14 fájl érintett; CSS border-radius értékek (markdownCSS) érintetlenek. Git commit: TODO

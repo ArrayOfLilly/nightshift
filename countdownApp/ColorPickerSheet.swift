@@ -26,7 +26,7 @@ struct ColorPickerSheet: View {
             ZStack(alignment: .topTrailing) {
                 Text("PICK A COLOR")
                     .font(AppTheme.alienLeagueBold(20))
-                    .foregroundStyle(AppTheme.dark.opacity(0.85))
+                    .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha90))
                     .kerning(2)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 28)
@@ -35,10 +35,10 @@ struct ColorPickerSheet: View {
                 Button { dismiss() } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(AppTheme.dark.opacity(0.5))
+                        .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha50))
                         .frame(width: 26, height: 26)
-                        .background(AppTheme.dark.opacity(0.08))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .background(AppTheme.dark.opacity(AppTheme.alpha08))
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
                 }
                 .buttonStyle(.plain)
                 .focusable(false)
@@ -52,7 +52,7 @@ struct ColorPickerSheet: View {
 
                 // "Auto" swatch — resets to hash-based color
                 // opacity(0.70): avoids glare on the amber background
-                swatchButton(color: Color.white.opacity(0.60),
+                swatchButton(color: Color.white.opacity(AppTheme.alpha60),
                              index: nil,
                              label: "AUTO")
 
@@ -93,7 +93,7 @@ struct ColorPickerSheet: View {
                     .overlay(
                         Circle()
                             .strokeBorder(
-                                Color.white.opacity(isSelected ? 0.85 : 0.18),
+                                Color.white.opacity(isSelected ? AppTheme.alpha90 : 0.18),
                                 lineWidth: isSelected ? 2 : 1.5
                             )
                     )
@@ -101,11 +101,11 @@ struct ColorPickerSheet: View {
                 if isSelected {
                     Image(systemName: "checkmark")
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(AppTheme.dark.opacity(0.75))
+                        .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha75))
                 } else if let label {
                     Text(label)
                         .font(AppTheme.alienLeague(12))
-                        .foregroundStyle(AppTheme.dark.opacity(0.85))
+                        .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha90))
                         .kerning(1)
                 }
             }

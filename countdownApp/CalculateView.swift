@@ -12,7 +12,7 @@
 //  CALC-SAVE design language (save sheet + detail sheet + list popover):
 //  - Background: LinearGradient from AppTheme.freeColors[7] @ 35% opacity (top) → AppTheme.calculateBackground (25% down).
 //  - Header: alienLeagueBold title in AppTheme.background (amber); date subtitle in white 55% opacity.
-//  - Dividers: Color.white.opacity(0.08), full width minus horizontal padding.
+//  - Dividers: Color.white.opacity(AppTheme.alpha08), full width minus horizontal padding.
 //  - Buttons: amber-fill SAVE/LOAD (dark text), grey CANCEL (white 50% text, white 7% bg), trash (white 10% bg).
 //  - Split SAVE button: left = bookmark + "SAVE" (opens save sheet), right = chevron.down (opens list popover).
 //    The chevron half uses .contentShape(Rectangle()) so the full padded zone is tappable, not just the icon.
@@ -90,7 +90,7 @@ struct CalculateView: View {
 
                     Text("FROM")
                         .font(AppTheme.alienLeague(20))
-                        .foregroundStyle(Color.white.opacity(0.9))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha90))
                     dateStepper(date: Binding(
                         get: { fromDate },
                         set: { fromInterval = snapToMinute($0).timeIntervalSince1970 }
@@ -101,7 +101,7 @@ struct CalculateView: View {
 
                     Text("TO")
                         .font(AppTheme.alienLeague(20))
-                        .foregroundStyle(Color.white.opacity(0.9))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha90))
                     dateStepper(date: Binding(
                         get: { toDate },
                         set: { toInterval = snapToMinute($0).timeIntervalSince1970 }
@@ -111,13 +111,13 @@ struct CalculateView: View {
                     }
 
                     Rectangle()
-                        .fill(Color.white.opacity(0.25))
+                        .fill(Color.white.opacity(AppTheme.alpha25))
                         .frame(height: 1)
                         .padding(.vertical, 4)
 
                     Text(resultLabel.uppercased())
                         .font(AppTheme.alienLeague(20))
-                        .foregroundStyle(Color.white.opacity(0.9))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha90))
 
                     resultRow
 
@@ -141,7 +141,7 @@ struct CalculateView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: moonSize)
-                                    .opacity(0.85)
+                                    .opacity(AppTheme.alpha90)
                                     .offset(y: -arcOffset)
                             }
                         }
@@ -227,8 +227,8 @@ struct CalculateView: View {
             .foregroundStyle(AppTheme.calculateBackground)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(AppTheme.background.opacity(0.85))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .background(AppTheme.background.opacity(AppTheme.alpha90))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
 
             Button("Dismiss") {
                 UserDefaults.standard.removeObject(forKey: AppKeys.corruptedDump)
@@ -237,15 +237,15 @@ struct CalculateView: View {
             .buttonStyle(.plain)
             .focusable(false)
             .font(AppTheme.alienLeague(12))
-            .foregroundStyle(AppTheme.background.opacity(0.7))
+            .foregroundStyle(AppTheme.background.opacity(AppTheme.alpha75))
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(Color.white.opacity(0.08))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .background(Color.white.opacity(AppTheme.alpha08))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 10)
-        .background(Color(red: 0x8B/255, green: 0x0/255, blue: 0x0/255).opacity(0.75))
+        .background(Color(red: 0x8B/255, green: 0x0/255, blue: 0x0/255).opacity(AppTheme.alpha75))
     }
 
     // MARK: - NOW button
@@ -262,8 +262,8 @@ struct CalculateView: View {
             .foregroundStyle(AppTheme.background)
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
-            .background(Color.white.opacity(0.12))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .background(Color.white.opacity(AppTheme.alpha12))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
         }
         .buttonStyle(.plain)
         .focusable(false)
@@ -281,7 +281,7 @@ struct CalculateView: View {
                 onInc: { adjustDate(date, .year,   by:  1) },
                 onDec: { adjustDate(date, .year,   by: -1) },
                 foregroundColor: AppTheme.background,
-                backgroundColor: Color.white.opacity(0.12)
+                backgroundColor: Color.white.opacity(AppTheme.alpha12)
             )
             ComponentStepper(
                 label: "MON",
@@ -290,7 +290,7 @@ struct CalculateView: View {
                 onInc: { adjustDate(date, .month,  by:  1) },
                 onDec: { adjustDate(date, .month,  by: -1) },
                 foregroundColor: AppTheme.background,
-                backgroundColor: Color.white.opacity(0.12)
+                backgroundColor: Color.white.opacity(AppTheme.alpha12)
             )
             ComponentStepper(
                 label: "DAY",
@@ -299,7 +299,7 @@ struct CalculateView: View {
                 onInc: { adjustDate(date, .day,    by:  1) },
                 onDec: { adjustDate(date, .day,    by: -1) },
                 foregroundColor: AppTheme.background,
-                backgroundColor: Color.white.opacity(0.12)
+                backgroundColor: Color.white.opacity(AppTheme.alpha12)
             )
             ComponentStepper(
                 label: "HOUR",
@@ -308,7 +308,7 @@ struct CalculateView: View {
                 onInc: { adjustDate(date, .hour,   by:  1) },
                 onDec: { adjustDate(date, .hour,   by: -1) },
                 foregroundColor: AppTheme.background,
-                backgroundColor: Color.white.opacity(0.12)
+                backgroundColor: Color.white.opacity(AppTheme.alpha12)
             )
             ComponentStepper(
                 label: "MIN",
@@ -317,13 +317,13 @@ struct CalculateView: View {
                 onInc: { adjustDate(date, .minute, by:  1) },
                 onDec: { adjustDate(date, .minute, by: -1) },
                 foregroundColor: AppTheme.background,
-                backgroundColor: Color.white.opacity(0.12)
+                backgroundColor: Color.white.opacity(AppTheme.alpha12)
             )
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
-        .background(Color.white.opacity(0.12))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(Color.white.opacity(AppTheme.alpha12))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusLarge))
     }
 
     // MARK: - Result display
@@ -339,7 +339,7 @@ struct CalculateView: View {
                     .monospacedDigit()
                 Text(parts[i].unit)
                     .font(AppTheme.alienLeague(18))
-                    .foregroundStyle(Color.white.opacity(0.5))
+                    .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
                     .padding(.trailing, i < parts.count - 1 ? 6 : 0)
             }
         }
@@ -359,8 +359,8 @@ struct CalculateView: View {
                 .foregroundStyle(AppTheme.background)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(Color.white.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .background(Color.white.opacity(AppTheme.alpha12))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
         }
         .buttonStyle(.plain)
         .focusable(false)
@@ -418,8 +418,8 @@ struct CalculateView: View {
                 deadlineListPopoverContent
             }
         }
-        .background(Color.white.opacity(0.12))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .background(Color.white.opacity(AppTheme.alpha12))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
     }
 
     // MARK: - CALC-SAVE: Shared gradient background helper
@@ -429,7 +429,7 @@ struct CalculateView: View {
     private var calcSaveGradient: LinearGradient {
         LinearGradient(
             stops: [
-                .init(color: AppTheme.freeColors[7].opacity(0.35), location: 0),
+                .init(color: AppTheme.freeColors[7].opacity(AppTheme.alpha35), location: 0),
                 .init(color: AppTheme.calculateBackground, location: 0.25),
             ],
             startPoint: .top,
@@ -444,13 +444,13 @@ struct CalculateView: View {
         VStack(spacing: 0) {
             Text("SAVED DEADLINES")
                 .font(AppTheme.alienLeague(11))
-                .foregroundStyle(Color.white.opacity(0.5))
+                .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
                 .kerning(2)
                 .padding(.top, 18)
                 .padding(.bottom, 12)
 
             Rectangle()
-                .fill(Color.white.opacity(0.08))
+                .fill(Color.white.opacity(AppTheme.alpha08))
                 .frame(height: 1)
                 .padding(.horizontal, 20)
 
@@ -467,7 +467,7 @@ struct CalculateView: View {
                         HStack(alignment: .center, spacing: 6) {
                             Text(deadline.title)
                                 .font(AppTheme.alienLeague(12))
-                                .foregroundStyle(Color.white.opacity(0.5))
+                                .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
                                 .lineLimit(1)
                             Spacer()
                             VStack(alignment: .trailing, spacing: 2) {
@@ -476,11 +476,11 @@ struct CalculateView: View {
                                     .foregroundStyle(
                                         deadline.date > Date()
                                             ? AppTheme.background
-                                            : Color.white.opacity(0.35)
+                                            : Color.white.opacity(AppTheme.alpha35)
                                     )
                                 Text(deadlineDateString(deadline.date))
                                     .font(AppTheme.alienLeague(11))
-                                    .foregroundStyle(Color.white.opacity(0.35))
+                                    .foregroundStyle(Color.white.opacity(AppTheme.alpha35))
                             }
                         }
                         .padding(.horizontal, 20)
@@ -491,7 +491,7 @@ struct CalculateView: View {
                     .focusable(false)
 
                     Rectangle()
-                        .fill(Color.white.opacity(0.08))
+                        .fill(Color.white.opacity(AppTheme.alpha08))
                         .frame(height: 1)
                         .padding(.horizontal, 20)
                 }
@@ -526,13 +526,13 @@ struct CalculateView: View {
 
                 Text(deadlineDateString(snapToMinute(toDate)))
                     .font(AppTheme.alienLeague(13))
-                    .foregroundStyle(Color.white.opacity(0.55))
+                    .foregroundStyle(Color.white.opacity(AppTheme.alpha60))
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.bottom, 20)
             }
 
             Rectangle()
-                .fill(Color.white.opacity(0.08))
+                .fill(Color.white.opacity(AppTheme.alpha08))
                 .frame(height: 1)
 
             // Body — name field + action buttons
@@ -543,8 +543,8 @@ struct CalculateView: View {
                     .foregroundStyle(AppTheme.background)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(Color.white.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .background(Color.white.opacity(AppTheme.alpha12))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
 
                 HStack(spacing: 12) {
                     Spacer()
@@ -554,11 +554,11 @@ struct CalculateView: View {
                     .buttonStyle(.plain)
                     .focusable(false)
                     .font(AppTheme.alienLeague(13))
-                    .foregroundStyle(Color.white.opacity(0.5))
+                    .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.07))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .background(Color.white.opacity(AppTheme.alpha08))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
 
                     Button("SAVE") {
                         let trimmed = saveTitleDraft.trimmingCharacters(in: .whitespaces)
@@ -572,7 +572,7 @@ struct CalculateView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(AppTheme.background)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     .disabled(saveTitleDraft.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
@@ -604,8 +604,8 @@ struct CalculateView: View {
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 6)
-                            .background(Color.white.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .background(Color.white.opacity(AppTheme.alpha12))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                             .padding(.horizontal, 24)
                             .padding(.top, 46)  // BUG-DEADLINE-2: clear X button (12pt top + 26pt height + 8pt gap)
                     } else {
@@ -617,7 +617,7 @@ struct CalculateView: View {
                     }
                     Text(deadlineDateString(deadline.date))
                         .font(AppTheme.alienLeague(13))
-                        .foregroundStyle(Color.white.opacity(0.55))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha60))
                         .padding(.bottom, 20)
                 }
                 .frame(maxWidth: .infinity)
@@ -625,10 +625,10 @@ struct CalculateView: View {
                 Button { activeModal = nil } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(Color.white.opacity(0.5))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
                         .frame(width: 26, height: 26)
-                        .background(Color.white.opacity(0.08))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .background(Color.white.opacity(AppTheme.alpha08))
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
                 }
                 .buttonStyle(.plain)
                 .focusable(false)
@@ -638,7 +638,7 @@ struct CalculateView: View {
             }
 
             Rectangle()
-                .fill(Color.white.opacity(0.08))
+                .fill(Color.white.opacity(AppTheme.alpha08))
                 .frame(height: 1)
                 .padding(.horizontal, 28)
 
@@ -652,11 +652,11 @@ struct CalculateView: View {
                     .buttonStyle(.plain)
                     .focusable(false)
                     .font(AppTheme.alienLeague(13))
-                    .foregroundStyle(Color.white.opacity(0.5))
+                    .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.07))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .background(Color.white.opacity(AppTheme.alpha08))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
 
                     Button("RENAME") {
                         let trimmed = renameDraft.trimmingCharacters(in: .whitespaces)
@@ -674,7 +674,7 @@ struct CalculateView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(AppTheme.background)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     .disabled(renameDraft.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
                 .padding(.horizontal, 28)
@@ -695,7 +695,7 @@ struct CalculateView: View {
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
                         .background(AppTheme.background)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                     .buttonStyle(.plain)
                     .focusable(false)
@@ -706,10 +706,10 @@ struct CalculateView: View {
                     } label: {
                         Image(systemName: "pencil")
                             .font(.system(size: 14))
-                            .foregroundStyle(AppTheme.background.opacity(0.6))
+                            .foregroundStyle(AppTheme.background.opacity(AppTheme.alpha60))
                             .frame(width: 40, height: 38)
-                            .background(Color.white.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .background(Color.white.opacity(AppTheme.alpha12))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                     .buttonStyle(.plain)
                     .focusable(false)
@@ -720,10 +720,10 @@ struct CalculateView: View {
                     } label: {
                         Image(systemName: "trash")
                             .font(.system(size: 14))
-                            .foregroundStyle(AppTheme.background.opacity(0.6))
+                            .foregroundStyle(AppTheme.background.opacity(AppTheme.alpha60))
                             .frame(width: 40, height: 38)
-                            .background(Color.white.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .background(Color.white.opacity(AppTheme.alpha12))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                     .buttonStyle(.plain)
                     .focusable(false)

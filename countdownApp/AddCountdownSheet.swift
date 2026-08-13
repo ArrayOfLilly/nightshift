@@ -33,8 +33,8 @@ struct AddCountdownSheet: View {
                         .foregroundStyle(AppTheme.dark)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(AppTheme.dark.opacity(0.12))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .background(AppTheme.dark.opacity(AppTheme.alpha12))
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                         .focusable(false)
 
                     Spacer()
@@ -48,14 +48,14 @@ struct AddCountdownSheet: View {
                     .buttonStyle(.plain)
                     .font(AppTheme.alienLeagueBold(15))
                     .foregroundStyle(label.trimmingCharacters(in: .whitespaces).isEmpty
-                                ? Color.white.opacity(0.8)
+                                ? Color.white.opacity(AppTheme.alpha75)
                                 : AppTheme.background)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(label.trimmingCharacters(in: .whitespaces).isEmpty
                                 ? AppTheme.dark.opacity(0.3)
                                 : AppTheme.dark)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     .disabled(label.trimmingCharacters(in: .whitespaces).isEmpty)
                     .focusable(false)
                 }
@@ -131,8 +131,8 @@ struct AddCountdownSheet: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
-        .background(AppTheme.dark.opacity(0.12))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(AppTheme.dark.opacity(AppTheme.alpha12))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusLarge))
     }
 
     private func adjust(_ c: Calendar.Component, by value: Int) {

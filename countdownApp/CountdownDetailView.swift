@@ -205,12 +205,12 @@ struct CountdownDetailView: View {
                             .overlay(alignment: .bottom) {
                             Rectangle()
                                 .frame(height: 1.5)
-                                .foregroundStyle(AppTheme.dark.opacity(0.35))
+                                .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha35))
                         }
                     } else {
                         Text(item.label.isEmpty ? "Countdown" : item.label.uppercased())
                             .font(AppTheme.alienLeagueBold(24))
-                            .foregroundStyle(AppTheme.dark.opacity(0.8))
+                            .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha75))
                             .kerning(4)
                             .lineLimit(1)
                             .truncationMode(.tail)
@@ -226,10 +226,10 @@ struct CountdownDetailView: View {
                     ) { isCopied in
                         Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(AppTheme.dark.opacity(0.85))
+                            .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha90))
                             .frame(width: 32, height: 32)
                             .background(AppTheme.dark.opacity(0.18))
-                            .clipShape(RoundedRectangle(cornerRadius: 7))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                 }
                     .padding(.horizontal, 24)
@@ -276,7 +276,7 @@ struct CountdownDetailView: View {
                             .padding(.horizontal, 24)
                             .padding(.vertical, 9)
                             .background(AppTheme.dark)
-                            .clipShape(RoundedRectangle(cornerRadius: 7))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                         .buttonStyle(.plain)
                         .focusable(false)
@@ -291,7 +291,7 @@ struct CountdownDetailView: View {
                                     .foregroundStyle(AppTheme.background)
                                     .frame(width: 32, height: 32)
                                     .background(AppTheme.dark)
-                                    .clipShape(RoundedRectangle(cornerRadius: 7))
+                                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                             }
                                 .buttonStyle(.plain)
                                 .focusable(false)
@@ -314,7 +314,7 @@ struct CountdownDetailView: View {
                                 .frame(width: 32, height: 32)
                                 .background(item.soundEnabled
                                 ? AppTheme.dark : AppTheme.dark.opacity(1.0))
-                                .clipShape(RoundedRectangle(cornerRadius: 7))
+                                .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                         }
                             .buttonStyle(.plain)
                             .focusable(false)
@@ -332,7 +332,7 @@ struct CountdownDetailView: View {
                                 .frame(width: 32, height: 32)
                                 .background(item.notes.isEmpty
                                             ? AppTheme.dark.opacity(1.0) : AppTheme.dark)
-                                .clipShape(RoundedRectangle(cornerRadius: 7))
+                                .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                         }
                             .buttonStyle(.plain)
                             .focusable(false)
@@ -347,7 +347,7 @@ struct CountdownDetailView: View {
                             .foregroundStyle(AppTheme.background)
                             .frame(width: 32, height: 32)
                             .background(AppTheme.dark)
-                            .clipShape(RoundedRectangle(cornerRadius: 7))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                         .buttonStyle(.plain)
                         .focusable(false)
@@ -405,8 +405,8 @@ struct CountdownDetailView: View {
         }
             .padding(.horizontal, 20)
             .padding(.vertical, 14)
-            .background(AppTheme.dark.opacity(0.12))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .background(AppTheme.dark.opacity(AppTheme.alpha12))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusLarge))
             .padding(.horizontal, 24)
     }
 

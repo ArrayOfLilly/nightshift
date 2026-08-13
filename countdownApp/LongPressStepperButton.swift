@@ -27,7 +27,7 @@ struct LongPressStepperButton: View {
 
     // Visual styling — same defaults as the existing chevron buttons.
     var foregroundColor: Color = AppTheme.dark
-    var backgroundColor: Color = AppTheme.dark.opacity(0.12)
+    var backgroundColor: Color = AppTheme.dark.opacity(AppTheme.alpha12)
 
     /// VoiceOver label for this icon-only control (G-5). Defaults to empty for call
     /// sites not yet migrated — those are tracked separately, not silently accepted.
@@ -42,7 +42,7 @@ struct LongPressStepperButton: View {
             .foregroundStyle(foregroundColor)
             .frame(width: 32, height: 22)
             .background(isPressed ? backgroundColor.opacity(2) : backgroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: 5))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
             .accessibilityLabel(accessibilityLabel)
             .accessibilityAddTraits(.isButton)
             .gesture(

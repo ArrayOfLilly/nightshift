@@ -436,3 +436,19 @@ G kategória lezárul.
   - Lokalizációs deferred task dokumentálva `Formatters.swift` fejlécében
 - [x] Git commit: `5c7760b`
 
+
+---
+
+## Session AO — 2026-08-13 (F-9 corner radii + opacity tokenek)
+
+### Session AO — LEZÁRVA
+- [x] **F-9** — Magic numbers → `AppTheme` tokenek:
+  - `AppTheme` — 3 corner radius token: `radiusSmall = 5` (összevon: 5, 6), `radiusMedium = 7` (összevon: 7, 8), `radiusLarge = 12` (összevon: 12, 14)
+  - `AppTheme` — 8 alpha token: `alpha08` (0.07, 0.08), `alpha12` (0.10, 0.12), `alpha25`, `alpha35`, `alpha50` (0.45, 0.50), `alpha60` (0.55, 0.60), `alpha75` (0.70, 0.80), `alpha90` (0.85, 0.90)
+  - 14 érintett fájl: AddCountdownSheet, CalculateView, ColorPickerSheet, ComponentStepper, ContentView, CountdownDetailView, CountdownRowView, CountdownView, LongPressStepperButton, NotesSheet, SnippetEditSheet, SnippetsView, SunPanel, AppTheme
+  - Nem tokenizált maradékok (szándékos): 0.2, 0.3, 0.4, 0.05, 0.15, 0.18, 0.95 — egyedi vagy nincs összevonási pár; ColorPickerSheet ternáris 0.18 szintén marad
+  - CSS border-radius értékek (SharedEditorComponents.swift markdownCSS) érintetlenek — külön WebView világ, nem szinkronizálható SwiftUI tokenekkel
+- [ ] Git commit: PENDING
+
+**Következő session:** D kategória (SRP / god views) — egyeztetéssel kezd
+

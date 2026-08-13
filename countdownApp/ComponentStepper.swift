@@ -17,13 +17,13 @@ struct ComponentStepper: View {
     let onInc: () -> Void
     let onDec: () -> Void
     var foregroundColor: Color = AppTheme.dark
-    var backgroundColor: Color = AppTheme.dark.opacity(0.12)
+    var backgroundColor: Color = AppTheme.dark.opacity(AppTheme.alpha12)
 
     var body: some View {
         VStack(spacing: 4) {
             Text(label)
                 .font(AppTheme.alienLeague(10))
-                .foregroundStyle(foregroundColor.opacity(0.6))
+                .foregroundStyle(foregroundColor.opacity(AppTheme.alpha60))
             LongPressStepperButton(
                 systemImage: "chevron.up",
                 action: onInc,

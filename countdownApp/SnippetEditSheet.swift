@@ -51,7 +51,7 @@ private struct ProjectField: View {
             } label: {
                 Image(systemName: "chevron.down")
                     .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(Color.white.opacity(0.45))
+                    .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
             }
@@ -65,7 +65,7 @@ private struct ProjectField: View {
         }
         .frame(height: 28)
         .background(AppTheme.freeColors[10])
-        .clipShape(RoundedRectangle(cornerRadius: 6))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
     }
 
     private var suggestionList: some View {
@@ -77,7 +77,7 @@ private struct ProjectField: View {
                 } label: {
                     Text(s)
                         .font(AppTheme.alienLeague(13))
-                        .foregroundStyle(Color.white.opacity(0.85))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha90))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
@@ -86,7 +86,7 @@ private struct ProjectField: View {
                 .buttonStyle(.plain)
                 .focusable(false)
                 if s != suggestions.last {
-                    Rectangle().fill(Color.white.opacity(0.07)).frame(height: 1)
+                    Rectangle().fill(Color.white.opacity(AppTheme.alpha08)).frame(height: 1)
                 }
             }
         }
@@ -149,7 +149,7 @@ struct SnippetEditSheet: View {
             AppTheme.background.ignoresSafeArea()
             VStack(spacing: 0) {
                 header
-                Rectangle().fill(Color.white.opacity(0.08)).frame(height: 1).padding(.horizontal, 24)
+                Rectangle().fill(Color.white.opacity(AppTheme.alpha08)).frame(height: 1).padding(.horizontal, 24)
                 contentArea
             }
         }
@@ -193,10 +193,10 @@ struct SnippetEditSheet: View {
                     ) { isCopied in
                         Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
                             .font(.system(size: 15, weight: .medium))
-                            .foregroundStyle(isCopied ? AppTheme.background : Color.white.opacity(0.7))
+                            .foregroundStyle(isCopied ? AppTheme.background : Color.white.opacity(AppTheme.alpha75))
                             .frame(width: 36, height: 36)
-                            .background(Color.white.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .background(Color.white.opacity(AppTheme.alpha12))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                     headerButton(icon: isEditing ? "checkmark" : "pencil",
                                  label: isEditing ? "Done editing" : "Edit snippet") { isEditing.toggle() }
@@ -204,7 +204,7 @@ struct SnippetEditSheet: View {
                         headerButton(icon: "trash", label: "Delete snippet") { showDeleteConfirm = true }
                     }
                 }
-                Rectangle().fill(Color.white.opacity(0.12)).frame(width: 1, height: 22).padding(.horizontal, 6)
+                Rectangle().fill(Color.white.opacity(AppTheme.alpha12)).frame(width: 1, height: 22).padding(.horizontal, 6)
                 headerButton(icon: "xmark", label: "Close") { commitSave(); dismiss() }
             }
             .padding(.bottom, 12)
@@ -212,7 +212,7 @@ struct SnippetEditSheet: View {
             HStack(spacing: 4) {
                 Image(systemName: "tag")
                     .font(.system(size: 10))
-                    .foregroundStyle(AppTheme.dark.opacity(0.55))
+                    .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha60))
                 ProjectField(text: $project, suggestions: existingProjects)
                     .frame(height: 28)
             }
@@ -232,8 +232,8 @@ struct SnippetEditSheet: View {
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(tint)
                 .frame(width: 36, height: 36)
-                .background(Color.white.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .background(Color.white.opacity(AppTheme.alpha12))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
         }
         .buttonStyle(.plain)
         .focusable(false)
@@ -262,7 +262,7 @@ struct SnippetEditSheet: View {
                         .foregroundStyle(Color.white.opacity(0.4))
                     Text("Tap to start writing.")
                         .font(AppTheme.alienLeague(13))
-                        .foregroundStyle(Color.white.opacity(0.6))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha60))
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .contentShape(Rectangle())

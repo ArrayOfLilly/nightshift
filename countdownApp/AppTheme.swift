@@ -62,6 +62,34 @@ enum AppTheme {
         freeColors[index % freeColors.count]
     }
 
+    // MARK: - Corner Radii
+
+    /// Small radius — stepper buttons, compact badges (consolidates 5 and 6)
+    static let radiusSmall:  CGFloat = 5
+    /// Medium radius — standard buttons and input fields (consolidates 7 and 8)
+    static let radiusMedium: CGFloat = 7
+    /// Large radius — section containers and main cards (consolidates 12 and 14)
+    static let radiusLarge:  CGFloat = 12
+
+    // MARK: - Alpha
+
+    /// Divider lines and barely-visible backgrounds (consolidates 0.07 and 0.08)
+    static let alpha08: CGFloat = 0.08
+    /// Button and field backgrounds — most common surface tint (consolidates 0.10 and 0.12)
+    static let alpha12: CGFloat = 0.12
+    /// Light overlay — fills and subtle highlights
+    static let alpha25: CGFloat = 0.25
+    /// Soft overlay — gradient stops and secondary fills
+    static let alpha35: CGFloat = 0.35
+    /// Muted text and mid-opacity elements (consolidates 0.45 and 0.50)
+    static let alpha50: CGFloat = 0.50
+    /// Clear-ish tints and icon fills (consolidates 0.55 and 0.60)
+    static let alpha60: CGFloat = 0.60
+    /// Strong tints and active state fills (consolidates 0.70 and 0.80)
+    static let alpha75: CGFloat = 0.75
+    /// Near-opaque elements — selected states and high-contrast labels (consolidates 0.85 and 0.90)
+    static let alpha90: CGFloat = 0.90
+
     // MARK: - Fonts
     // NOTE: If text appears in system font, verify the PostScript name in Font Book.
     // Open a .ttf with Font Book → Info tab → PostScript name.

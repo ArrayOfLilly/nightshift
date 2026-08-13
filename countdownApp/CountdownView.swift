@@ -227,8 +227,8 @@ struct CountdownView: View {
             .foregroundStyle(AppTheme.dark)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(AppTheme.background.opacity(0.85))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .background(AppTheme.background.opacity(AppTheme.alpha90))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
 
             Button("Dismiss") {
                 UserDefaults.standard.removeObject(forKey: AppKeys.corruptedDump)
@@ -237,15 +237,15 @@ struct CountdownView: View {
             .buttonStyle(.plain)
             .focusable(false)
             .font(AppTheme.alienLeague(12))
-            .foregroundStyle(AppTheme.background.opacity(0.7))
+            .foregroundStyle(AppTheme.background.opacity(AppTheme.alpha75))
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
             .background(AppTheme.dark.opacity(0.2))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 10)
-        .background(Color(red: 0x4A/255, green: 0x0/255, blue: 0x0/255).opacity(0.85))
+        .background(Color(red: 0x4A/255, green: 0x0/255, blue: 0x0/255).opacity(AppTheme.alpha90))
     }
 
     // MARK: - Subviews
@@ -320,7 +320,7 @@ struct CountdownView: View {
                 .padding(.horizontal, 36)
                 .padding(.vertical, 12)
                 .background(AppTheme.dark)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
         }
         .buttonStyle(.plain)
         .focusable(false)

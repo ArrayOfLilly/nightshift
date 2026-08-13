@@ -72,11 +72,11 @@ struct ContentView: View {
             Text(mode.rawValue)
                 .font(AppTheme.alienLeagueBold(20))
                 .foregroundStyle(Color.white)
-                .opacity(selected ? 1.0 : 0.45)
+                .opacity(selected ? 1.0 : AppTheme.alpha50)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
-                    RoundedRectangle(cornerRadius: 8)
+                    RoundedRectangle(cornerRadius: AppTheme.radiusMedium)
                         .fill(AppTheme.dark)
                         .opacity(selected ? 1.0 : 0.0)
                 )

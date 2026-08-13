@@ -134,8 +134,8 @@ struct SnippetsView: View {
             .foregroundStyle(AppTheme.calculateBackground)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(AppTheme.background.opacity(0.85))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .background(AppTheme.background.opacity(AppTheme.alpha90))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
 
             Button("Dismiss") {
                 UserDefaults.standard.removeObject(forKey: AppKeys.corruptedDump)
@@ -144,15 +144,15 @@ struct SnippetsView: View {
             .buttonStyle(.plain)
             .focusable(false)
             .font(AppTheme.alienLeague(12))
-            .foregroundStyle(AppTheme.background.opacity(0.7))
+            .foregroundStyle(AppTheme.background.opacity(AppTheme.alpha75))
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(Color.white.opacity(0.08))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .background(Color.white.opacity(AppTheme.alpha08))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 10)
-        .background(Color(red: 0x8B/255, green: 0x0/255, blue: 0x0/255).opacity(0.75))
+        .background(Color(red: 0x8B/255, green: 0x0/255, blue: 0x0/255).opacity(AppTheme.alpha75))
     }
 
     // MARK: - Header bar
@@ -166,10 +166,10 @@ struct SnippetsView: View {
             Button { showNewSheet = true } label: {
                 Image(systemName: "plus")
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color.white.opacity(0.7))
+                    .foregroundStyle(Color.white.opacity(AppTheme.alpha75))
                     .frame(width: 32, height: 32)
-                    .background(Color.white.opacity(0.07))
-                    .clipShape(RoundedRectangle(cornerRadius: 7))
+                    .background(Color.white.opacity(AppTheme.alpha08))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
             }
             .buttonStyle(.plain)
             .focusable(false)
@@ -190,7 +190,7 @@ struct SnippetsView: View {
                     .foregroundStyle(AppTheme.background.opacity(0.4))
                 Text("Tap + to add a snippet.")
                     .font(AppTheme.alienLeague(14))
-                    .foregroundStyle(Color.white.opacity(0.35))
+                    .foregroundStyle(Color.white.opacity(AppTheme.alpha35))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
@@ -232,7 +232,7 @@ struct SnippetsView: View {
             } label: {
                 Image(systemName: "chevron.down")
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(Color.white.opacity(0.45))
+                    .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
                     .frame(width: 22, height: 22)
             }
             .menuStyle(.borderlessButton)
@@ -273,12 +273,12 @@ struct SnippetsView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(snippet.title.isEmpty ? "Untitled" : snippet.title)
                         .font(AppTheme.alienLeague(14))
-                        .foregroundStyle(Color.white.opacity(0.9))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha90))
                         .lineLimit(1)
                     if !snippet.body.isEmpty {
                         Text(String(snippet.body.prefix(140)).replacingOccurrences(of: "\n", with: " "))
                             .font(.system(size: 11, design: .monospaced))
-                            .foregroundStyle(Color.white.opacity(0.35))
+                            .foregroundStyle(Color.white.opacity(AppTheme.alpha35))
                             .lineLimit(2)
                     }
                 }
@@ -301,10 +301,10 @@ struct SnippetsView: View {
                 let copied = copiedID == snippet.id
                 Image(systemName: copied ? "checkmark" : "doc.on.doc")
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(copied ? AppTheme.background : Color.white.opacity(0.45))
+                    .foregroundStyle(copied ? AppTheme.background : Color.white.opacity(AppTheme.alpha50))
                     .frame(width: 30, height: 30)
                     .background(Color.white.opacity(0.05))
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
             }
             .buttonStyle(.plain)
             .focusable(false)

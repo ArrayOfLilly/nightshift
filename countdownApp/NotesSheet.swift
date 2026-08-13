@@ -42,7 +42,7 @@ struct NotesSheet: View {
             AppTheme.background.ignoresSafeArea()
             VStack(spacing: 0) {
                 header
-                Rectangle().fill(Color.white.opacity(0.08)).frame(height: 1).padding(.horizontal, 24)
+                Rectangle().fill(Color.white.opacity(AppTheme.alpha08)).frame(height: 1).padding(.horizontal, 24)
                 contentArea
             }
         }
@@ -91,16 +91,16 @@ struct NotesSheet: View {
                 ) { isCopied in
                     Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
                         .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(isCopied ? AppTheme.background : Color.white.opacity(0.7))
+                        .foregroundStyle(isCopied ? AppTheme.background : Color.white.opacity(AppTheme.alpha75))
                         .frame(width: 36, height: 36)
-                        .background(Color.white.opacity(0.12))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .background(Color.white.opacity(AppTheme.alpha12))
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                 }
                 headerButton(icon: isEditing ? "checkmark" : "pencil",
                              label: isEditing ? "Done editing" : "Edit notes") { isEditing.toggle() }
                 headerButton(icon: "trash", label: "Delete notes") { showDeleteConfirm = true }
             }
-            Rectangle().fill(Color.white.opacity(0.12)).frame(width: 1, height: 22).padding(.horizontal, 6)
+            Rectangle().fill(Color.white.opacity(AppTheme.alpha12)).frame(width: 1, height: 22).padding(.horizontal, 6)
             headerButton(icon: "xmark", label: "Close") { dismiss() }
         }
         .padding(.horizontal, 24)
@@ -110,7 +110,7 @@ struct NotesSheet: View {
 
     @ViewBuilder
     private func headerButton(icon: String,
-                              tint: Color = Color.white.opacity(0.7),
+                              tint: Color = Color.white.opacity(AppTheme.alpha75),
                               label: String,
                               action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -118,8 +118,8 @@ struct NotesSheet: View {
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(tint)
                 .frame(width: 36, height: 36)
-                .background(Color.white.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .background(Color.white.opacity(AppTheme.alpha12))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
         }
         .buttonStyle(.plain)
         .focusable(false)
@@ -148,7 +148,7 @@ struct NotesSheet: View {
                         .foregroundStyle(Color.white.opacity(0.4))
                     Text("No notes yet.\nTap to start writing.")
                         .font(AppTheme.alienLeague(13))
-                        .foregroundStyle(Color.white.opacity(0.6))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha60))
                         .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
