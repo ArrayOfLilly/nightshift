@@ -17,8 +17,8 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `6314c6a` (AY session, markdown HTML/CSS kiemelés +
-  CODE_SIGN_ENTITLEMENTS fix + windowResizability fix)
+- Git: **naprakész** — legutóbbi commit `d612afe` (BB session, dokumentáció-only: pending commit hash-ek
+  rendezése, mappastruktúra ellenőrzés, 6 új buglist bejegyzés)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
