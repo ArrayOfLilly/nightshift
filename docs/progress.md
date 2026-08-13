@@ -16,7 +16,7 @@
   `notes = originalNotes` visszaállítással; delete alert `originalNotes = ""` reset
 - [x] `docs/buglist.md` — BUG-CHECKMARKDIRTY-1 és BUG-NOTESDISMISS-1 ✅ KÉSZ státuszra frissítve
 - [x] `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
-- Git commit: PENDING
+- Git commit: `3b78104`
 
 **Következő session:** BUG-TRASH-1 🔴 (editor trash visszateszi a törölt snippetet) vagy
 BUG-DETAILDELETE-1 🔴 (CountdownDetailView törlés után nem navigál vissza) — egyeztetés alapján
