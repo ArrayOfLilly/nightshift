@@ -40,7 +40,7 @@
   - `SnippetEditSheet`: `showDeleteAlert` → `showDeleteConfirm` (3 hely)
   - `SnippetsView`: `showDeleteProjectAlert` → `showDeleteProjectConfirm` (3 hely)
   - Konvenció: `showDelete<Entity?>Confirm` wszerte
-- [x] Git commit: PENDING
+- [x] Git commit: `550afe9`
 
 **Következő session:** E-1 (Boolean sprawl → enum), F-1 (`updateSheetWidth` helper), F-3 (`componentStepper` unifikáció), F-7/F-8 (AppTheme tokenek) — egyeztetés alapján
 

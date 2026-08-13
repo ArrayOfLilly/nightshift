@@ -46,7 +46,7 @@
   F-4: `monthAbbrev()` lokális impl. eltávolítva mind a 3 fájlból (AddCountdownSheet inline fmt, CountdownDetailView és CalculateView thin wrapper), call site-ok `Formatters.monthAbbrev` direkt hívással;
   E-4: `FocusedNSTextField` font+color → `makeNSView`-ba, `updateNSView` csak stringValue (1Hz AppKit pass megszűnt);
   E-2: `loadDeadlines` `onDismiss`-ben mindkét CalculateView sheet-en;
-  F-10: `showDeleteAlert` → `showDeleteConfirm` (SnippetEditSheet), `showDeleteProjectAlert` → `showDeleteProjectConfirm` (SnippetsView). Git commit: PENDING
+  F-10: `showDeleteAlert` → `showDeleteConfirm` (SnippetEditSheet), `showDeleteProjectAlert` → `showDeleteProjectConfirm` (SnippetsView). Git commit: `550afe9`
 
 ---
 
