@@ -149,7 +149,6 @@ struct CountdownDetailView: View {
     @Binding var item: CountdownItem
     let onDelete: () -> Void
 
-    @State private var copyFeedback: Bool = false
     @State private var isEditing: Bool = false
     @State private var showColorPicker: Bool = false
     @State private var showNotes: Bool = false
@@ -217,26 +216,18 @@ struct CountdownDetailView: View {
                         }
                     }
 
-                    Button {
-                        let trimmed = item.label.trimmingCharacters(in: .whitespaces)
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(trimmed, forType: .string)
-                        copyFeedback = true
-                        Task {
-                            try? await Task.sleep(for: .milliseconds(1200))
-                            copyFeedback = false
-                        }
-                    } label: {
-                        Image(systemName: copyFeedback ? "checkmark" : "doc.on.doc")
+                    CopyButton(
+                        value: item.label.trimmingCharacters(in: .whitespaces),
+                        defaultAccessibilityLabel: "Copy label",
+                        copiedAccessibilityLabel: "Label copied"
+                    ) { isCopied in
+                        Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
                             .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(AppTheme.dark.opacity(0.85))
                             .frame(width: 32, height: 32)
                             .background(AppTheme.dark.opacity(0.18))
                             .clipShape(RoundedRectangle(cornerRadius: 7))
                     }
-                        .buttonStyle(.plain)
-                        .focusable(false)
-                        .accessibilityLabel(copyFeedback ? "Label copied" : "Copy label")
                 }
                     .padding(.horizontal, 24)
                     .padding(.top, 28)

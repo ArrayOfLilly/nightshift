@@ -31,7 +31,6 @@ struct NotesSheet: View {
     @State private var draft:            String = ""
     @State private var debounceTask:     Task<Void, Never>? = nil
     @State private var isEditing         = false
-    @State private var copyFeedback      = false
     @State private var showDeleteConfirm = false
     // FIX (Session N, ported from SnippetEditSheet): sheet width now tracks
     // the real window width instead of a static maxWidth: 900, so it can
@@ -86,16 +85,17 @@ struct NotesSheet: View {
                 .kerning(2)
             Spacer()
             HStack(spacing: 8) {
-                headerButton(icon: copyFeedback ? "checkmark" : "doc.on.doc",
-                             tint: copyFeedback ? AppTheme.background : Color.white.opacity(0.7),
-                             label: copyFeedback ? "Notes copied" : "Copy notes") {
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(draft, forType: .string)
-                    copyFeedback = true
-                    Task {
-                        try? await Task.sleep(for: .milliseconds(1000))
-                        copyFeedback = false
-                    }
+                CopyButton(
+                    value: draft,
+                    defaultAccessibilityLabel: "Copy notes",
+                    copiedAccessibilityLabel: "Notes copied"
+                ) { isCopied in
+                    Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(isCopied ? AppTheme.background : Color.white.opacity(0.7))
+                        .frame(width: 36, height: 36)
+                        .background(Color.white.opacity(0.12))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
                 headerButton(icon: isEditing ? "checkmark" : "pencil",
                              label: isEditing ? "Done editing" : "Edit notes") { isEditing.toggle() }
@@ -119,7 +119,7 @@ struct NotesSheet: View {
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(tint)
                 .frame(width: 36, height: 36)
-                .background(Color.white.opacity(0.07))
+                .background(Color.white.opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)

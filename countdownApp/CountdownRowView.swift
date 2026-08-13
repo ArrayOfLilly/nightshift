@@ -53,7 +53,10 @@ struct CountdownRowView: View {
                     UIPasteboard.general.string = trimmed
                     #endif
                     copyFeedback = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { copyFeedback = false }
+                    Task {
+                        try? await Task.sleep(for: .milliseconds(1000))
+                        copyFeedback = false
+                    }
                 })
 
                 if expired {

@@ -36,16 +36,24 @@
   saveButton chevron, deadlineDetailContent xmark/pencil/trash), `CountdownRowView` (toggle),
   `SnippetsView` (3 gomb), `CountdownView` (nincs teendő). Build OK. **G-5 és G kategória LEZÁRVA ✅**
   (commit `963f387`)
+- **AJ session**: F-2 + F-5 side-fix + B-2 straggler —
+  `CopyButton.swift` új shared komponens (`@ViewBuilder label: (Bool) -> Label`);
+  `CountdownDetailView`, `NotesSheet`, `SnippetEditSheet` — `@State copyFeedback` eltávolítva,
+  `CopyButton`-ra migrálva, delay 1000ms egységesítve;
+  `NotesSheet.headerButton` bg 0.07 → 0.12 (F-5 lezárva);
+  `CountdownRowView` — `DispatchQueue` → Task (B-2 lezárva). Git commit: PENDING
 
 ---
 
 ## Következő session feladata
 
-- **E és F kategóriák** (`refactor-plan.md`) — state management (E-1, E-2, E-4) és duplication
-  (F-1–F-5, F-7–F-10) findingek. Egyeztetés szükséges melyikkel kezdünk, mi fér egy sessionba.
-- **FONTOS refactor-plan.md stale findingek**: E-3 (SnippetEditSheet.onDisappear auto-save) már kész
-  AE sessionban (A-4 finding); F-6 (markdownCSS/amberHex) már kész AA-a sessionban — ezeket
-  refactor-plan.md-ben "DONE" státuszra kell hozni, mielőtt E/F munkát kezdünk.
+- **E és F kategóriák** (`refactor-plan.md`) — nyitott findingek:
+  - F-1 (`updateSheetWidth` shared helper, 5 impl), F-3 (`componentStepper` unifikáció),
+    F-4 (`monthAbbrev` → `Formatters.swift`), F-7/F-8 (`AppTheme` tokenek), F-10 (alert flags)
+  - E-1 (Boolean sprawl → enum), E-2 (`namedDeadlines` stale read), E-4 (font recreation)
+  - **F-2 ✅ KÉSZ** (AJ session), **F-5 ✅ KÉSZ** (AJ session side-fix), **F-6 ✅ KÉSZ** (AA-a session)
+  - F-9 (magic numbers) — külön session (nagy volumen)
+- refactor-plan.md-ben E-3 és F-6 már "KÉSZ"-ként jelölve (nem kell frissíteni)
 - Manual PDF újragenerálása (`manual_build.py` futtatása) ha szükséges
 
 ---

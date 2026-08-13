@@ -165,16 +165,18 @@ előtt kötelező fix.
 - `NotesSheet`, `SnippetEditSheet`, `CalculateView`, `ColorPickerSheet`, `AddCountdownSheet`
 - **Fix:** `windowConstrainedWidth(min:max:margin:fallback:) -> CGFloat` shared helper
 
-### F-2: Copy-to-clipboard block — 4 helyen, divegráló feedback delay és icon
-- `NotesSheet`, `SnippetEditSheet`, `CountdownDetailView`, `CountdownRowView`
-- **Fix:** `CopyButton` shared component (vagy legalább shared helper)
+### F-2: Copy-to-clipboard block — ✅ KÉSZ (AJ session)
+- `CopyButton.swift` — `struct CopyButton<Label: View>`, `@ViewBuilder label: (Bool) -> Label`
+- `CountdownDetailView`, `NotesSheet`, `SnippetEditSheet` → `CopyButton`-ra migrálva, delay 1000ms
+- `CountdownRowView` — `simultaneousGesture` (nem button, más UX), `DispatchQueue` → Task (B-2 fix)
 
 ### F-3: `componentStepper` — 3 implementáció (AddCountdownSheet-ben visszaesés: plain Button, nem LongPress)
 - **Fix:** shared `ComponentStepper` view, `LongPressStepperButton`-nal
 
 ### F-4: `monthAbbrev()` — 3 implementáció, static helper kellene
 
-### F-5: `headerButton()` — NotesSheet vs SnippetEditSheet bg opacity eltérés (0.07 vs 0.12)
+### F-5: `headerButton()` — NotesSheet vs SnippetEditSheet bg opacity eltérés — ✅ KÉSZ (AJ session side-fix)
+- `NotesSheet.headerButton` bg 0.07 → 0.12 (SnippetEditSheet értékre egységesítve)
 
 ### F-6: `markdownCSS` — `#F5A623` nem egyezik `AppTheme.background` (#E5A020) amberrel — ✅ KÉSZ (AA-a session)
 - `AppTheme.background` → `#F5A623`, `amberHex` szinkron kulcs bevezetve, `markdownCSS` computed var lett, commit `2dd8900`
@@ -199,11 +201,11 @@ előtt kötelező fix.
 - `body` ScrollView-ba csomagolva, `.frame(minWidth: 360, maxHeight: 600)`
 ### G-4: `CalculateView` deadline popover — nincs ScrollView, sok deadline esetén unreachable items — ✅ KÉSZ (AG session)
 - Lista ScrollView-ba csomagolva, `.frame(maxHeight: 320)`, header fix marad
-### G-5: Accessibility: icon-only gombok wszerte `.accessibilityLabel` nélkül — RÉSZBEN KÉSZ (AH session, Csoport 1/3)
+### G-5: Accessibility: icon-only gombok wszerte `.accessibilityLabel` nélkül — RÉSZBEN KÉSZ (AH session, Csoport 1–2/3)
 - Sok fájlt érint, 3 csoportra bontva:
   - **Csoport 1 — ✅ KÉSZ**: `LongPressStepperButton` (shared komponens, `accessibilityLabel` param),
     `CountdownDetailView`, `ColorPickerSheet`, `AddCountdownSheet` — commit `0fd05b0`
-  - **Csoport 2 — NYITOTT**: `SnippetEditSheet`, `NotesSheet`
+  - **Csoport 2 — ✅ KÉSZ**: `SnippetEditSheet`, `NotesSheet` — commit `b5a046d`
   - **Csoport 3 — NYITOTT**: `CalculateView` (+ `LongPressStepperButton` call site-ok itt), `CountdownRowView`,
     `SnippetsView`, `CountdownView`
 

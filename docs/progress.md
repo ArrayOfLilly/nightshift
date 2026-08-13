@@ -1,5 +1,29 @@
 # countdownApp — Progress
 
+## Session AJ — 2026-08-13 (F-2 copy button + F-5 opacity + B-2 maradék)
+
+### Session AJ — LEZÁRVA
+- [x] **CopyButton.swift** — új shared komponens (`B+X` pattern):
+  - `struct CopyButton<Label: View>` — `value: String`, `defaultAccessibilityLabel`, `copiedAccessibilityLabel`,
+    `feedbackDuration: Duration = .milliseconds(1000)`, `@ViewBuilder label: (Bool) -> Label`
+  - Saját `@State private var isCopied` — eltűnik a hívó view-ból
+  - `.buttonStyle(.plain)` + `.focusable(false)` + `.accessibilityLabel` a komponensben
+  - `performCopy()`: NSPasteboard write + `Task { .sleep(feedbackDuration) }` egységesítve
+- [x] **CountdownDetailView.swift** — `@State private var copyFeedback` eltávolítva;
+  copy Button → `CopyButton(value:...) { isCopied in ... }`, delay 1200ms → 1000ms
+- [x] **NotesSheet.swift** — `@State private var copyFeedback` eltávolítva;
+  headerButton copy hívás → `CopyButton`; `headerButton` bg 0.07 → 0.12 (F-5 side-fix)
+- [x] **SnippetEditSheet.swift** — `@State private var copyFeedback` eltávolítva;
+  headerButton copy hívás → `CopyButton`
+- [x] **CountdownRowView.swift** — `DispatchQueue.main.asyncAfter` → `Task { .sleep(1000ms) }`
+  (B-2 straggler — az AF sessionban kimaradt ez a call site); delay 1200ms → 1000ms
+- [ ] Git commit: PENDING
+
+**Következő session:** E vagy F kategória — egyeztetés alapján
+(F-1 `updateSheetWidth` shared helper, F-3 `componentStepper`, E-1 Boolean sprawl, stb.)
+
+---
+
 ## Session AI — 2026-08-13 (G-5 Csoport 3 — G kategória lezárva)
 
 ### Session AI — LEZÁRVA

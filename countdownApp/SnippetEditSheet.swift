@@ -111,7 +111,6 @@ struct SnippetEditSheet: View {
     @State private var snippetBody: String
 
     @State private var isEditing       = true
-    @State private var copyFeedback    = false
     @State private var showDeleteAlert = false
     // FIX: sheet width was a fixed maxWidth: 900, which could exceed the
     // actual window width when the window is narrower than 900pt (the
@@ -189,16 +188,17 @@ struct SnippetEditSheet: View {
                     .textFieldStyle(.plain)
                 Spacer()
                 HStack(spacing: 8) {
-                    headerButton(icon: copyFeedback ? "checkmark" : "doc.on.doc",
-                                 tint: copyFeedback ? AppTheme.background : Color.white.opacity(0.7),
-                                 label: copyFeedback ? "Snippet copied" : "Copy snippet") {
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(snippetBody, forType: .string)
-                        copyFeedback = true
-                        Task {
-                            try? await Task.sleep(for: .milliseconds(1000))
-                            copyFeedback = false
-                        }
+                    CopyButton(
+                        value: snippetBody,
+                        defaultAccessibilityLabel: "Copy snippet",
+                        copiedAccessibilityLabel: "Snippet copied"
+                    ) { isCopied in
+                        Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(isCopied ? AppTheme.background : Color.white.opacity(0.7))
+                            .frame(width: 36, height: 36)
+                            .background(Color.white.opacity(0.12))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     headerButton(icon: isEditing ? "checkmark" : "pencil",
                                  label: isEditing ? "Done editing" : "Edit snippet") { isEditing.toggle() }
