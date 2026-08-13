@@ -35,6 +35,11 @@
 **Következő session:** prioritás felülvizsgálva — `BUG-TRASH-1`, `BUG-DETAILDELETE-1`, `BUG-NOTESDISMISS-1`
 mind 🔴 kritikus használhatósági hibák, elsőként ezek közül érdemes választani
 
+**További utólagos kiegészítés:**
+- [x] `ENH-NOTEBADGE-1` 🟢 felvéve `docs/buglist.md`-be — vizuális jelzés (pl. pink dot badge a név mellett)
+  a countdown itemen, ha van hozzá note; részletek (pozíció, szín, hol jelenjen meg) egyeztetendők
+- [x] `countdownApp-handoff.md` “Következő session feladata” listája bővítve 8. pontként
+
 ---
 
 ## Session BA — 2026-08-13 (ellenőrzés + dokumentáció szinkronizálás)

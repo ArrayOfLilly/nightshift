@@ -108,6 +108,21 @@ a tényleges kód alapján, nem a korábbi feljegyzés alapján.
 
 ---
 
+## ENH-NOTEBADGE-1: Vizuális jelzés a countdown itemen, ha van hozzá note 🟢
+
+Jelenleg a `CountdownRowView` (és feltételezhetően `CountdownDetailView` címe is) nem jelzi vizuálisan,
+hogy az adott countdown itemhez tartozik-e note. Felhasználói javaslat: kis badge/dot a név mellett
+(pl. pink pötty), ha `item.notes` nem üres.
+
+**Egyeztetendő részletek a következő sessionben:**
+- Pontos vizuál (szín, méret, pozíció a név mellett/mögött) — `AppTheme` szín token vagy új egyedi szín?
+- Csak `CountdownRowView`-n, vagy `CountdownDetailView` fejlécén is jelenjen meg?
+- Feltétel: `item.notes` nem üres string (trim-elve?) vagy csak nem-nil, ha a mező opcionális
+
+**Státusz:** NYITOTT — csak dokumentálva, egyeztetés + implementáció külön session
+
+---
+
 ## ENH-DEFERRED-1: Deferred taskok dokumentálása (lokalizáció, Settings, About, Help) 🟢
 
 Több deferred téma nincs formálisan dokumentálva:
