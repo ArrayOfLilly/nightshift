@@ -132,11 +132,11 @@ struct SnippetEditSheet: View {
     // margin narrower than the window.
     @State private var sheetWidth: CGFloat = 700
 
-    /// Baseline values captured at init time; var so commitEdit() can refresh them after an
+    /// Baseline values captured at init time; @State so commitEdit() can refresh them after an
     /// explicit save (checkmark), ensuring a subsequent X sees a clean state.
-    private var originalTitle:   String
-    private var originalProject: String
-    private var originalBody:    String
+    @State private var originalTitle:   String
+    @State private var originalProject: String
+    @State private var originalBody:    String
 
     init(snippet: Snippet?,
          existingProjects: [String],
@@ -195,6 +195,7 @@ struct SnippetEditSheet: View {
         .alert("Delete snippet?", isPresented: $showDeleteConfirm) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
+                shouldSaveOnDisappear = false
                 if let id = snippet?.id { onDelete?(id) }
                 dismiss()
             }
