@@ -785,3 +785,21 @@ G kategória lezárul.
   Scene-hez; az ablak átméretezhető tartománya mostantól a `ContentView` `frame(minWidth:maxWidth:)`-jéből
   származik, fizikailag nem nőhet 520pt fölé
 - [x] Git commit: `6314c6a`
+
+---
+
+## Session BD — 2026-08-13 (BUG-DETAILDELETE-1)
+
+### Session BD — LEZÁRVA
+- [x] Claude.md, progress.md, countdownApp-handoff.md, buglist.md elolvasva
+- [x] `CountdownDetailView.swift` + `CountdownView.swift` elolvasva — root cause megerősítve:
+  `onDelete()` eltávolítja az itemet az `items`-ből és ment, de `dismiss()` nem lett hívva —
+  a view bent maradt a törölt itemen
+- [x] **BUG-DETAILDELETE-1** — `CountdownDetailView`: `@Environment(\.dismiss) private var dismiss`
+  hozzáadva; delete alert destructive ágában `onDelete()` mellé `dismiss()` hívás — navigáció
+  visszaugrik `CountdownView`-ra a törlés után
+- [x] Build OK, git commit: `485e363`
+- [x] `docs/buglist.md` — BUG-DETAILDELETE-1 ✅ KÉSZ státuszra frissítendő (külön lépés)
+
+**Következő session:** BUG-TRASH-1 🔴 (editor trash visszateszi a törölt snippetet) vagy
+ENH-NOTEBADGE-1 🟢 (note badge a countdown itemen) — egyeztetés alapján

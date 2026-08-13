@@ -59,6 +59,9 @@
   F-1: `WindowHelpers.swift` új fájl (`enum WindowHelpers`, `windowConstrainedWidth` + `windowConstrainedHeight`), mind az 5 call site migrálva (NotesSheet, SnippetEditSheet, CalculateView, ColorPickerSheet, AddCountdownSheet); `SnippetEditSheet.windowMargin` property eltávolítva. Git commit: `ca4445a`
 - **AU session**: UX-1 — `AppTheme.windowMinWidth = 460`, `windowMaxWidth = 520`; `ContentView` frame constraint frissítve; git commit `37b1674`
 - **AV session**: D-1 — `FocusedNSTextField.swift` új fájl; `CountdownDetailView.swift` ~110 sor (FocusedNSTextField blokk) eltávolítva; git commit `01e652f`
+- **BD session**: BUG-DETAILDELETE-1 — `CountdownDetailView`: `@Environment(\.dismiss)` hozzáadva;
+  delete alert destructive ágában `onDelete(); dismiss()` — view mostantól visszaugrik `CountdownView`-ra
+  törlés után. Build OK. Git commit: `485e363`
 - **BC session**: BUG-CHECKMARKDIRTY-1 + BUG-NOTESDISMISS-1 — `SnippetEditSheet`: `let` → `var` az
   `original*` property-ken, `commitEdit()` baseline refresh; `NotesSheet`: debounce eltávolítva,
   `originalNotes` baseline bevezetve, `handleDismiss()` egységesítve — mindkét sheet X viselkedése azonos.
@@ -88,8 +91,8 @@ a manual (`BUG-MANUAL-1`) MINDIG UTOLSÓ, mert screenshotjai csak a végleges UI
 1. **BUG-TRASH-1** 🔴 — SnippetEditSheet/NotesSheet editor trash gombja nem törli véglegesen a snippetet:
    törli, majd visszateszi — pontos root cause a következő sessionben vizsgálandó (trash handler + esetleges
    auto-save/onDisappear interakció gyanús)
-2. **BUG-DETAILDELETE-1** 🔴 — `CountdownDetailView`-n item törlésekor a sheet/nav nem csukódik be automatikusan;
-   a felhasználó egy már nem létező item részletein marad — törlés után vissza kell navigálni `CountdownView`-ra
+2. ~~**BUG-DETAILDELETE-1**~~ ✅ KÉSZ (BD session) — `@Environment(\.dismiss)` + `dismiss()` a delete alert
+   destructive ágában; navigáció visszaugrik `CountdownView`-ra törlés után. Git commit: `485e363`
 3. ~~**BUG-NOTESDISMISS-1**~~ ✅ KÉSZ (BC session) — debounce eltávolítva, `originalNotes` baseline, X viselkedés egységes
 4. ~~**BUG-CHECKMARKDIRTY-1**~~ ✅ KÉSZ (BC session) — `let` → `var`, `commitEdit()` baseline refresh
 5. **ENH-NOTEBADGE-1** 🟢 — vizuális jelzés a countdown itemen, ha van hozzá note: pici badge a név mögött,

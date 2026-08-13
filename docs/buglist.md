@@ -114,8 +114,9 @@ de a törlés után visszakerül (feltehetően auto-save / `.onDisappear` / dirt
 `CountdownDetailView`-n egy countdown item törlésekor a nézet nem csukódik be / navigál vissza automatikusan
 a `CountdownView`-ra — a felhasználó egy már nem létező item részletein marad, ami használhatatlan állapot.
 
-**Státusz:** NYITOTT — implementáció külön session (valószínűleg `dismiss()` vagy navigation pop hozzáadása
-a delete action-höz)
+**Státusz:** ✅ KÉSZ — BD session: `@Environment(\.dismiss)` hozzáadva `CountdownDetailView`-ba;
+delete alert destructive ágában `onDelete(); dismiss()` — navigáció visszaugrik `CountdownView`-ra.
+Git commit: `485e363`
 
 ---
 
