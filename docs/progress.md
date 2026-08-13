@@ -1,5 +1,19 @@
 # countdownApp — Progress
 
+## Session AT — 2026-08-13 (D-5 commit + UX-1 buglist)
+
+### Session AT — LEZÁRVA
+- [x] D-5 git commit (volt PENDING): `CountdownItem` mutating funcok, `Snippet` factory,
+  `CountdownDetailView` + `SnippetEditSheet` lecsökkentett logika
+- [x] `docs/buglist.md` új fájl — UX-1 bejegyzés (max-szélesség korlátok hiánya):
+  főablak, componentStepper-ek, CountdownRowView sorok, SnippetsView sorok, popupok egyenkénti audit
+- [x] progress.md + handoff.md frissítve
+- [ ] Git commit: PENDING
+
+**Következő session:** D-1 (`CountdownDetailView` kiemelés) — egyeztetéssel, vagy UX-1 implementáció (egyeztetés után)
+
+---
+
 ## Session AR — 2026-08-13 (D-3 bugfix: stale save() call)
 
 ### Session AR — LEZÁRVA
@@ -7,7 +21,7 @@
   - `.navigationDestination` delete callback-jében `save()` hívás maradt a D-3 refaktor után,
     ahol a `private func save()` törlésre került
   - Fix: `save()` → `CountdownItem.save(items)` (egy sor, surgical edit_block)
-- [x] Git commit: PENDING
+- [x] Git commit: `3f25353`
 
 **Következő session:** D-5, D-1, D-2 — egyeztetéssel
 
@@ -519,4 +533,17 @@ G kategória lezárul.
 - [x] Git commit: `d46824d`
 
 **Következő session:** D-3
+
+---
+
+## Session AQ+AR+AP+AS — 2026-08-13 (D-5)
+
+### Session AS — LEZÁRVA
+- [x] **D-5** — Domain logika kiemelése a View-kból (SRP):
+  - `CountdownItem` — `mutating func resetIfExpired(at now: Date)` + `mutating func adjustDeadline(_ component: Calendar.Component, by value: Int)` (új `// MARK: - Deadline mutations` szekció a struct-on belül)
+  - `Snippet` — `static func committed(from:title:body:project:) -> Snippet?` (új `// MARK: - Factory` extension a Persistence extension előtt)
+  - `CountdownDetailView` — `.onAppear` lecsökkent: `item.resetIfExpired(at: now)` + `localDeadline = item.deadline`; `adjust(_:by:)` lecsökkent: `item.adjustDeadline(c, by: value)` + `localDeadline = item.deadline`
+  - `SnippetEditSheet` — `commitSave()` lecsökkent: `Snippet.committed(from:title:body:project:)` hívás
+  - View-kban nulla domain/business logika vagy dátumszámítás nem maradt; `cal` property megmaradt a `component(_:)` helper miatt (query, nem mutáció)
+- [ ] Git commit: PENDING
 

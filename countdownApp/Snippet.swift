@@ -50,6 +50,31 @@ struct Snippet: Identifiable, Codable {
     }
 }
 
+// MARK: - Factory
+
+extension Snippet {
+
+    /// Assembles the final Snippet for persistence from the fields collected by the editor.
+    /// Trims title and project; defaults an empty project to "General".
+    /// Returns nil when both title and body are blank (nothing to save).
+    static func committed(
+        from existing: Snippet?,
+        title: String,
+        body: String,
+        project: String
+    ) -> Snippet? {
+        let trimmedTitle   = title.trimmingCharacters(in: .whitespaces)
+        let trimmedProject = project.trimmingCharacters(in: .whitespaces)
+        guard !trimmedTitle.isEmpty || !body.isEmpty else { return nil }
+        var s          = existing ?? Snippet(title: "", body: "", project: "")
+        s.title        = trimmedTitle
+        s.body         = body
+        s.project      = trimmedProject.isEmpty ? "General" : trimmedProject
+        s.updatedAt    = Date()
+        return s
+    }
+}
+
 // MARK: - Persistence
 
 extension Snippet {

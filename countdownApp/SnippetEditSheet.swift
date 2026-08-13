@@ -292,12 +292,8 @@ struct SnippetEditSheet: View {
     // MARK: - Persistence
 
     private func commitSave() {
-        guard !title.isEmpty || !snippetBody.isEmpty else { return }
-        var s = snippet ?? Snippet(title: "", body: "", project: "")
-        s.title     = title.trimmingCharacters(in: .whitespaces)
-        s.body      = snippetBody
-        s.project   = project.trimmingCharacters(in: .whitespaces).isEmpty ? "General" : project.trimmingCharacters(in: .whitespaces)
-        s.updatedAt = Date()
-        onSave(s)
+        if let s = Snippet.committed(from: snippet, title: title, body: snippetBody, project: project) {
+            onSave(s)
+        }
     }
 }

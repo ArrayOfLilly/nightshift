@@ -94,6 +94,29 @@ struct CountdownItem: Identifiable, Codable, Equatable, Hashable {
     var deadlineFormatted: String {
         Formatters.deadline.string(from: deadline)
     }
+
+    // MARK: - Deadline mutations
+
+    /// Resets `deadline` to `now` if the item is currently expired.
+    /// Call on `.onAppear` in the detail view so the steppers start from a sensible base.
+    mutating func resetIfExpired(at now: Date) {
+        if isExpired(at: now) {
+            deadline = now
+        }
+    }
+
+    /// Adjusts `deadline` by `value` calendar units.
+    /// If the item is expired at call time, `deadline` is first snapped to `now`
+    /// (mirrors the visual snap-to-now behaviour of the detail view steppers).
+    mutating func adjustDeadline(_ component: Calendar.Component, by value: Int) {
+        let now = Date()
+        if isExpired(at: now) {
+            deadline = now
+        }
+        if let newDate = Calendar.current.date(byAdding: component, value: value, to: deadline) {
+            deadline = newDate
+        }
+    }
 }
 
 // MARK: - Persistence

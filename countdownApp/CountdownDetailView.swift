@@ -181,13 +181,9 @@ struct CountdownDetailView: View {
         }
             .navigationTitle("")
             .onAppear {
-            if item.isExpired(at: Date()) {
-                let now = Date()
-                item.deadline = now
-                localDeadline = now
-            } else {
-                localDeadline = item.deadline
-            }
+            let now = Date()
+            item.resetIfExpired(at: now)
+            localDeadline = item.deadline
         }
     }
 
@@ -443,16 +439,8 @@ struct CountdownDetailView: View {
     }
 
     private func adjust(_ c: Calendar.Component, by value: Int) {
-        var base = localDeadline
-        if item.isExpired(at: Date()) {
-            base = Date()
-            localDeadline = base
-            item.deadline = base
-        }
-        if let newDate = cal.date(byAdding: c, value: value, to: base) {
-            localDeadline = newDate
-            item.deadline = newDate
-        }
+        item.adjustDeadline(c, by: value)
+        localDeadline = item.deadline
     }
 
 }

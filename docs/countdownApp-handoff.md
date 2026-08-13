@@ -62,6 +62,20 @@
 
 ## Következő session feladata
 
+- **UX-1** — Max-szélesség korlátok: főablak, componentStepper, CountdownRowView sorok,
+  SnippetsView sorok, popupok audit — `docs/buglist.md` részletezi; egyeztetés után implementáció
+- **D-1** — `CountdownDetailView` logika kiemelése — egyeztetéssel
+
+---
+
+## Buglist
+
+- `docs/buglist.md` — UX-1 (max-szélesség korlátok) bejegyzve (AT session)
+
+---
+
+## D kategória előzmény
+
 - **D-4 ✅ KÉSZ** (AP session)
 - **D-3 ✅ KÉSZ** (AQ session)
 - **E-1 ✅ KÉSZ** (AM session)
@@ -138,8 +152,13 @@ countdownAppApp.swift
 - **AO session**: F-9 — `AppTheme` corner radii tokenek (`radiusSmall/Medium/Large`), alpha tokenek (`alpha08`…`alpha90`); 14 fájl érintett; CSS border-radius értékek (markdownCSS) érintetlenek. Git commit: TODO
 - **AP session**: D-4 — `DeadlineDetailSheet.swift` új fájl; `AppTheme.calcSaveGradient` új token;
   `CalculateView`: `isRenamingDeadline`/`renameDraft`/`showDeleteDeadlineConfirm` state-ek + `deadlineDetailContent()` func + `calcSaveGradient` private var eltávolítva. Git commit: `d46824d`
+- **AT session**: D-5 commit lezárva; `docs/buglist.md` létrehozva — UX-1 (max-szélesség korlátok) bejegyzve.
+- **AS session**: D-5 — `CountdownItem`: `mutating func resetIfExpired(at:)` + `mutating func adjustDeadline(_:by:)`;
+  `Snippet`: `static func committed(from:title:body:project:) -> Snippet?` factory;
+  `CountdownDetailView`: `.onAppear` + `adjust(_:by:)` lecsökkentve modellhívásra;
+  `SnippetEditSheet`: `commitSave()` lecsökkentve `Snippet.committed(from:...)` hívásra. Git commit: PENDING → (AT session-ben zárva)
 - **AR session**: D-3 bugfix — `CountdownView.swift` `.navigationDestination` delete callbackben
-  `save()` → `CountdownItem.save(items)` (stale call, D-3 refaktor lefelejtett call site). Git commit: PENDING
+  `save()` → `CountdownItem.save(items)` (stale call, D-3 refaktor lefelejtett call site). Git commit: `3f25353`
 - **AQ session**: D-3 — static load/save a modell fájlokban:
   `CountdownItem.swift` + `NamedDeadline.swift`: `extension Persistence` (load/save static metódusok, Snippet-minta);
   `CountdownItem.load(dumpPolicy:)`: closure param a notes-alapú corrupt dump döntéshez;
