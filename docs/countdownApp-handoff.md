@@ -62,8 +62,7 @@
 
 ## Következő session feladata
 
-- **UX-1** — Max-szélesség korlátok: főablak, componentStepper, CountdownRowView sorok,
-  SnippetsView sorok, popupok audit — `docs/buglist.md` részletezi; egyeztetés után implementáció
+- **UX-1** — ✅ KÉSZ: `AppTheme.windowMinWidth/windowMaxWidth` tokenek + `ContentView` frame — git commit PENDING
 - **D-1** — `CountdownDetailView` logika kiemelése — egyeztetéssel
 
 ---

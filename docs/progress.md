@@ -1,5 +1,20 @@
 # countdownApp — Progress
 
+## Session AU — 2026-08-13 (UX-1 egyeztetés + implementáció)
+
+### Session AU — LEZÁRVA
+- [x] UX-1 egyeztetés befejezve: főablak max szélesség **520pt**, minden más marad
+- [x] `docs/buglist.md` — UX-1 megközelítés szekció frissítve (egyeztetés lezárva, referencia kijelző dokumentálva)
+- [x] **UX-1 implementáció**:
+  - `AppTheme.swift` — új `// MARK: - Window` szekció: `windowMinWidth = 460`, `windowMaxWidth = 520`
+  - `ContentView.swift` — `.frame(minWidth: 460)` → `.frame(minWidth: AppTheme.windowMinWidth, maxWidth: AppTheme.windowMaxWidth)`
+- [x] progress.md + handoff.md frissítve
+- [ ] Git commit: PENDING
+
+**Következő session:** D-1 (`CountdownDetailView` kiemelés) — egyeztetéssel
+
+---
+
 ## Session AT — 2026-08-13 (D-5 commit + UX-1 buglist)
 
 ### Session AT — LEZÁRVA

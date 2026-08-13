@@ -57,7 +57,7 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(minWidth: 460)
+        .frame(minWidth: AppTheme.windowMinWidth, maxWidth: AppTheme.windowMaxWidth)
     }
 
     // MARK: - Mode button

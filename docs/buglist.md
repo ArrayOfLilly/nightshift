@@ -24,13 +24,15 @@ Prioritás-jelzés: 🔴 kritikus, 🟡 fontos, 🟢 nice-to-have
 - `DeadlineDetailSheet` — új fájl, még nem ellenőrzött
 - `CalculateView` (saveSheet + deadline detail) — ellenőrizni
 
-**Megközelítés (egyeztetés után):**
-- Főablakra: `.frame(maxWidth: X)` valahol a ContentView / WindowGroup szintjén, vagy
-  a WindowHelpers-be kerülő új helper a tartalom constraint-jére
-- ComponentStepper: `.frame(maxWidth:)` a stepper belső layout-ján belül
-- CountdownRowView: `.frame(maxWidth:)` a sor szintjén
-- Popupok: esetileg, csak ahol a tartalom valóban szétfolyik
+**Egyeztetés lezárva (AU session):**
+- Főablak max szélesség: **520pt** — ez az egyetlen szükséges változás
+- Megvalósítás: ContentView / WindowGroup szinten (pontosan hol: implementációkor dől el)
+- ComponentStepper, CountdownRowView, SnippetsView sorok: külön cap nem kell — a főablak max elég
+- Popup-ok (AddCountdownSheet, ColorPickerSheet, DeadlineDetailSheet, CalculateView sheets,
+  NotesSheet, SnippetEditSheet): mind marad a jelenlegi WindowHelpers range — nem érintett
+- Referencia: MBP M4 14", 1800×1169 felbontás; app ablak látható szélessége ~500–520pt-nek
+  felel meg azon a kijelzőn (Claude Desktop ~900px + app a maradék jobb oldalon ~55–60%)
 
-**Státusz:** NYITOTT — implementáció előtt egyeztetés
+**Státusz:** NYITOTT — egyeztetés KÉSZ, implementáció következő session
 
 ---

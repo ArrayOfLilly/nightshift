@@ -90,6 +90,14 @@ enum AppTheme {
     /// Near-opaque elements — selected states and high-contrast labels (consolidates 0.85 and 0.90)
     static let alpha90: CGFloat = 0.90
 
+    // MARK: - Window
+
+    /// Minimum main window width — prevents content from collapsing below a usable layout
+    static let windowMinWidth: CGFloat = 460
+    /// Maximum main window width — keeps steppers and list rows from spreading out on wide displays
+    /// Reference: MBP M4 14" at 1800×1169; app fills ~500–520pt of the available space comfortably
+    static let windowMaxWidth: CGFloat = 520
+
     // MARK: - Gradients
 
     /// Shared gradient background for CALC-SAVE sheets and popovers.
