@@ -49,7 +49,7 @@ A felhasználó visszajelzése szerint a tényleges ablak szélesség 500–520p
 2. Fix 500pt szélesség, `.windowResizability` teljesen kikapcsolva — ha úgyis csak 500–520pt között van értelme,
    az átméretezhetőség feleslegessé válik
 
-**Státusz:** NYITOTT — egyeztetés szükséges melyik irány, implementáció külön session
+**Státusz:** ✅ KÉSZ — BF session: `AppTheme.windowMaxWidth = 600` (volt: 520); comment frissítve (UX-2 hivatkozás). `ContentView` érintetlen — már `AppTheme.windowMaxWidth` tokent használ (AU session).
 
 ---
 
@@ -159,7 +159,7 @@ következik, miután minden más, UI-t érintő változás (bugfix vagy enhancem
 - Csak `CountdownRowView`-n, vagy `CountdownDetailView` fejlécén is jelenjen meg?
 - Feltétel: `item.notes` nem üres string (trim-elve?) vagy csak nem-nil, ha a mező opcionális
 
-**Státusz:** NYITOTT — csak dokumentálva, egyeztetés + implementáció külön session
+**Státusz:** ✅ KÉSZ — BF session: `AppTheme.noteIndicator` token (orangered, `Color(red: 1.0, green: 0.27, blue: 0.0)`); `CountdownRowView` label box belsejében `note.text` SF Symbol ikon (`system(size: 10, weight: .medium)`), `if !item.notes.isEmpty`, `.accessibilityHidden(true)`.
 
 ---
 

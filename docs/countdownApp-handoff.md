@@ -17,7 +17,7 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `3b78104` (BC session: BUG-CHECKMARKDIRTY-1 + BUG-NOTESDISMISS-1 fix)
+- Git: **naprakész** — legutóbbi commit PENDING (BF session: ENH-NOTEBADGE-1 + UX-2)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
@@ -65,6 +65,9 @@
 - **BC session**: BUG-CHECKMARKDIRTY-1 + BUG-NOTESDISMISS-1 — `SnippetEditSheet`: `let` → `var` az
   `original*` property-ken, `commitEdit()` baseline refresh; `NotesSheet`: debounce eltávolítva,
   `originalNotes` baseline bevezetve, `handleDismiss()` egységesítve — mindkét sheet X viselkedése azonos.
+- **BF session**: ENH-NOTEBADGE-1 + UX-2 — `AppTheme.noteIndicator` token (orangered);
+  `CountdownRowView` label box-ban `note.text` SF Symbol badge (`if !item.notes.isEmpty`, size 10, `.accessibilityHidden(true)`);
+  `AppTheme.windowMaxWidth` 520 → 600 (UX-2, comment frissítve). `ContentView` érintetlen.
 - **AY session**: Nyitott teendők #1 — inline HTML/CSS kiemelés `SharedEditorComponents.swift`-ből:
   `resources/markdown-template.html` + `resources/markdown-style.css` új bundle resource-ok (placeholder csere
   + `var(--theme-amber)`); globális `markdownCSS` var törölve; `reload(_:into:)` bundle-ből olvas +
@@ -94,11 +97,8 @@ a manual (`BUG-MANUAL-1`) MINDIG UTOLSÓ, mert screenshotjai csak a végleges UI
    destructive ágában; navigáció visszaugrik `CountdownView`-ra törlés után. Git commit: `485e363`
 3. ~~**BUG-NOTESDISMISS-1**~~ ✅ KÉSZ (BC session) — debounce eltávolítva, `originalNotes` baseline, X viselkedés egységes
 4. ~~**BUG-CHECKMARKDIRTY-1**~~ ✅ KÉSZ (BC session) — `let` → `var`, `commitEdit()` baseline refresh
-5. **ENH-NOTEBADGE-1** 🟢 — vizuális jelzés a countdown itemen, ha van hozzá note: pici badge a név mögött,
-   szín **orangered** (lezárva, új `AppTheme` token szükséges), forma (dot/szem-ikon/note-ikon) még nyitott —
-   ez a manual előtt valósítandó meg (lásd függőség lent)
-6. **UX-2** 🟡 — főablak max szélesség 520pt → 600pt (UX-1/AU session döntésének felülvizsgálata); alternatíva:
-   fix 500pt, nem átméretezhető — egyeztetés szükséges melyik irány
+5. ~~**ENH-NOTEBADGE-1**~~ ✅ KÉSZ (BF session) — `AppTheme.noteIndicator` (orangered); `CountdownRowView` `note.text` badge `if !item.notes.isEmpty`
+6. ~~**UX-2**~~ ✅ KÉSZ (BF session) — `AppTheme.windowMaxWidth` 520 → 600
 7. **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik, megírandó
 8. **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása: lokalizáció, UI nyelv, input nyelv/locale-ok külön
    kezelése; ehhez Settings menü + About + Help menü (még egyik sincs megvalósítva)

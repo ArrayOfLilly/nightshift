@@ -36,6 +36,8 @@ enum AppTheme {
     static let cardSurface        = Color(red: 0.165, green: 0.125, blue: 0.082).opacity(0.20)
     /// White — used for numerals displayed on the tomato body
     static let timerText   = Color.white
+    /// Orangered indicator — shown as a note.text badge on countdown rows when notes are non-empty
+    static let noteIndicator = Color(red: 1.0, green: 0.27, blue: 0.0)
 
     /// Free-slot card color palette (12 options, rotated by item index)
     /// 30271B · 51422E · 778005 · 4D70D8 · 293B72 · 403873
@@ -94,9 +96,10 @@ enum AppTheme {
 
     /// Minimum main window width — prevents content from collapsing below a usable layout
     static let windowMinWidth: CGFloat = 460
-    /// Maximum main window width — keeps steppers and list rows from spreading out on wide displays
-    /// Reference: MBP M4 14" at 1800×1169; app fills ~500–520pt of the available space comfortably
-    static let windowMaxWidth: CGFloat = 520
+    /// Maximum main window width — keeps steppers and list rows from spreading out on wide displays.
+    /// Raised from 520 to 600pt (UX-2): gives more breathing room for snippet text and countdown
+    /// name rows without letting the layout spread too wide on large displays.
+    static let windowMaxWidth: CGFloat = 600
     /// Margin subtracted from the window dimension so sheets never overhang the window edges
     static let windowSheetMargin: CGFloat = 24
     /// Fallback sheet width used when the main window cannot be resolved

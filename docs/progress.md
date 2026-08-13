@@ -1,5 +1,25 @@
 # countdownApp — Progress
 
+## Session BF — 2026-08-13 (ENH-NOTEBADGE-1 + UX-2)
+
+### Session BF — LEZÁRVA
+- [x] Claude.md, progress.md, countdownApp-handoff.md elolvasva
+- [x] `CountdownRowView.swift` + `AppTheme.swift` + `CountdownItem.swift` elolvasva
+- [x] **ENH-NOTEBADGE-1** — `AppTheme.noteIndicator` token (orangered, `Color(red:1.0, green:0.27, blue:0.0)`)
+  hozzáadva a Colors szekcióhoz; `CountdownRowView` label box `HStack`-jébe `note.text` SF Symbol ikon
+  (`system(size: 10, weight: .medium)`, `AppTheme.noteIndicator`), `if !item.notes.isEmpty` feltétellel,
+  `.accessibilityHidden(true)` (a label szövege már tartalmaz elegendő screen reader kontextust)
+- [x] **UX-2** — `AppTheme.windowMaxWidth` 520 → 600; comment frissítve (UX-2 hivatkozás);
+  `ContentView` érintetlen — már `AppTheme.windowMaxWidth` tokent használ (AU session)
+- [x] `docs/buglist.md` — ENH-NOTEBADGE-1 és UX-2 ✅ KÉSZ státuszra frissítve
+- [x] `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
+- Git commit: PENDING
+
+**Következő session:** BUG-MANUAL-1 🟡 (manual frissítése — screenshot + szöveg, ez az utolsó nyitott
+UI-t érintő feladat)
+
+---
+
 ## Session BC — 2026-08-13 (BUG-CHECKMARKDIRTY-1 + BUG-NOTESDISMISS-1)
 
 ### Session BC — LEZÁRVA

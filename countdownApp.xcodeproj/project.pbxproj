@@ -29,33 +29,10 @@
 		AB699A233025257100A7F242 /* countdownAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = countdownAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		AB0EFBDA302E333D0067FA71 /* Exceptions for "countdownApp" folder in "countdownApp" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				.contextgen_session.json,
-			);
-			target = AB699A0B3025257000A7F242 /* countdownApp */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AB699A0E3025257000A7F242 /* countdownApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				AB0EFBDA302E333D0067FA71 /* Exceptions for "countdownApp" folder in "countdownApp" target */,
-			);
 			path = countdownApp;
-			sourceTree = "<group>";
-		};
-		AB699A1C3025257100A7F242 /* countdownAppTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = countdownAppTests;
-			sourceTree = "<group>";
-		};
-		AB699A263025257100A7F242 /* countdownAppUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = countdownAppUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -89,8 +66,6 @@
 			isa = PBXGroup;
 			children = (
 				AB699A0E3025257000A7F242 /* countdownApp */,
-				AB699A1C3025257100A7F242 /* countdownAppTests */,
-				AB699A263025257100A7F242 /* countdownAppUITests */,
 				AB699A0D3025257000A7F242 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -143,9 +118,6 @@
 			dependencies = (
 				AB699A1B3025257100A7F242 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				AB699A1C3025257100A7F242 /* countdownAppTests */,
-			);
 			name = countdownAppTests;
 			packageProductDependencies = (
 			);
@@ -165,9 +137,6 @@
 			);
 			dependencies = (
 				AB699A253025257100A7F242 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				AB699A263025257100A7F242 /* countdownAppUITests */,
 			);
 			name = countdownAppUITests;
 			packageProductDependencies = (
