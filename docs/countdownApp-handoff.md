@@ -17,7 +17,7 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `0fd05b0` (AH session, G-5 1/3 rész)
+- Git: **naprakész** — legutóbbi commit `963f387` (AI session, G-5 Csoport 3, G kategória lezárva)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
@@ -29,25 +29,23 @@
 - **AE session**: Swift concurrency cleanup — B-2 `SnippetEditSheet` copyFeedback DispatchQueue→Task, B-3 `CalculateView` hoverTask DispatchWorkItem→Task, A-4 `SnippetEditSheet` `.onDisappear` auto-save — commit `f7f774d`
 - **AF session**: Performance + concurrency — B-2 maradék (`SnippetsView` copy), C-1 MarkdownWebView guard, C-2 NotesSheet debounce, C-3 orderedFreeItems O(n), C-4 `Formatters.swift` (DateFormatter centralizálás + lokalizáció deferred task dokumentálva)
 - **AG session**: G kategória részben — G-1 `CountdownDetailView` ScrollView+GeometryReader (Spacer-centerozás megőrizve rövid abaknál scroll), G-2 `SnippetEditSheet` din. `sheetHeight` (cap 680, floor 400, ugyanaz a minta mint sheetWidth), G-3 `SunPanel` ScrollView+maxHeight 600, G-4 `CalculateView` deadline list popover ScrollView+maxHeight 320 (header fix marad). G-5 (accessibility labels, ~10 fájl) áthalasztva következő sessionra
-- **AH session**: G-5 accessibility — 3 csoportra bontva (egyeztetve). Csoport 1 kész: `LongPressStepperButton`
-  (`accessibilityLabel` param, default üres — CalculateView call site-ok még hátra), `CountdownDetailView`,
-  `ColorPickerSheet`, `AddCountdownSheet`. Label konvenció: vegyes (rövid szó / kontextusos, ha több hasonló
-  gomb van egy view-ban). Commit `0fd05b0`. Csoport 2 (SnippetEditSheet, NotesSheet) és Csoport 3
-  (CalculateView, CountdownRowView, SnippetsView, CountdownView) még nyitott
+- **AH session**: G-5 accessibility — Csoport 1: `LongPressStepperButton`, `CountdownDetailView`,
+  `ColorPickerSheet`, `AddCountdownSheet` (commit `0fd05b0`). Csoport 2: `SnippetEditSheet`, `NotesSheet`
+  (commit `b5a046d`).
+- **AI session**: G-5 Csoport 3 — `CalculateView` (componentStepper unit param, 10 stepper label,
+  saveButton chevron, deadlineDetailContent xmark/pencil/trash), `CountdownRowView` (toggle),
+  `SnippetsView` (3 gomb), `CountdownView` (nincs teendő). Build OK. **G-5 és G kategória LEZÁRVA ✅**
+  (commit `963f387`)
 
 ---
 
 ## Következő session feladata
 
-- **G-5 Csoport 2** — `SnippetEditSheet.swift`, `NotesSheet.swift`: azonos `headerButton` minta (copy,
-  edit-toggle, trash, xmark — 4×4), `SnippetEditSheet`-ben ezen felül `ProjectField` chevron.down gombja.
-  Label konvenció: vegyes (lásd AH session bejegyzés) — pl. "Copy"/"Copied", "Edit"/"Done editing",
-  "Delete", "Close", chevronhoz "Show project suggestions"
-- **G-5 Csoport 3** — `CalculateView.swift` (itt kell pótolni a `LongPressStepperButton`
-  `accessibilityLabel` hívásokat is az 5 dateStepper-re!), `CountdownRowView.swift`, `SnippetsView.swift`,
-  `CountdownView.swift` (utóbbinak nincs saját icon-only gombja, csak dokumentáció miatt szerepel a listán)
-- Ezután: E-* (state management) és F-* (duplication) kategóriák
-- **FONTOS**: `refactor-plan.md` E-3 és F-6 findingek stálek — E-3 (`SnippetEditSheet.onDisappear`) már kész AE sessionban (A-4), F-6 (`markdownCSS`/`amberHex`) már kész AA-a sessionban — refactor-plan.md-t frissíteni kell, mielőtt E/F kategóriával kezdünk
+- **E és F kategóriák** (`refactor-plan.md`) — state management (E-1, E-2, E-4) és duplication
+  (F-1–F-5, F-7–F-10) findingek. Egyeztetés szükséges melyikkel kezdünk, mi fér egy sessionba.
+- **FONTOS refactor-plan.md stale findingek**: E-3 (SnippetEditSheet.onDisappear auto-save) már kész
+  AE sessionban (A-4 finding); F-6 (markdownCSS/amberHex) már kész AA-a sessionban — ezeket
+  refactor-plan.md-ben "DONE" státuszra kell hozni, mielőtt E/F munkát kezdünk.
 - Manual PDF újragenerálása (`manual_build.py` futtatása) ha szükséges
 
 ---

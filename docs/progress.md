@@ -1,5 +1,23 @@
 # countdownApp — Progress
 
+## Session AI — 2026-08-13 (G-5 Csoport 3 — G kategória lezárva)
+
+### Session AI — LEZÁRVA
+- [x] **CalculateView.swift** — `componentStepper` új `unit: String` param; mind a 10
+      `LongPressStepperButton` hívás `accessibilityLabel`-t kapott (`"Increase/Decrease year/month/day/hour/minute"`);
+      `saveButton` chevron.down: `"Show saved deadlines"`; `deadlineDetailContent` xmark: `"Close"`,
+      pencil: `"Rename deadline"`, trash: `"Delete deadline"`
+- [x] **CountdownRowView.swift** — calendar/clock toggle: dinamikus label
+      (`"Switch to date display"` / `"Switch to remaining time"`)
+- [x] **SnippetsView.swift** — `"+"` gomb: `"New snippet"`; sectionHeader Menu chevron.down: `"Project options"`;
+      snippetRow copy gomb: `"Copy snippet"`
+- [x] **CountdownView.swift** — ellenőrizve, nincs icon-only gomb label nélkül (addButton szöveges)
+- [x] Build OK — első build ellenőrzés az AH session óta ✅
+- [x] Git commit: `963f387`
+- **G-5 LEZÁRVA** — ezzel a **G kategória teljes** ✅
+
+---
+
 ## Session AH — 2026-08-13 (G-5 accessibility — prep, egyeztetés alatt)
 
 ### Session AH — folyamatban
@@ -60,7 +78,7 @@ még a `ProjectField` chevron.down gombja is)
 ### Csoport 2 — LEZÁRVA
 - G-5 további 2 fájl kész: SnippetEditSheet, NotesSheet
 - Build ellenőrzés NEM történt
-- [ ] Git commit — következik
+- [x] Git commit: `b5a046d`
 
 **Csoport 3 (következő session) — utolsó G-5 rész:** CalculateView (+ itt kell pótolni az 5 dateStepper
 `LongPressStepperButton` `accessibilityLabel` hívását is, ugyanaz a minta mint CountdownDetailView-ban:
