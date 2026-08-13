@@ -80,26 +80,28 @@
   `Theme/` 1, `Views/` 1 + `Views/Calculate/` 3 + `Views/Countdown/` 6 + `Views/Snippets/` 2), file-system-synchronized
   Xcode group, nincs teendő. Lásd lent frissített fájllista.
 
-**Buglist — 6 új bejegyzés (BB session, `docs/buglist.md`), mind egyeztetésre vár implementáció előtt:**
+**Buglist — 8 bejegyzés (`docs/buglist.md`), mind egyeztetésre vár implementáció előtt — fontos sorrend:
+a manual (`BUG-MANUAL-1`) MINDIG UTOLSÓ, mert screenshotjai csak a végleges UI állapotot tükrözhetik:**
 
-1. **BUG-MANUAL-1** 🟡 — manual frissítése a bezárási metódus (pipa/X) változása miatt (AZ session) —
-   screenshotok készülnek, utána következik a manual szöveg/kép frissítése
-2. **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik, megírandó
-3. **BUG-TRASH-1** 🔴 — SnippetEditSheet/NotesSheet editor trash gombja nem törli véglegesen a snippetet:
+1. **BUG-TRASH-1** 🔴 — SnippetEditSheet/NotesSheet editor trash gombja nem törli véglegesen a snippetet:
    törli, majd visszateszi — pontos root cause a következő sessionben vizsgálandó (trash handler + esetleges
    auto-save/onDisappear interakció gyanús)
-4. **BUG-DETAILDELETE-1** 🔴 — `CountdownDetailView`-n item törlésekor a sheet/nav nem csukódik be automatikusan;
+2. **BUG-DETAILDELETE-1** 🔴 — `CountdownDetailView`-n item törlésekor a sheet/nav nem csukódik be automatikusan;
    a felhasználó egy már nem létező item részletein marad — törlés után vissza kell navigálni `CountdownView`-ra
-5. **UX-2** 🟡 — főablak max szélesség 520pt → 600pt (UX-1/AU session döntésének felülvizsgálata); alternatíva:
-   fix 500pt, nem átméretezhető — egyeztetés szükséges melyik irány
-6. **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása: lokalizáció, UI nyelv, input nyelv/locale-ok külön
-   kezelése; ehhez Settings menü + About + Help menü (még egyik sincs megvalósítva)
-7. **BUG-NOTESDISMISS-1** 🔴 — `NotesSheet` X gombja szó nélkül ment+dismiss, nem követi a `SnippetEditSheet`
+3. **BUG-NOTESDISMISS-1** 🔴 — `NotesSheet` X gombja szó nélkül ment+dismiss, nem követi a `SnippetEditSheet`
    (AZ session) dirty-check + confirm alert mintáját — felhasználó jelezte utólag, a BA session tévesen
    állította késznek
-8. **ENH-NOTEBADGE-1** 🟢 — vizuális jelzés a countdown itemen, ha van hozzá note: pici badge a név mögött,
-   szín (pink/narancs/piros) és forma (dot/szem-ikon/note-ikon) még nyitott — jelenleg semmi nem jelzi a
-   `CountdownRowView`-n hogy van-e note
+4. **ENH-NOTEBADGE-1** 🟢 — vizuális jelzés a countdown itemen, ha van hozzá note: pici badge a név mögött,
+   szín **orangered** (lezárva, új `AppTheme` token szükséges), forma (dot/szem-ikon/note-ikon) még nyitott —
+   ez a manual előtt valósítandó meg (lásd függőség lent)
+5. **UX-2** 🟡 — főablak max szélesség 520pt → 600pt (UX-1/AU session döntésének felülvizsgálata); alternatíva:
+   fix 500pt, nem átméretezhető — egyeztetés szükséges melyik irány
+6. **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik, megírandó
+7. **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása: lokalizáció, UI nyelv, input nyelv/locale-ok külön
+   kezelése; ehhez Settings menü + About + Help menü (még egyik sincs megvalósítva)
+8. **BUG-MANUAL-1** 🟡 — UTOLSÓKÉNT: manual frissítése a bezárási metódus (pipa/X) változása miatt
+   (AZ session) + `ENH-NOTEBADGE-1` és minden más UI-t érintő változás eredménye — screenshotok
+   csak akkor készüljenek, ha a fenti pontok már készen vannak
 
 ---
 

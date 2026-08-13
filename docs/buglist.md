@@ -59,6 +59,10 @@ Az AZ sessionben implementált pipa/X viselkedés (`NotesSheet` + `SnippetEditSh
 X: dirty esetén confirm alert) nincs dokumentálva a manualban. Screenshotok készülnek, utána a
 `countdownApp-manual.md` érintett szekciói (Notes, Snippets szerkesztés) frissítendők.
 
+**Függőség:** a manual frissítés (és screenshotok készítése) csak az összes többi nyitott, UI-t érintő
+további változás (pl. `ENH-NOTEBADGE-1`) elkészülte után történjen — a manual mindig utolsóként jön,
+hogy a screenshotok a végleges állapotot tükrözzék.
+
 **Státusz:** NYITOTT — screenshot előkészítés alatt (felhasználó oldalán), implementáció (manual szöveg/kép) külön session
 
 ---
@@ -112,12 +116,18 @@ a tényleges kód alapján, nem a korábbi feljegyzés alapján.
 
 Jelenleg a `CountdownRowView` (és feltételezhetően `CountdownDetailView` címe is) nem jelzi vizuálisan,
 hogy az adott countdown itemhez tartozik-e note. Felhasználói megfogalmazás: kell valami jelzés a név
-mögé, pici badge — szín: pink/narancs/piros; forma: dot/szem-ikon/note-ikon — pontos választás még nyitott,
+mögé, pici badge — szín: **orangered**; forma: dot/szem-ikon/note-ikon — pontos választás még nyitott,
 ha `item.notes` nem üres.
 
+**Fontos sorrend:** ez a változás a manual (`BUG-MANUAL-1`) előtt valósítandó meg — a manual screenshotok
+csak a végleges UI állapotot tükrözik, így a note badge-nek már látszania kell rajtuk mielőtt a manual
+frissítés (és az ahhoz tartozó screenshotok) elkészülnek. Általánosabban: a manual mindig utolsóként
+következik, miután minden más, UI-t érintő változás (bugfix vagy enhancement) már elkészült.
+
 **Egyeztetendő részletek a következő sessionben:**
-- Szín: pink / narancs / piros közül választva; `AppTheme` törzs színekhez (`freeColors`, `amberHex`)
-  viszonyítva melyik illeszkedik
+- Szín: **orangered** lezárva; `AppTheme`-ben nincs még orangered token — új szín bevezetése szükséges
+  (Claude.md szabály: `enum AppKeys`-hez hasonlóan át kell gondolni, hova kerüljön — valószínűleg
+  `AppTheme` új static color property-je)
 - Forma: egyszerű dot, vagy szem-ikon (👁️-szerű), vagy note-ikon (📝-szerű) — SF Symbols közül kell
   választani, ha ikon a választás
 - Méret, pozíció a név mellett/mögött
