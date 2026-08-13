@@ -111,11 +111,16 @@ a tényleges kód alapján, nem a korábbi feljegyzés alapján.
 ## ENH-NOTEBADGE-1: Vizuális jelzés a countdown itemen, ha van hozzá note 🟢
 
 Jelenleg a `CountdownRowView` (és feltételezhetően `CountdownDetailView` címe is) nem jelzi vizuálisan,
-hogy az adott countdown itemhez tartozik-e note. Felhasználói javaslat: kis badge/dot a név mellett
-(pl. pink pötty), ha `item.notes` nem üres.
+hogy az adott countdown itemhez tartozik-e note. Felhasználói megfogalmazás: kell valami jelzés a név
+mögé, pici badge — szín: pink/narancs/piros; forma: dot/szem-ikon/note-ikon — pontos választás még nyitott,
+ha `item.notes` nem üres.
 
 **Egyeztetendő részletek a következő sessionben:**
-- Pontos vizuál (szín, méret, pozíció a név mellett/mögött) — `AppTheme` szín token vagy új egyedi szín?
+- Szín: pink / narancs / piros közül választva; `AppTheme` törzs színekhez (`freeColors`, `amberHex`)
+  viszonyítva melyik illeszkedik
+- Forma: egyszerű dot, vagy szem-ikon (👁️-szerű), vagy note-ikon (📝-szerű) — SF Symbols közül kell
+  választani, ha ikon a választás
+- Méret, pozíció a név mellett/mögött
 - Csak `CountdownRowView`-n, vagy `CountdownDetailView` fejlécén is jelenjen meg?
 - Feltétel: `item.notes` nem üres string (trim-elve?) vagy csak nem-nil, ha a mező opcionális
 

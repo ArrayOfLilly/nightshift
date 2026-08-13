@@ -97,8 +97,9 @@
 7. **BUG-NOTESDISMISS-1** 🔴 — `NotesSheet` X gombja szó nélkül ment+dismiss, nem követi a `SnippetEditSheet`
    (AZ session) dirty-check + confirm alert mintáját — felhasználó jelezte utólag, a BA session tévesen
    állította késznek
-8. **ENH-NOTEBADGE-1** 🟢 — vizuális jelzés (pl. pink dot badge a név mellett) a countdown itemen, ha van
-   hozzá note — jelenleg semmi nem jelzi a `CountdownRowView`-n hogy van-e note
+8. **ENH-NOTEBADGE-1** 🟢 — vizuális jelzés a countdown itemen, ha van hozzá note: pici badge a név mögött,
+   szín (pink/narancs/piros) és forma (dot/szem-ikon/note-ikon) még nyitott — jelenleg semmi nem jelzi a
+   `CountdownRowView`-n hogy van-e note
 
 ---
 
