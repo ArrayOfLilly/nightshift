@@ -38,6 +38,8 @@ struct CountdownDetailView: View {
     @Binding var item: CountdownItem
     let onDelete: () -> Void
 
+    @Environment(\.dismiss) private var dismiss
+
     @State private var isEditing: Bool = false
     @State private var showColorPicker: Bool = false
     @State private var showNotes: Bool = false
@@ -235,7 +237,7 @@ struct CountdownDetailView: View {
                         .focusable(false)
                         .accessibilityLabel("Delete countdown")
                         .alert("Delete \"\(item.label)\"?", isPresented: $showDeleteConfirm) {
-                            Button("Delete", role: .destructive) { onDelete() }
+                            Button("Delete", role: .destructive) { onDelete(); dismiss() }
                             Button("Cancel", role: .cancel) { }
                         } message: {
                             Text("This slot will be permanently removed.")
