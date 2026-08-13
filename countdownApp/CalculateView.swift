@@ -254,30 +254,35 @@ struct CalculateView: View {
         HStack(spacing: 10) {
             componentStepper(
                 label: "YEAR",
+                unit: "year",
                 value: String(cal.component(.year,   from: date.wrappedValue)),
                 onInc: { adjustDate(date, .year,   by:  1) },
                 onDec: { adjustDate(date, .year,   by: -1) }
             )
             componentStepper(
                 label: "MON",
+                unit: "month",
                 value: monthAbbrev(from: date.wrappedValue),
                 onInc: { adjustDate(date, .month,  by:  1) },
                 onDec: { adjustDate(date, .month,  by: -1) }
             )
             componentStepper(
                 label: "DAY",
+                unit: "day",
                 value: String(format: "%02d", cal.component(.day,    from: date.wrappedValue)),
                 onInc: { adjustDate(date, .day,    by:  1) },
                 onDec: { adjustDate(date, .day,    by: -1) }
             )
             componentStepper(
                 label: "HOUR",
+                unit: "hour",
                 value: String(format: "%02d", cal.component(.hour,   from: date.wrappedValue)),
                 onInc: { adjustDate(date, .hour,   by:  1) },
                 onDec: { adjustDate(date, .hour,   by: -1) }
             )
             componentStepper(
                 label: "MIN",
+                unit: "minute",
                 value: String(format: "%02d", cal.component(.minute, from: date.wrappedValue)),
                 onInc: { adjustDate(date, .minute, by:  1) },
                 onDec: { adjustDate(date, .minute, by: -1) }
@@ -292,6 +297,7 @@ struct CalculateView: View {
     @ViewBuilder
     private func componentStepper(
         label: String,
+        unit: String,
         value: String,
         onInc: @escaping () -> Void,
         onDec: @escaping () -> Void
@@ -304,7 +310,8 @@ struct CalculateView: View {
                 systemImage: "chevron.up",
                 action: onInc,
                 foregroundColor: AppTheme.background,
-                backgroundColor: Color.white.opacity(0.12)
+                backgroundColor: Color.white.opacity(0.12),
+                accessibilityLabel: "Increase \(unit)"
             )
             Text(value)
                 .font(AppTheme.alienLeagueBold(15))
@@ -315,7 +322,8 @@ struct CalculateView: View {
                 systemImage: "chevron.down",
                 action: onDec,
                 foregroundColor: AppTheme.background,
-                backgroundColor: Color.white.opacity(0.12)
+                backgroundColor: Color.white.opacity(0.12),
+                accessibilityLabel: "Decrease \(unit)"
             )
         }
         .frame(maxWidth: .infinity)
@@ -408,6 +416,7 @@ struct CalculateView: View {
             }
             .buttonStyle(.plain)
             .focusable(false)
+            .accessibilityLabel("Show saved deadlines")
             .popover(isPresented: $showDeadlineListPopover) {
                 deadlineListPopoverContent
             }
@@ -626,6 +635,7 @@ struct CalculateView: View {
                 }
                 .buttonStyle(.plain)
                 .focusable(false)
+                .accessibilityLabel("Close")
                 .padding(.top, 12)
                 .padding(.trailing, 14)
             }
@@ -706,6 +716,7 @@ struct CalculateView: View {
                     }
                     .buttonStyle(.plain)
                     .focusable(false)
+                    .accessibilityLabel("Rename deadline")
 
                     Button {
                         showDeleteDeadlineConfirm = true
@@ -719,6 +730,7 @@ struct CalculateView: View {
                     }
                     .buttonStyle(.plain)
                     .focusable(false)
+                    .accessibilityLabel("Delete deadline")
                     .alert("Delete \"\(deadline.title)\"?", isPresented: $showDeleteDeadlineConfirm) {
                         Button("Delete", role: .destructive) {
                             namedDeadlines.removeAll { $0.id == deadline.id }

@@ -71,6 +71,7 @@ struct CountdownRowView: View {
                     }
                     .buttonStyle(.plain)
                     .focusable(false)
+                    .accessibilityLabel(item.showRemaining ? "Switch to date display" : "Switch to remaining time")
                 }
             }
 

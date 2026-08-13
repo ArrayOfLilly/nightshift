@@ -173,6 +173,7 @@ struct SnippetsView: View {
             }
             .buttonStyle(.plain)
             .focusable(false)
+            .accessibilityLabel("New snippet")
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
@@ -238,6 +239,7 @@ struct SnippetsView: View {
             .menuIndicator(.hidden)
             .fixedSize()
             .focusable(false)
+            .accessibilityLabel("Project options")
             Spacer()
         }
         .padding(.horizontal, 20)
@@ -306,6 +308,7 @@ struct SnippetsView: View {
             }
             .buttonStyle(.plain)
             .focusable(false)
+            .accessibilityLabel("Copy snippet")
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
