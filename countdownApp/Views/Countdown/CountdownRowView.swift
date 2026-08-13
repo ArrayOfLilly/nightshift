@@ -37,8 +37,8 @@ struct CountdownRowView: View {
                         .font(AppTheme.alienLeague(14))
                         .foregroundStyle(Color.white.opacity(copyFeedback ? 0.5 : 0.8))
                         .lineLimit(1)
-                    if !item.notes.isEmpty {
-                        Image(systemName: "note.text")
+                    if !copyFeedback && !item.notes.isEmpty {
+                        Image(systemName: "eye.fill")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundStyle(AppTheme.noteIndicator)
                             .accessibilityHidden(true)

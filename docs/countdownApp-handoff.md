@@ -17,7 +17,7 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit PENDING (BF session: ENH-NOTEBADGE-1 + UX-2)
+- Git: **naprakész** — legutóbbi commit `e6aa819` (BF session: ENH-NOTEBADGE-1 + UX-2)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on

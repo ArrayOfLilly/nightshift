@@ -13,7 +13,7 @@
   `ContentView` érintetlen — már `AppTheme.windowMaxWidth` tokent használ (AU session)
 - [x] `docs/buglist.md` — ENH-NOTEBADGE-1 és UX-2 ✅ KÉSZ státuszra frissítve
 - [x] `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
-- Git commit: PENDING
+- Git commit: `e6aa819`
 
 **Következő session:** BUG-MANUAL-1 🟡 (manual frissítése — screenshot + szöveg, ez az utolsó nyitott
 UI-t érintő feladat)

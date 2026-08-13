@@ -36,8 +36,8 @@ enum AppTheme {
     static let cardSurface        = Color(red: 0.165, green: 0.125, blue: 0.082).opacity(0.20)
     /// White — used for numerals displayed on the tomato body
     static let timerText   = Color.white
-    /// Orangered indicator — shown as a note.text badge on countdown rows when notes are non-empty
-    static let noteIndicator = Color(red: 1.0, green: 0.27, blue: 0.0)
+    /// Orange indicator — shown as an eye.fill badge on countdown rows when notes are non-empty
+    static let noteIndicator = Color(red: 1.0, green: 0.45, blue: 0.0)
 
     /// Free-slot card color palette (12 options, rotated by item index)
     /// 30271B · 51422E · 778005 · 4D70D8 · 293B72 · 403873
