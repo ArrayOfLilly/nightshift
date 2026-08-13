@@ -33,6 +33,75 @@ Prioritás-jelzés: 🔴 kritikus, 🟡 fontos, 🟢 nice-to-have
 - Referencia: MBP M4 14", 1800×1169 felbontás; app ablak látható szélessége ~500–520pt-nek
   felel meg azon a kijelzőn (Claude Desktop ~900px + app a maradék jobb oldalon ~55–60%)
 
-**Státusz:** NYITOTT — egyeztetés KÉSZ, implementáció következő session
+**Státusz:** ✅ KÉSZ — implementálva AU sessionben (`AppTheme.windowMaxWidth = 520`, commit `bc725a2`/`4bbe75e`).
+Lásd UX-2 alant — az 520pt érték felülvizsgálat alatt.
+
+---
+
+## UX-2: Főablak max szélesség felülvizsgálata (520pt → 600pt?) 🟡
+
+A felhasználó visszajelzése szerint a tényleges ablak szélesség 500–520pt között mozog — a jelenlegi
+`windowMinWidth = 460` / `windowMaxWidth = 520` (UX-1, AU session) tartomány gyakorlatilag nem enged
+érdemi átméretezést.
+
+**Két opció, egyeztetés szükséges:**
+1. `windowMaxWidth` növelése 600pt-ra — több mozgástér az átméretezésre
+2. Fix 500pt szélesség, `.windowResizability` teljesen kikapcsolva — ha úgyis csak 500–520pt között van értelme,
+   az átméretezhetőség feleslegessé válik
+
+**Státusz:** NYITOTT — egyeztetés szükséges melyik irány, implementáció külön session
+
+---
+
+## BUG-MANUAL-1: Manual frissítése a bezárási metódus változása miatt 🟡
+
+Az AZ sessionben implementált pipa/X viselkedés (`NotesSheet` + `SnippetEditSheet` — pipa: ment+dismiss,
+X: dirty esetén confirm alert) nincs dokumentálva a manualban. Screenshotok készülnek, utána a
+`countdownApp-manual.md` érintett szekciói (Notes, Snippets szerkesztés) frissítendők.
+
+**Státusz:** NYITOTT — screenshot előkészítés alatt (felhasználó oldalán), implementáció (manual szöveg/kép) külön session
+
+---
+
+## ENH-DEVDOCS-1: Fejlesztői dokumentáció hiányzik 🟡
+
+Nincs külön fejlesztői dokumentáció (architektúra áttekintés, modul felelősségek, persistence réteg,
+recovery infrastruktúra, hogyan fejlesztünk egy új feature-t) — jelenleg csak a `Claude.md` (fejlesztési policy) +
+`countdownApp-handoff.md` (session-állapot) létezik, ezek nem helyettesítik a termék/architektúra dokumentációt.
+
+**Státusz:** NYITOTT — tartalom + struktúra egyeztetése szükséges, implementáció külön session
+
+---
+
+## BUG-TRASH-1: Editor trash gomb nem törli véglegesen a snippetet 🔴
+
+Az editorban (`SnippetEditSheet` feltételezhetően, pontosítandó) a trash gomb látszólag törli a snippetet,
+de a törlés után visszakerül (feltehetően auto-save / `.onDisappear` / dirty-state interakció miatt).
+
+**Státusz:** NYITOTT — root cause vizsgálat szükséges (melyik view pontosan, mi írja vissza), implementáció külön session
+
+---
+
+## BUG-DETAILDELETE-1: CountdownDetailView törlés után nem navigál vissza 🔴
+
+`CountdownDetailView`-n egy countdown item törlésekor a nézet nem csukódik be / navigál vissza automatikusan
+a `CountdownView`-ra — a felhasználó egy már nem létező item részletein marad, ami használhatatlan állapot.
+
+**Státusz:** NYITOTT — implementáció külön session (valószínűleg `dismiss()` vagy navigation pop hozzáadása
+a delete action-höz)
+
+---
+
+## ENH-DEFERRED-1: Deferred taskok dokumentálása (lokalizáció, Settings, About, Help) 🟢
+
+Több deferred téma nincs formálisan dokumentálva:
+- **Lokalizáció**: UI nyelv és input nyelv/locale-ok külön kezelése (a `Formatters.swift` fejléc már említi
+  deferred taskként, de nincs részletes terv)
+- **Settings menü**: jelenleg nincs — szükséges lenne a lokalizációs beállításokhoz és egyéb jövőbeli
+  opciókhoz
+- **About**: termék-infó (verzió, szerző, stb.) nincs
+- **Help menü**: nincs
+
+**Státusz:** NYITOTT — csak dokumentálás, nincs implementációs döntés; scope + prioritás egyeztetése szükséges
 
 ---

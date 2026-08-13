@@ -17,7 +17,8 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `01e652f` (AV session, D-1 FocusedNSTextField kiemelés)
+- Git: **naprakész** — legutóbbi commit `6314c6a` (AY session, markdown HTML/CSS kiemelés +
+  CODE_SIGN_ENTITLEMENTS fix + windowResizability fix)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
@@ -47,42 +48,52 @@
   E-4: `FocusedNSTextField` font+color → `makeNSView`-ba, `updateNSView` csak stringValue (1Hz AppKit pass megszűnt);
   E-2: `loadDeadlines` `onDismiss`-ben mindkét CalculateView sheet-en;
   F-10: `showDeleteAlert` → `showDeleteConfirm` (SnippetEditSheet), `showDeleteProjectAlert` → `showDeleteProjectConfirm` (SnippetsView). Git commit: `550afe9`
-- **AN session**: F-3 — `ComponentStepper.swift` új fájl (shared struct); `CountdownDetailView`, `CalculateView`, `AddCountdownSheet` — `private func componentStepper` törölve, 15 call site migrálva; `AddCountdownSheet` bugfix: plain `Button` → `LongPressStepperButton`. Git commit: TODO
+- **AN session**: F-3 — `ComponentStepper.swift` új fájl (shared struct); `CountdownDetailView`, `CalculateView`, `AddCountdownSheet` — `private func componentStepper` törölve, 15 call site migrálva; `AddCountdownSheet` bugfix: plain `Button` → `LongPressStepperButton`. Git commit: `f09bd0c`
 - **AM session**: E-1 — `CalculationModal` enum: `showSaveSheet: Bool` + `selectedDeadline: NamedDeadline?` eltavolitva;
   `private enum CalculationModal: Identifiable` (nested, `case saveSheet` + `case deadlineDetail(NamedDeadline)`);
   `activeModal: CalculationModal? = nil` egyetlen state; ket `.sheet` modifier egysitve;
   7 call site migralva. `isRenamingDeadline` marad (D-4), `showDeleteDeadlineConfirm` marad (`.alert` kenyszer).
-  Build OK. Git commit: TODO
+  Build OK. Git commit: `dc656e3`
 - **AL session**: AppTheme tokenek + WindowHelpers —
   F-7: `CalculateView.calcSaveGradient` `Color(red: 0x59/255, ...)` → `AppTheme.freeColors[7].opacity(0.35)`;
   F-8: `SnippetEditSheet.ProjectField` body bg → `AppTheme.freeColors[10]`, suggestionList bg → `AppTheme.freeColors[6]`;
-  F-1: `WindowHelpers.swift` új fájl (`enum WindowHelpers`, `windowConstrainedWidth` + `windowConstrainedHeight`), mind az 5 call site migrálva (NotesSheet, SnippetEditSheet, CalculateView, ColorPickerSheet, AddCountdownSheet); `SnippetEditSheet.windowMargin` property eltávolítva. Git commit: `4fd8eef`
+  F-1: `WindowHelpers.swift` új fájl (`enum WindowHelpers`, `windowConstrainedWidth` + `windowConstrainedHeight`), mind az 5 call site migrálva (NotesSheet, SnippetEditSheet, CalculateView, ColorPickerSheet, AddCountdownSheet); `SnippetEditSheet.windowMargin` property eltávolítva. Git commit: `ca4445a`
 - **AU session**: UX-1 — `AppTheme.windowMinWidth = 460`, `windowMaxWidth = 520`; `ContentView` frame constraint frissítve; git commit `37b1674`
 - **AV session**: D-1 — `FocusedNSTextField.swift` új fájl; `CountdownDetailView.swift` ~110 sor (FocusedNSTextField blokk) eltávolítva; git commit `01e652f`
 - **AY session**: Nyitott teendők #1 — inline HTML/CSS kiemelés `SharedEditorComponents.swift`-ből:
   `resources/markdown-template.html` + `resources/markdown-style.css` új bundle resource-ok (placeholder csere
   + `var(--theme-amber)`); globális `markdownCSS` var törölve; `reload(_:into:)` bundle-ből olvas +
   `replacingOccurrences` placeholder-cserével; `fallbackHTML` inline minimál CSS-re cserélve.
-  Project file-system-synchronized group, nincs `.pbxproj` szerkesztés szükséges. **Build NINCS ellenőrizve**
-  ebben a sessionben. Git commit: PENDING
+  Project file-system-synchronized group, nincs `.pbxproj` szerkesztés szükséges.
+  + build hiba fix: `CODE_SIGN_ENTITLEMENTS` stale path (`countdownApp/countdownApp.entitlements` →
+  `countdownApp/App/countdownApp.entitlements`, Debug + Release).
+  + window resize bug fix: `.windowResizability(.contentSize)` a `WindowGroup`-on (natív macOS resize
+  addig túlnyújthatta az NSWindow-t a `ContentView.frame(maxWidth:)` fölé).
+  Build OK, user verifikálta. Git commit: `6314c6a`
 
 ---
 
 ## Következő session feladata
 
-**AY session (inline HTML/CSS kiemelés) — implementáció kész, build ELLENŐRZÉS PENDING:**
-- `resources/markdown-template.html` + `resources/markdown-style.css` létrehozva; `SharedEditorComponents.swift`
-  `reload(_:into:)` + `fallbackHTML` frissítve; globális `markdownCSS` var törölve. Részletek: progress.md AY.
-- **Első lépés a következő sessionben: Xcode build futtatása** — MCP-n keresztül nem volt elérhető build
-  ebben a sessionben, úgyhogy a bundle resource betöltés (fájlnév egyezés, placeholder csere) nincs
-  ténylegesen verifikálva. Ha OK: git commit. Ha hiba: fix ugyanebben a sessionben.
+**Nyitott teendők #2 — mappastruktúra: LEZÁRVA (BB session)** — `countdownApp/countdownApp/` alatt mind
+  a 27 Swift fájl már a végleges alkönyvtárakban van (`App/` 2, `Components/` 5, `Models/` 3, `Services/` 4,
+  `Theme/` 1, `Views/` 1 + `Views/Calculate/` 3 + `Views/Countdown/` 6 + `Views/Snippets/` 2), file-system-synchronized
+  Xcode group, nincs teendő. Lásd lent frissített fájllista.
 
-**Nyitott teendők (egyeztetés szükséges, sorrend meghatározandó):**
+**Buglist — 6 új bejegyzés (BB session, `docs/buglist.md`), mind egyeztetésre vár implementáció előtt:**
 
-1. **Mappastruktúra** — fájlrendszer szintű mappák (nem Xcode virtuális groupok); struktúra tervezés + implementáció külön session.
-   Megjegyzés: a `countdownApp/countdownApp/` alatt már léteznek alkönyvtárak (`App/`, `Components/`, `Models/`,
-   `Services/`, `Theme/`, `Views/`, `resources/`) — ez a fenti pont már részben megtörtént korábbi sessionben;
-   pontosítandó hogy mi maradt hátra.
+1. **BUG-MANUAL-1** 🟡 — manual frissítése a bezárási metódus (pipa/X) változása miatt (AZ session) —
+   screenshotok készülnek, utána következik a manual szöveg/kép frissítése
+2. **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik, megírandó
+3. **BUG-TRASH-1** 🔴 — SnippetEditSheet/NotesSheet editor trash gombja nem törli véglegesen a snippetet:
+   törli, majd visszateszi — pontos root cause a következő sessionben vizsgálandó (trash handler + esetleges
+   auto-save/onDisappear interakció gyanús)
+4. **BUG-DETAILDELETE-1** 🔴 — `CountdownDetailView`-n item törlésekor a sheet/nav nem csukódik be automatikusan;
+   a felhasználó egy már nem létező item részletein marad — törlés után vissza kell navigálni `CountdownView`-ra
+5. **UX-2** 🟡 — főablak max szélesség 520pt → 600pt (UX-1/AU session döntésének felülvizsgálata); alternatíva:
+   fix 500pt, nem átméretezhető — egyeztetés szükséges melyik irány
+6. **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása: lokalizáció, UI nyelv, input nyelv/locale-ok külön
+   kezelése; ehhez Settings menü + About + Help menü (még egyik sincs megvalósítva)
 
 ---
 
@@ -139,42 +150,45 @@
 
 ---
 
-## Swift fájlok (teljes lista)
+## Swift fájlok (teljes lista, mappastruktúra szerint — BB session frissítés)
 
 ```
-AddCountdownSheet.swift
-AppKeys.swift
-ComponentStepper.swift
-AppTheme.swift
-Formatters.swift
-CalculateView.swift
-ColorPickerSheet.swift
-ContentView.swift
-CountdownDetailView.swift
-CountdownItem.swift
-CountdownRowView.swift
-CountdownView.swift
-LongPressStepperButton.swift
-NamedDeadline.swift
-NotesSheet.swift
-WindowHelpers.swift
-SharedEditorComponents.swift
-Snippet.swift
-SnippetEditSheet.swift
-SnippetsView.swift
-SunPanel.swift
-SunTimes.swift
-SunTimesService.swift
-countdownAppApp.swift
+App/AppKeys.swift
+App/countdownAppApp.swift
+Components/ComponentStepper.swift
+Components/CopyButton.swift
+Components/FocusedNSTextField.swift
+Components/LongPressStepperButton.swift
+Components/SharedEditorComponents.swift
+Models/CountdownItem.swift
+Models/NamedDeadline.swift
+Models/Snippet.swift
+Services/Formatters.swift
+Services/SunTimes.swift
+Services/SunTimesService.swift
+Services/WindowHelpers.swift
+Theme/AppTheme.swift
+Views/ContentView.swift
+Views/Calculate/CalculateView.swift
+Views/Calculate/DeadlineDetailSheet.swift
+Views/Calculate/SunPanel.swift
+Views/Countdown/AddCountdownSheet.swift
+Views/Countdown/ColorPickerSheet.swift
+Views/Countdown/CountdownDetailView.swift
+Views/Countdown/CountdownRowView.swift
+Views/Countdown/CountdownView.swift
+Views/Countdown/NotesSheet.swift
+Views/Snippets/SnippetEditSheet.swift
+Views/Snippets/SnippetsView.swift
 ```
-- **AO session**: F-9 — `AppTheme` corner radii tokenek (`radiusSmall/Medium/Large`), alpha tokenek (`alpha08`…`alpha90`); 14 fájl érintett; CSS border-radius értékek (markdownCSS) érintetlenek. Git commit: TODO
+- **AO session**: F-9 — `AppTheme` corner radii tokenek (`radiusSmall/Medium/Large`), alpha tokenek (`alpha08`…`alpha90`); 14 fájl érintett; CSS border-radius értékek (markdownCSS) érintetlenek. Git commit: `822f154`
 - **AP session**: D-4 — `DeadlineDetailSheet.swift` új fájl; `AppTheme.calcSaveGradient` új token;
   `CalculateView`: `isRenamingDeadline`/`renameDraft`/`showDeleteDeadlineConfirm` state-ek + `deadlineDetailContent()` func + `calcSaveGradient` private var eltávolítva. Git commit: `d46824d`
 - **AT session**: D-5 commit lezárva; `docs/buglist.md` létrehozva — UX-1 (max-szélesség korlátok) bejegyzve.
 - **AS session**: D-5 — `CountdownItem`: `mutating func resetIfExpired(at:)` + `mutating func adjustDeadline(_:by:)`;
   `Snippet`: `static func committed(from:title:body:project:) -> Snippet?` factory;
   `CountdownDetailView`: `.onAppear` + `adjust(_:by:)` lecsökkentve modellhívásra;
-  `SnippetEditSheet`: `commitSave()` lecsökkentve `Snippet.committed(from:...)` hívásra. Git commit: PENDING → (AT session-ben zárva)
+  `SnippetEditSheet`: `commitSave()` lecsökkentve `Snippet.committed(from:...)` hívásra. Git commit: `37b1674` (AT session-ben zárva)
 - **AR session**: D-3 bugfix — `CountdownView.swift` `.navigationDestination` delete callbackben
   `save()` → `CountdownItem.save(items)` (stale call, D-3 refaktor lefelejtett call site). Git commit: `3f25353`
 - **AQ session**: D-3 — static load/save a modell fájlokban:

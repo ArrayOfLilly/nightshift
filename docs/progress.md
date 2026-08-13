@@ -1,5 +1,35 @@
 # countdownApp — Progress
 
+## Session BB — 2026-08-13 (pending commit hash-ek rendezése + mappastruktúra ellenőrzés + buglist bővítés)
+
+### Session BB — LEZÁRVA
+- [x] `git log` alapján ellenőrizve: AN (F-3), AM (E-1), AO (F-9), AL (F-1/F-7/F-8), AS (D-5), Z+AA-b+AB,
+  Q–Y sessionok `progress.md`-ben “Git commit: PENDING/TODO” jelziként szerepeltek, de a kód valójában már
+  commitolva volt — mind a 9 hely frissítve tényleges hash-ekkel (`f09bd0c`, `dc656e3`, `822f154`, `ca4445a`,
+  `37b1674`, `ebe890a`, `678bea6`, `25f7591`)
+- [x] `countdownApp-handoff.md` — AL session tévesen `4fd8eef`-et mutatott (az AK docs commit, nem AL) →
+  javítva `ca4445a`-ra; AN/AM/AO “TODO” jelzések frissítve; AS “PENDING” frissítve
+- [x] Uncommitted doc-only változások (BA sessionből maradt, AY commit hash + “Következő session feladata”
+  szinkronizálás) — beleépítve ebbe a session commitba
+- [x] Mappastruktúra (Nyitott teendők #2) ellenőrizve `find` paranccsal: mind a 27 Swift fájl már
+  végleges alkönyvtárban van (`App/`, `Components/`, `Models/`, `Services/`, `Theme/`, `Views/` +
+  `Views/Calculate/`, `Views/Countdown/`, `Views/Snippets/`) — **nincs hátralévő munka**, csak dokumentáció
+  frissítés volt szükséges (handoff.md fájllista frissítve, `CopyButton.swift` + `DeadlineDetailSheet.swift`
+  hozzáadva a listához — korábban hiányoztak)
+- [x] `docs/buglist.md` — 6 új bejegyzés felhasználói visszajelzés alapján (mind csak dokumentálva,
+  implementáció nem történt): `BUG-MANUAL-1` (manual frissítés bezárási metódus miatt),
+  `ENH-DEVDOCS-1` (fejlesztői dokumentáció hiányzik), `BUG-TRASH-1` (editor trash visszateszi a törölt
+  snippetet), `BUG-DETAILDELETE-1` (CountdownDetailView törlés után nem navigál vissza), `UX-2` (max
+  ablakszélesség 520→600pt felülvizsgálat, alternatíva fix 500pt), `ENH-DEFERRED-1` (lokalizáció +
+  Settings/About/Help menü deferred dokumentálása); `UX-1` státusz ✅ KÉSZ-re javítva (ténylegesen
+  implementálva volt AU sessionben, buglist.md ezt nem tükrözte)
+- Git commit: ebben a sessionben, dokumentáció-only
+
+**Következő session:** a 6 új buglist bejegyzés közül egy vagy több egyeztetése + implementációja
+(prioritás: BUG-TRASH-1 és BUG-DETAILDELETE-1 🔴 kritikusak, először ezeket érdemes vizsgálni)
+
+---
+
 ## Session BA — 2026-08-13 (ellenőrzés + dokumentáció szinkronizálás)
 
 ### Session BA — LEZÁRVA
@@ -168,7 +198,7 @@
   - `CountdownDetailView`: `private func componentStepper` törölve, 5 call site → `ComponentStepper(...)` (default színek, nincs override)
   - `CalculateView`: `private func componentStepper` törölve, 5 call site → `ComponentStepper(...)` + `foregroundColor: AppTheme.background, backgroundColor: Color.white.opacity(0.12)` override
   - `AddCountdownSheet`: `private func componentStepper` törölve (plain Button eltávolítva), 5 call site → `ComponentStepper(...)` (default színek, nincs override)
-- [ ] Git commit: PENDING
+- [x] Git commit: `f09bd0c`
 
 **Következő session:** F-9 (magic numbers — corner radii, opacity) vagy egyéb egyeztetés alapján
 
@@ -188,7 +218,7 @@
   - `isRenamingDeadline` marad (D-4-re halasztva); `showDeleteDeadlineConfirm` marad
     (`.alert(isPresented:)` technikai kenyszer)
   - Build OK
-- [ ] Git commit: PENDING
+- [x] Git commit: `dc656e3`
 
 **Kovetkezo session:** F-3 (`componentStepper` 3 impl shared `ComponentStepper` view)
 
@@ -213,7 +243,7 @@
     - `CalculateView.updateSheetWidth()` → helper [300, 520]
     - `ColorPickerSheet.onAppear` → helper [300, 420]
     - `AddCountdownSheet.onAppear` → helper [380, 560]
-- [ ] Git commit: PENDING
+- [x] Git commit: `ca4445a`
 
 **Következő session:** E-1 (`CalculateView` Boolean sprawl → `enum CalculationModalState`) — egyeztetés alapján
 
@@ -439,7 +469,7 @@ G kategória lezárul.
   - `CalculateView`: banner `.overlay(alignment: .top)` — ScrollView miatt overlay pattern
   - `CountdownView`: banner a `VStack` tetején (itemList előtt)
   - Banner szín: `CountdownView` → dark sötétvörös (`#4A0000` 85%), többi → `#8B0000` 75%
-- [ ] Git commit (Session Z+AA-a+AA-b+AB összevonva, PENDING)
+- [x] Git commit: `ebe890a`
 
 ## Session AA-b — 2026-08-12 (CountdownView.load() per-item recovery + notes-elágazás)
 
@@ -451,7 +481,7 @@ G kategória lezárul.
     - `notes` hiányzik vagy üres → csendes eldobás, semmi dump
   - Minta: `Snippet.load()` és `CalculateView.loadDeadlines()` struktúrája követve
 - [x] Load path táblázat: `CountdownView.load()` ✅ per-item + ✅ notes-elágazás
-- [ ] Git commit (Session Z+AA-a+AA-b összevonva, PENDING)
+- [x] Git commit: `678bea6`
 
 **AB következő:**
 - Banner UI (`SnippetsView`, `CalculateView`, `CountdownView`)
@@ -499,7 +529,7 @@ G kategória lezárul.
 - [x] Mind a 16 audit fájl elolvasva egyenként
 - [x] `docs/refactor-plan.md` teljes findings listával feltöltve — 7 kategória (A–G), 35+ finding tételesen
 - [x] `docs/countdownApp-handoff.md` frissítve
-- [ ] Git commit (Session Q–Y)
+- [x] Git commit: `25f7591` (Session Q–X összevont commit)
 
 ---
 
@@ -509,7 +539,7 @@ G kategória lezárul.
 - [x] `Claude.md` megírva a gyökérbe
 - [x] `docs/refactor-plan.md` létrehozva
 - [x] `docs/countdownApp-handoff.md` frissítve
-- [ ] Git commit (Session Q–X)
+- [x] Git commit: `25f7591`
 
 ---
 
@@ -520,7 +550,7 @@ G kategória lezárul.
 - [x] SESSION_HANDOFF.md + countdownApp-handoff.md összevonva
 - [x] docs/ áthelyezve inner repóba
 - [x] progress.md archiválva → history.md
-- [ ] Git commit (Session Q–W)
+- [x] Git commit: `25f7591`
 
 ---
 
@@ -607,7 +637,7 @@ G kategória lezárul.
   - 14 érintett fájl: AddCountdownSheet, CalculateView, ColorPickerSheet, ComponentStepper, ContentView, CountdownDetailView, CountdownRowView, CountdownView, LongPressStepperButton, NotesSheet, SnippetEditSheet, SnippetsView, SunPanel, AppTheme
   - Nem tokenizált maradékok (szándékos): 0.2, 0.3, 0.4, 0.05, 0.15, 0.18, 0.95 — egyedi vagy nincs összevonási pár; ColorPickerSheet ternáris 0.18 szintén marad
   - CSS border-radius értékek (SharedEditorComponents.swift markdownCSS) érintetlenek — külön WebView világ, nem szinkronizálható SwiftUI tokenekkel
-- [ ] Git commit: PENDING
+- [x] Git commit: `822f154`
 
 **Következő session:** D kategória (SRP / god views) — egyeztetéssel kezd
 
@@ -670,7 +700,7 @@ G kategória lezárul.
   - `CountdownDetailView` — `.onAppear` lecsökkent: `item.resetIfExpired(at: now)` + `localDeadline = item.deadline`; `adjust(_:by:)` lecsökkent: `item.adjustDeadline(c, by: value)` + `localDeadline = item.deadline`
   - `SnippetEditSheet` — `commitSave()` lecsökkent: `Snippet.committed(from:title:body:project:)` hívás
   - View-kban nulla domain/business logika vagy dátumszámítás nem maradt; `cal` property megmaradt a `component(_:)` helper miatt (query, nem mutáció)
-- [ ] Git commit: PENDING
+- [x] Git commit: `37b1674` (AT session-ben zárva, lásd AT bejegyzés)
 
 
 ## Session AY — 2026-08-13 (Inline HTML/CSS kiemelés — Nyitott teendők #1)
@@ -692,7 +722,7 @@ G kategória lezárul.
   - Build: NEM futtatva ebben a sessionben (nincs hozzáférés Xcode buildhez az MCP-n keresztül) — **következő
     session elején ellenőrizendő**
 - [x] Build OK, CSS bundle betöltés működik
-- [x] Git commit: `TBD` (lásd session végi commit)
+- [x] Git commit: `6314c6a` (lásd session végi commit — entitlements fix + window resize fix is benne)
 
 **Következő session:** Nyitott teendők #2 (mappastruktúra) — egyeztetéssel kezd
 
@@ -707,7 +737,7 @@ G kategória lezárul.
 - [x] Fix: `CODE_SIGN_ENTITLEMENTS` mindkét configban (Debug + Release) →
   `countdownApp/App/countdownApp.entitlements` — fájl a helyén marad, path frissítve hozzá
   (nem a gyökérbe mozgatás, mert az App/ szervezés szándékos volt)
-- [ ] Git commit: PENDING (ugyanabba a commitba mehet az AY session többi változtatásával)
+- [x] Git commit: `6314c6a`
 
 ---
 
@@ -719,4 +749,4 @@ G kategória lezárul.
 - [x] Fix: `countdownAppApp.swift` — `.windowResizability(.contentSize)` hozzáadva a `WindowGroup`
   Scene-hez; az ablak átméretezhető tartománya mostantól a `ContentView` `frame(minWidth:maxWidth:)`-jéből
   származik, fizikailag nem nőhet 520pt fölé
-- [ ] Git commit: PENDING (ugyanabba a commitba mehet az AY session többi változtatásával)
+- [x] Git commit: `6314c6a`
