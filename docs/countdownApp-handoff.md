@@ -134,3 +134,11 @@ SunTimesService.swift
 countdownAppApp.swift
 ```
 - **AO session**: F-9 — `AppTheme` corner radii tokenek (`radiusSmall/Medium/Large`), alpha tokenek (`alpha08`…`alpha90`); 14 fájl érintett; CSS border-radius értékek (markdownCSS) érintetlenek. Git commit: TODO
+
+## D kategória — sorrend és döntések
+
+- **Motiváció:** fejleszthetőség + olvashatóság (nem testability-első)
+- **Sorrend:** D-4 → D-3 → D-5 → D-1 → D-2
+- **D-3 irány:** static load/save a modell fájlokban (Snippet-minta) — CountdownItem, NamedDeadline
+- **D-2 megjegyzés:** szükségességét D-3 után újra ítéljük — lehet hogy a maradék logika már elég kis méretű
+- **Következő:** D-4 — `deadlineDetailContent()` → `struct DeadlineDetailSheet: View` saját `@State`-tel

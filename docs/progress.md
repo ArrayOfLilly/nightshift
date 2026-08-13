@@ -452,3 +452,17 @@ G kategória lezárul.
 
 **Következő session:** D kategória (SRP / god views) — egyeztetéssel kezd
 
+
+---
+
+## Session AO — D kategória tervezés (egyeztetés)
+
+- [x] D kategória sorrendje és motivációja egyeztetve:
+  - Cél: fejleszthetőség + olvashatóság (nem testability-első)
+  - Sorrend: **D-4 → D-3 → D-5 → D-1 → D-2**
+  - D-2 (`CountdownViewModel`) szükségességét D-3 után újra ítéljük meg — lehet hogy D-3 után
+    a View-ban maradó logika már annyira kis méretű, hogy külön ViewModel nem indokolt
+  - D-3 irány megerősítve: static load/save metódusok a modell fájlokban (`Snippet`-minta kiterjesztve)
+    `CountdownItem`, `NamedDeadline` — a View csak hívja őket
+- [ ] D-4 implementáció: következő session
+
