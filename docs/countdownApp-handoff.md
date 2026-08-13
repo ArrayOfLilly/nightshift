@@ -41,17 +41,22 @@
   `CountdownDetailView`, `NotesSheet`, `SnippetEditSheet` — `@State copyFeedback` eltávolítva,
   `CopyButton`-ra migrálva, delay 1000ms egységesítve;
   `NotesSheet.headerButton` bg 0.07 → 0.12 (F-5 lezárva);
-  `CountdownRowView` — `DispatchQueue` → Task (B-2 lezárva). Git commit: PENDING
+  `CountdownRowView` — `DispatchQueue` → Task (B-2 lezárva). Git commit: `cb76608`
+- **AK session**: kis fixek —
+  F-4: `monthAbbrev()` lokális impl. eltávolítva mind a 3 fájlból (AddCountdownSheet inline fmt, CountdownDetailView és CalculateView thin wrapper), call site-ok `Formatters.monthAbbrev` direkt hívással;
+  E-4: `FocusedNSTextField` font+color → `makeNSView`-ba, `updateNSView` csak stringValue (1Hz AppKit pass megszűnt);
+  E-2: `loadDeadlines` `onDismiss`-ben mindkét CalculateView sheet-en;
+  F-10: `showDeleteAlert` → `showDeleteConfirm` (SnippetEditSheet), `showDeleteProjectAlert` → `showDeleteProjectConfirm` (SnippetsView). Git commit: PENDING
 
 ---
 
 ## Következő session feladata
 
 - **E és F kategóriák** (`refactor-plan.md`) — nyitott findingek:
-  - F-1 (`updateSheetWidth` shared helper, 5 impl), F-3 (`componentStepper` unifikáció),
-    F-4 (`monthAbbrev` → `Formatters.swift`), F-7/F-8 (`AppTheme` tokenek), F-10 (alert flags)
-  - E-1 (Boolean sprawl → enum), E-2 (`namedDeadlines` stale read), E-4 (font recreation)
-  - **F-2 ✅ KÉSZ** (AJ session), **F-5 ✅ KÉSZ** (AJ session side-fix), **F-6 ✅ KÉSZ** (AA-a session)
+  - F-1 (`updateSheetWidth` shared helper, 5 impl), F-3 (`componentStepper` unifikáció), F-7/F-8 (`AppTheme` tokenek)
+  - E-1 (Boolean sprawl → enum)
+  - **F-2 ✅ KÉSZ** (AJ session), **F-4 ✅ KÉSZ** (AK session), **F-5 ✅ KÉSZ** (AJ session side-fix), **F-6 ✅ KÉSZ** (AA-a session)
+  - **E-2 ✅ KÉSZ** (AK session), **E-4 ✅ KÉSZ** (AK session), **F-10 ✅ KÉSZ** (AK session)
   - F-9 (magic numbers) — külön session (nagy volumen)
 - refactor-plan.md-ben E-3 és F-6 már "KÉSZ"-ként jelölve (nem kell frissíteni)
 - Manual PDF újragenerálása (`manual_build.py` futtatása) ha szükséges

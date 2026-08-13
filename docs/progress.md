@@ -17,10 +17,32 @@
   headerButton copy hívás → `CopyButton`
 - [x] **CountdownRowView.swift** — `DispatchQueue.main.asyncAfter` → `Task { .sleep(1000ms) }`
   (B-2 straggler — az AF sessionban kimaradt ez a call site); delay 1200ms → 1000ms
-- [ ] Git commit: PENDING
+- [x] Git commit: `cb76608`
 
-**Következő session:** E vagy F kategória — egyeztetés alapján
-(F-1 `updateSheetWidth` shared helper, F-3 `componentStepper`, E-1 Boolean sprawl, stb.)
+---
+
+## Session AK — 2026-08-13 (F-4, E-4, E-2, F-10 — kis fixek)
+
+### Session AK — LEZÁRVA
+- [x] **F-4** — `monthAbbrev()` lokális implementációk eltávolítva (mind a 3):
+  - `AddCountdownSheet`: inline `DateFormatter` eltávolítva, call site → `Formatters.monthAbbrev.string(from: deadline).uppercased()`
+  - `CountdownDetailView`: thin wrapper eltávolítva, call site → `Formatters.monthAbbrev.string(from: localDeadline).uppercased()`
+  - `CalculateView`: thin wrapper eltávolítva, call site → `Formatters.monthAbbrev.string(from: date.wrappedValue).uppercased()`
+  - `Formatters.monthAbbrev` az egyetlen implementáció (C-4 session óta)
+- [x] **E-4** — `FocusedNSTextField.updateNSView` font+color recreation per-second:
+  - Font és textColor áthelyezve `makeNSView`-ba (egyszer, view létrehozáskor)
+  - `updateNSView` mostantól csak `stringValue` frissítést végez — AppKit layout pass 1Hz tikkenként megszűnt
+- [x] **E-2** — `namedDeadlines` stale read:
+  - `showSaveSheet` sheet: `onDismiss: loadDeadlines` hozzáadva
+  - `selectedDeadline` sheet: `onDismiss: loadDeadlines` hozzáadva
+  - Save/edit/delete után a lista mindig frissül sheet bezárásakor
+- [x] **F-10** — delete-confirm alert flag nevek egységesítve:
+  - `SnippetEditSheet`: `showDeleteAlert` → `showDeleteConfirm` (3 hely)
+  - `SnippetsView`: `showDeleteProjectAlert` → `showDeleteProjectConfirm` (3 hely)
+  - Konvenció: `showDelete<Entity?>Confirm` wszerte
+- [x] Git commit: PENDING
+
+**Következő session:** E-1 (Boolean sprawl → enum), F-1 (`updateSheetWidth` helper), F-3 (`componentStepper` unifikáció), F-7/F-8 (AppTheme tokenek) — egyeztetés alapján
 
 ---
 

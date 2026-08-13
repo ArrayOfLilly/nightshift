@@ -169,8 +169,9 @@ struct CalculateView: View {
             corruptedFragments = (UserDefaults.standard.array(forKey: AppKeys.corruptedDump) as? [String]) ?? []
         }
         #endif
-        .sheet(isPresented: $showSaveSheet) { saveSheetContent }
-        .sheet(item: $selectedDeadline) { deadline in deadlineDetailContent(deadline) }
+        // E-2: reload after each sheet dismissal so the deadline list is never stale.
+        .sheet(isPresented: $showSaveSheet, onDismiss: loadDeadlines) { saveSheetContent }
+        .sheet(item: $selectedDeadline, onDismiss: loadDeadlines) { deadline in deadlineDetailContent(deadline) }
     }
 
     // MARK: - Corruption banner
@@ -262,7 +263,7 @@ struct CalculateView: View {
             componentStepper(
                 label: "MON",
                 unit: "month",
-                value: monthAbbrev(from: date.wrappedValue),
+                value: Formatters.monthAbbrev.string(from: date.wrappedValue).uppercased(),
                 onInc: { adjustDate(date, .month,  by:  1) },
                 onDec: { adjustDate(date, .month,  by: -1) }
             )
@@ -868,10 +869,6 @@ struct CalculateView: View {
 
     private func snapToMinute(_ date: Date) -> Date {
         Date(timeIntervalSince1970: floor(date.timeIntervalSince1970 / 60) * 60)
-    }
-
-    private func monthAbbrev(from date: Date) -> String {
-        Formatters.monthAbbrev.string(from: date).uppercased()
     }
 
     private func deadlineDateString(_ date: Date) -> String {

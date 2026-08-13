@@ -55,6 +55,15 @@ private struct FocusedNSTextField: NSViewRepresentable {
         tf.focusRingType = .none
         tf.lineBreakMode = .byTruncatingTail
         tf.maximumNumberOfLines = 1
+        // Font and color are static — set once here so updateNSView (called
+        // on every TimelineView tick) does not recreate NSFont each second.
+        if let font = NSFont(name: "AlienLeagueBold", size: 36)
+            ?? NSFont(name: "Alien League Bold", size: 36) {
+            tf.font = font
+        } else {
+            tf.font = NSFont.boldSystemFont(ofSize: 36)
+        }
+        tf.textColor = NSColor(AppTheme.dark).withAlphaComponent(0.8)
         // Suppress the grey inactive-selection highlight by using a fully
         // transparent selection background. The active selection uses a subtle
         // white tint so it is still legible while editing.
@@ -71,13 +80,7 @@ private struct FocusedNSTextField: NSViewRepresentable {
         if !context.coordinator.isEditing {
             nsView.stringValue = text
         }
-        if let font = NSFont(name: "AlienLeagueBold", size: 36)
-            ?? NSFont(name: "Alien League Bold", size: 36) {
-            nsView.font = font
-        } else {
-            nsView.font = NSFont.boldSystemFont(ofSize: 36)
-        }
-        nsView.textColor = NSColor(AppTheme.dark).withAlphaComponent(0.8)
+        // Font and color are set once in makeNSView; no work needed here.
     }
 
     func makeCoordinator() -> Coordinator {
@@ -374,7 +377,7 @@ struct CountdownDetailView: View {
             componentStepper(
                 label: "MON",
                 unit: "month",
-                value: monthAbbrev(),
+                value: Formatters.monthAbbrev.string(from: localDeadline).uppercased(),
                 onInc: { adjust(.month, by: 1) },
                 onDec: { adjust(.month, by: -1) }
             )
@@ -490,7 +493,4 @@ struct CountdownDetailView: View {
         }
     }
 
-    private func monthAbbrev() -> String {
-        Formatters.monthAbbrev.string(from: localDeadline).uppercased()
-    }
 }

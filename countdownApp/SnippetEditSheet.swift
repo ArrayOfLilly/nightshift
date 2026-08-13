@@ -111,7 +111,7 @@ struct SnippetEditSheet: View {
     @State private var snippetBody: String
 
     @State private var isEditing       = true
-    @State private var showDeleteAlert = false
+    @State private var showDeleteConfirm = false
     // FIX: sheet width was a fixed maxWidth: 900, which could exceed the
     // actual window width when the window is narrower than 900pt (the
     // sheet then visibly overhangs both edges). Now computed from the
@@ -166,7 +166,7 @@ struct SnippetEditSheet: View {
         .onAppear { updateSheetSize() }
         .onDisappear { commitSave() }
         .focusable(false)
-        .alert("Delete snippet?", isPresented: $showDeleteAlert) {
+        .alert("Delete snippet?", isPresented: $showDeleteConfirm) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
                 if let id = snippet?.id { onDelete?(id) }
@@ -203,7 +203,7 @@ struct SnippetEditSheet: View {
                     headerButton(icon: isEditing ? "checkmark" : "pencil",
                                  label: isEditing ? "Done editing" : "Edit snippet") { isEditing.toggle() }
                     if onDelete != nil {
-                        headerButton(icon: "trash", label: "Delete snippet") { showDeleteAlert = true }
+                        headerButton(icon: "trash", label: "Delete snippet") { showDeleteConfirm = true }
                     }
                 }
                 Rectangle().fill(Color.white.opacity(0.12)).frame(width: 1, height: 22).padding(.horizontal, 6)

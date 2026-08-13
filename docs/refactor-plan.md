@@ -147,15 +147,14 @@ előtt kötelező fix.
 - `CountdownDetailView`: `copyFeedback` + `isEditing` → javasolt: `enum LabelInteraction`
 - **Hatás:** lehetetlen state kombinációk kompilációs hibák helyett runtime bugok
 
-### E-2: `CalculateView.namedDeadlines` — stale read, nincs refresh ha tab switch
-- `.onAppear` csak egyszer hívódik; ha a view nem deallocálódik, tab váltás nem frissíti
-- **Fix:** `.task(id: isTabActive) { loadDeadlines() }` vagy értesítési mechanizmus
+### E-2: `CalculateView.namedDeadlines` — stale read, nincs refresh ha tab switch — ✅ KÉSZ (AK session)
+- `onDismiss: loadDeadlines` mindkét sheet-en (saveSheet + selectedDeadline); save/edit/delete után mindig frissül
 
 ### E-3: `SnippetEditSheet.onDisappear` — nincs `commitSave` external dismiss esetén — ✅ KÉSZ (AE session, A-4)
 - `.onDisappear { commitSave() }` hozzáadva, commit `f7f774d`
 
-### E-4: `SM-4a` — `FocusedNSTextField.updateNSView` font recreation per-second (TimelineView)
-- Minden 1Hz tick újra beállítja a font-ot az NSTextField-en — AppKit layout pass
+### E-4: `SM-4a` — `FocusedNSTextField.updateNSView` font recreation per-second (TimelineView) — ✅ KÉSZ (AK session)
+- Font+textColor áthelyezve `makeNSView`-ba; `updateNSView` csak stringValue-t frissít
 
 ---
 
@@ -173,7 +172,8 @@ előtt kötelező fix.
 ### F-3: `componentStepper` — 3 implementáció (AddCountdownSheet-ben visszaesés: plain Button, nem LongPress)
 - **Fix:** shared `ComponentStepper` view, `LongPressStepperButton`-nal
 
-### F-4: `monthAbbrev()` — 3 implementáció, static helper kellene
+### F-4: `monthAbbrev()` — 3 implementáció, static helper kellene — ✅ KÉSZ (AK session)
+- Lokális implementációk eltávolítva (AddCountdownSheet inline fmt, CountdownDetailView + CalculateView thin wrapper); call site-ok `Formatters.monthAbbrev` direkt hívással
 
 ### F-5: `headerButton()` — NotesSheet vs SnippetEditSheet bg opacity eltérés — ✅ KÉSZ (AJ session side-fix)
 - `NotesSheet.headerButton` bg 0.07 → 0.12 (SnippetEditSheet értékre egységesítve)
@@ -187,7 +187,8 @@ előtt kötelező fix.
 
 ### F-9: Magic corner radii (26 instance, 7 fájl), opacity értékek (35+ instance) → `AppTheme` tokenek
 
-### F-10: Delete-confirm alert flags — 6 instance különböző névvel (`showDeleteConfirm` vs `showDeleteAlert`)
+### F-10: Delete-confirm alert flags — 6 instance különböző névvel (`showDeleteConfirm` vs `showDeleteAlert`) — ✅ KÉSZ (AK session)
+- `SnippetEditSheet`: `showDeleteAlert` → `showDeleteConfirm`; `SnippetsView`: `showDeleteProjectAlert` → `showDeleteProjectConfirm`; konvenció: `showDelete<Entity?>Confirm`
 
 ---
 

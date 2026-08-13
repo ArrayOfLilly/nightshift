@@ -107,7 +107,7 @@ struct AddCountdownSheet: View {
             componentStepper(
                 label: "MON",
                 unit: "month",
-                value: monthAbbrev(),
+                value: Formatters.monthAbbrev.string(from: deadline).uppercased(),
                 onInc: { adjust(.month,  by:  1) },
                 onDec: { adjust(.month,  by: -1) }
             )
@@ -186,10 +186,4 @@ struct AddCountdownSheet: View {
         if let d = cal.date(byAdding: c, value: value, to: deadline) { deadline = d }
     }
 
-    private func monthAbbrev() -> String {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "MMM"
-        fmt.locale = Locale(identifier: "en_US")
-        return fmt.string(from: deadline).uppercased()
-    }
 }

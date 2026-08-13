@@ -26,7 +26,7 @@ struct SnippetsView: View {
 
     // Project delete
     @State private var projectToDelete:  String = ""
-    @State private var showDeleteProjectAlert = false
+    @State private var showDeleteProjectConfirm = false
 
     // Recovery banner
     @State private var corruptedFragments: [String] = []
@@ -73,7 +73,7 @@ struct SnippetsView: View {
         } message: {
             Text("All snippets in “\(projectToRename)” will be moved to the new name.")
         }
-        .alert("Delete project?", isPresented: $showDeleteProjectAlert) {
+        .alert("Delete project?", isPresented: $showDeleteProjectConfirm) {
             Button("Delete", role: .destructive) { deleteProject(projectToDelete) }
             Button("Cancel", role: .cancel) { }
         } message: {
@@ -227,7 +227,7 @@ struct SnippetsView: View {
                 Divider()
                 Button("Delete project", role: .destructive) {
                     projectToDelete       = project
-                    showDeleteProjectAlert = true
+                    showDeleteProjectConfirm = true
                 }
             } label: {
                 Image(systemName: "chevron.down")
