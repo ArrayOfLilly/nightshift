@@ -90,6 +90,19 @@ enum AppTheme {
     /// Near-opaque elements — selected states and high-contrast labels (consolidates 0.85 and 0.90)
     static let alpha90: CGFloat = 0.90
 
+    // MARK: - Gradients
+
+    /// Shared gradient background for CALC-SAVE sheets and popovers.
+    /// Purple tint (freeColors[7] @ 35%) fades into calculateBackground by 25% of the view height.
+    static let calcSaveGradient = LinearGradient(
+        stops: [
+            .init(color: freeColors[7].opacity(alpha35), location: 0),
+            .init(color: calculateBackground, location: 0.25),
+        ],
+        startPoint: .top,
+        endPoint: .bottom
+    )
+
     // MARK: - Fonts
     // NOTE: If text appears in system font, verify the PostScript name in Font Book.
     // Open a .ttf with Font Book → Info tab → PostScript name.

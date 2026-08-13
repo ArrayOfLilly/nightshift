@@ -464,5 +464,23 @@ G kategória lezárul.
     a View-ban maradó logika már annyira kis méretű, hogy külön ViewModel nem indokolt
   - D-3 irány megerősítve: static load/save metódusok a modell fájlokban (`Snippet`-minta kiterjesztve)
     `CountdownItem`, `NamedDeadline` — a View csak hívja őket
-- [ ] D-4 implementáció: következő session
+- [x] D-4 implementáció: AP session
+
+---
+
+## Session AP — 2026-08-13 (D-4 DeadlineDetailSheet)
+
+### Session AP — LEZÁRVA
+- [x] **D-4** — `deadlineDetailContent()` → `struct DeadlineDetailSheet: View`:
+  - `DeadlineDetailSheet.swift` új fájl: `deadline`, `onLoad`, `onDelete`, `onRename` paraméterek;
+    saját `@State`: `isRenaming`, `renameDraft`, `showDeleteConfirm`, `sheetWidth`;
+    `@Environment(\.dismiss)` az X gombhoz (nincs explicit onDismiss callback)
+  - `AppTheme.calcSaveGradient` — új `LinearGradient` static token a `// MARK: - Gradients` szekcióban;
+    `DeadlineDetailSheet` + `deadlineListPopoverContent` + `saveSheetContent` mind ezt használja
+  - `CalculateView` — eltávolítva: `isRenamingDeadline`, `renameDraft`, `showDeleteDeadlineConfirm` @State-ek;
+    `deadlineDetailContent()` @ViewBuilder func; `calcSaveGradient` private var;
+    sheet switch case frissítve: `DeadlineDetailSheet(deadline:onLoad:onDelete:onRename:)`
+- [ ] Git commit: PENDING
+
+**Következő session:** D-3
 

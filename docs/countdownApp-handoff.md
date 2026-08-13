@@ -62,6 +62,7 @@
 
 ## Következő session feladata
 
+- **D-4 ✅ KÉSZ** (AP session)
 - **E-1 ✅ KÉSZ** (AM session)
 - **F-3 ✅ KÉSZ** (AN session)
 - **F-9 ✅ KÉSZ** (AO session)
@@ -134,6 +135,8 @@ SunTimesService.swift
 countdownAppApp.swift
 ```
 - **AO session**: F-9 — `AppTheme` corner radii tokenek (`radiusSmall/Medium/Large`), alpha tokenek (`alpha08`…`alpha90`); 14 fájl érintett; CSS border-radius értékek (markdownCSS) érintetlenek. Git commit: TODO
+- **AP session**: D-4 — `DeadlineDetailSheet.swift` új fájl; `AppTheme.calcSaveGradient` új token;
+  `CalculateView`: `isRenamingDeadline`/`renameDraft`/`showDeleteDeadlineConfirm` state-ek + `deadlineDetailContent()` func + `calcSaveGradient` private var eltávolítva. Git commit: TODO
 
 ## D kategória — sorrend és döntések
 
@@ -141,4 +144,5 @@ countdownAppApp.swift
 - **Sorrend:** D-4 → D-3 → D-5 → D-1 → D-2
 - **D-3 irány:** static load/save a modell fájlokban (Snippet-minta) — CountdownItem, NamedDeadline
 - **D-2 megjegyzés:** szükségességét D-3 után újra ítéljük — lehet hogy a maradék logika már elég kis méretű
-- **Következő:** D-4 — `deadlineDetailContent()` → `struct DeadlineDetailSheet: View` saját `@State`-tel
+- **D-4 ✅ KÉSZ** (AP session)
+- **Következő:** D-3 — static load/save metódusok `CountdownItem` + `NamedDeadline` modell fájlokba

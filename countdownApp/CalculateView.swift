@@ -10,7 +10,7 @@
 //  CALC-SAVE: Named deadline persistence — SAVE button stores the current TO date with a name.
 //
 //  CALC-SAVE design language (save sheet + detail sheet + list popover):
-//  - Background: LinearGradient from AppTheme.freeColors[7] @ 35% opacity (top) → AppTheme.calculateBackground (25% down).
+//  - Background: AppTheme.calcSaveGradient — purple tint (freeColors[7] @ 35%) fades into calculateBackground by 25%.
 //  - Header: alienLeagueBold title in AppTheme.background (amber); date subtitle in white 55% opacity.
 //  - Dividers: Color.white.opacity(AppTheme.alpha08), full width minus horizontal padding.
 //  - Buttons: amber-fill SAVE/LOAD (dark text), grey CANCEL (white 50% text, white 7% bg), trash (white 10% bg).
@@ -39,7 +39,7 @@ struct CalculateView: View {
     @State private var todaySunTimes: SunTimes? = nil
 
     // CALC-SAVE: modal state — enum prevents simultaneous saveSheet + deadlineDetail presentation.
-    // isRenamingDeadline is sub-state within deadlineDetail; deferred to D-4 (DeadlineDetailSheet struct).
+    // Detail sub-state (isRenaming, showDeleteConfirm) lives in DeadlineDetailSheet (D-4).
     private enum CalculationModal: Identifiable {
         case saveSheet
         case deadlineDetail(NamedDeadline)
@@ -56,11 +56,8 @@ struct CalculateView: View {
     @State private var namedDeadlines:          [NamedDeadline]  = []
     @State private var activeModal:             CalculationModal? = nil
     @State private var saveTitleDraft:          String            = ""
-    @State private var showDeadlineListPopover: Bool              = false
-    @State private var isRenamingDeadline:      Bool              = false
-    @State private var renameDraft:             String          = ""
-    @State private var showDeleteDeadlineConfirm: Bool          = false
-    @State private var popoverWidth:            CGFloat         = 280
+    @State private var showDeadlineListPopover: Bool    = false
+    @State private var popoverWidth:            CGFloat = 280
     @State private var sheetWidth:              CGFloat         = 400
 
     private var fromDate: Date {
@@ -190,7 +187,24 @@ struct CalculateView: View {
             case .saveSheet:
                 saveSheetContent
             case .deadlineDetail(let deadline):
-                deadlineDetailContent(deadline)
+                DeadlineDetailSheet(
+                    deadline: deadline,
+                    onLoad: { d in
+                        toInterval = d.date.timeIntervalSince1970
+                        activeModal = nil
+                    },
+                    onDelete: { d in
+                        namedDeadlines.removeAll { $0.id == d.id }
+                        saveDeadlines()
+                        activeModal = nil
+                    },
+                    onRename: { d, newTitle in
+                        if let idx = namedDeadlines.firstIndex(where: { $0.id == d.id }) {
+                            namedDeadlines[idx].title = newTitle
+                            saveDeadlines()
+                        }
+                    }
+                )
             }
         }
     }
@@ -422,21 +436,6 @@ struct CalculateView: View {
         .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
     }
 
-    // MARK: - CALC-SAVE: Shared gradient background helper
-    // AppTheme.freeColors[7] @ 35% opacity fades into calculateBackground by 25% of the view height.
-    // Used by the list popover, save sheet, and detail sheet for visual consistency.
-
-    private var calcSaveGradient: LinearGradient {
-        LinearGradient(
-            stops: [
-                .init(color: AppTheme.freeColors[7].opacity(AppTheme.alpha35), location: 0),
-                .init(color: AppTheme.calculateBackground, location: 0.25),
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-
     // MARK: - CALC-SAVE: Deadline list popover
 
     @ViewBuilder
@@ -501,7 +500,7 @@ struct CalculateView: View {
             .frame(maxHeight: 320)
         }
         .frame(width: popoverWidth)
-        .background(calcSaveGradient)
+        .background(AppTheme.calcSaveGradient)
         .onAppear {
             let windowWidth = NSApp.mainWindow?.frame.width
                 ?? NSApp.windows.first(where: { $0.isVisible })?.frame.width
@@ -581,171 +580,8 @@ struct CalculateView: View {
             .padding(.bottom, 28)
         }
         .frame(minWidth: sheetWidth, maxWidth: sheetWidth)
-        .background(calcSaveGradient)
+        .background(AppTheme.calcSaveGradient)
         .onAppear { updateSheetWidth() }
-    }
-
-    // MARK: - CALC-SAVE: Deadline detail sheet (load / rename / delete)
-    // Same design language as save sheet and list popover.
-    // Rename mode: pencil button switches the title header into an editable TextField;
-    // CANCEL reverts, RENAME saves and persists.
-
-    @ViewBuilder
-    private func deadlineDetailContent(_ deadline: NamedDeadline) -> some View {
-        VStack(spacing: 0) {
-            // Header — title (static or editable) + date, with X dismiss overlay
-            ZStack(alignment: .topTrailing) {
-                VStack(spacing: 10) {
-                    if isRenamingDeadline {
-                        TextField("Name...", text: $renameDraft)
-                            .textFieldStyle(.plain)
-                            .font(AppTheme.alienLeagueBold(20))
-                            .foregroundStyle(AppTheme.background)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 6)
-                            .background(Color.white.opacity(AppTheme.alpha12))
-                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
-                            .padding(.horizontal, 24)
-                            .padding(.top, 46)  // BUG-DEADLINE-2: clear X button (12pt top + 26pt height + 8pt gap)
-                    } else {
-                        Text(deadline.title)
-                            .font(AppTheme.alienLeagueBold(20))
-                            .foregroundStyle(AppTheme.background)
-                            .multilineTextAlignment(.center)
-                            .padding(.top, 28)
-                    }
-                    Text(deadlineDateString(deadline.date))
-                        .font(AppTheme.alienLeague(13))
-                        .foregroundStyle(Color.white.opacity(AppTheme.alpha60))
-                        .padding(.bottom, 20)
-                }
-                .frame(maxWidth: .infinity)
-
-                Button { activeModal = nil } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
-                        .frame(width: 26, height: 26)
-                        .background(Color.white.opacity(AppTheme.alpha08))
-                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
-                }
-                .buttonStyle(.plain)
-                .focusable(false)
-                .accessibilityLabel("Close")
-                .padding(.top, 12)
-                .padding(.trailing, 14)
-            }
-
-            Rectangle()
-                .fill(Color.white.opacity(AppTheme.alpha08))
-                .frame(height: 1)
-                .padding(.horizontal, 28)
-
-            // Body — actions (normal mode) or rename confirm (rename mode)
-            if isRenamingDeadline {
-                HStack(spacing: 12) {
-                    Spacer()
-                    Button("CANCEL") {
-                        isRenamingDeadline = false
-                    }
-                    .buttonStyle(.plain)
-                    .focusable(false)
-                    .font(AppTheme.alienLeague(13))
-                    .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(Color.white.opacity(AppTheme.alpha08))
-                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
-
-                    Button("RENAME") {
-                        let trimmed = renameDraft.trimmingCharacters(in: .whitespaces)
-                        if !trimmed.isEmpty,
-                           let idx = namedDeadlines.firstIndex(where: { $0.id == deadline.id }) {
-                            namedDeadlines[idx].title = trimmed
-                            saveDeadlines()
-                        }
-                        isRenamingDeadline = false
-                    }
-                    .buttonStyle(.plain)
-                    .focusable(false)
-                    .font(AppTheme.alienLeagueBold(13))
-                    .foregroundStyle(AppTheme.calculateBackground)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(AppTheme.background)
-                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
-                    .disabled(renameDraft.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-                .padding(.horizontal, 28)
-                .padding(.vertical, 24)
-            } else {
-                HStack(spacing: 16) {
-                    Button {
-                        toInterval = deadline.date.timeIntervalSince1970
-                        activeModal = nil
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "arrow.down.to.line")
-                                .font(.system(size: 12, weight: .bold))
-                            Text("LOAD AS TO")
-                                .font(AppTheme.alienLeagueBold(13))
-                        }
-                        .foregroundStyle(AppTheme.calculateBackground)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(AppTheme.background)
-                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
-                    }
-                    .buttonStyle(.plain)
-                    .focusable(false)
-
-                    Button {
-                        isRenamingDeadline = true
-                        renameDraft = deadline.title
-                    } label: {
-                        Image(systemName: "pencil")
-                            .font(.system(size: 14))
-                            .foregroundStyle(AppTheme.background.opacity(AppTheme.alpha60))
-                            .frame(width: 40, height: 38)
-                            .background(Color.white.opacity(AppTheme.alpha12))
-                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
-                    }
-                    .buttonStyle(.plain)
-                    .focusable(false)
-                    .accessibilityLabel("Rename deadline")
-
-                    Button {
-                        showDeleteDeadlineConfirm = true
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(.system(size: 14))
-                            .foregroundStyle(AppTheme.background.opacity(AppTheme.alpha60))
-                            .frame(width: 40, height: 38)
-                            .background(Color.white.opacity(AppTheme.alpha12))
-                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
-                    }
-                    .buttonStyle(.plain)
-                    .focusable(false)
-                    .accessibilityLabel("Delete deadline")
-                    .alert("Delete \"\(deadline.title)\"?", isPresented: $showDeleteDeadlineConfirm) {
-                        Button("Delete", role: .destructive) {
-                            namedDeadlines.removeAll { $0.id == deadline.id }
-                            saveDeadlines()
-                            activeModal = nil
-                        }
-                        Button("Cancel", role: .cancel) { }
-                    } message: {
-                        Text("This deadline will be permanently removed.")
-                    }
-                }
-                .padding(.vertical, 24)
-            }
-        }
-        .frame(minWidth: sheetWidth, maxWidth: sheetWidth)
-        .background(calcSaveGradient)
-        .onAppear { updateSheetWidth() }
-        .onDisappear { isRenamingDeadline = false }
     }
 
     // MARK: - CALC-SAVE: Sheet width helper
