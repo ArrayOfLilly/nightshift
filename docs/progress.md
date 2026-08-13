@@ -41,13 +41,31 @@
 
 ### Csoport 1 — LEZÁRVA
 - G-5 részlegesen kész: CountdownDetailView, ColorPickerSheet, AddCountdownSheet, LongPressStepperButton
-- Build ellenőrzés NEM történt (nincs shell/xcodebuild hozzáférés ebben a sessionben) — következő sessionben
+- Build ellenőrzés NEM történt (nincs xcodebuild futás ebben a sessionben) — következő sessionben
   vagy manuálisan ajánlott ellenőrizni
-- [ ] Git commit — PENDING (nincs shell hozzáférés ebben a sessionben)
+- [x] Git commit: `0fd05b0`
 
 **Csoport 2 következő session feladata:** SnippetEditSheet + NotesSheet (azonos `headerButton` minta:
 copy/checkmark, edit-toggle pencil/checkmark, trash, xmark — mindegyik 4×; SnippetEditSheet-ben
 még a `ProjectField` chevron.down gombja is)
+
+## Csoport 2 — 2026-08-13 (ugyanaz a session, folytatás)
+
+- [x] `NotesSheet.swift` — `headerButton` új `label: String` param, mind a 4 hívás címkézve:
+  "Copy notes"/"Notes copied", "Edit notes"/"Done editing", "Delete notes", "Close"
+- [x] `SnippetEditSheet.swift` — `ProjectField` chevron.down → "Show project suggestions";
+  `headerButton` ugyanaz a `label` param minta: "Copy snippet"/"Snippet copied", "Edit snippet"/"Done editing",
+  "Delete snippet", "Close"
+
+### Csoport 2 — LEZÁRVA
+- G-5 további 2 fájl kész: SnippetEditSheet, NotesSheet
+- Build ellenőrzés NEM történt
+- [ ] Git commit — következik
+
+**Csoport 3 (következő session) — utolsó G-5 rész:** CalculateView (+ itt kell pótolni az 5 dateStepper
+`LongPressStepperButton` `accessibilityLabel` hívását is, ugyanaz a minta mint CountdownDetailView-ban:
+"Increase/Decrease \(unit)"), CountdownRowView, SnippetsView, CountdownView. G-5 ezután teljesen kész,
+G kategória lezárul.
 
 ---
 

@@ -199,8 +199,13 @@ előtt kötelező fix.
 - `body` ScrollView-ba csomagolva, `.frame(minWidth: 360, maxHeight: 600)`
 ### G-4: `CalculateView` deadline popover — nincs ScrollView, sok deadline esetén unreachable items — ✅ KÉSZ (AG session)
 - Lista ScrollView-ba csomagolva, `.frame(maxHeight: 320)`, header fix marad
-### G-5: Accessibility: icon-only gombok wszerte `.accessibilityLabel` nélkül — NYITOTT
-- Sok fájlt érint: CountdownDetailView, SnippetEditSheet, NotesSheet, CalculateView, CountdownRowView, ColorPickerSheet, AddCountdownSheet, SnippetsView, CountdownView, LongPressStepperButton
+### G-5: Accessibility: icon-only gombok wszerte `.accessibilityLabel` nélkül — RÉSZBEN KÉSZ (AH session, Csoport 1/3)
+- Sok fájlt érint, 3 csoportra bontva:
+  - **Csoport 1 — ✅ KÉSZ**: `LongPressStepperButton` (shared komponens, `accessibilityLabel` param),
+    `CountdownDetailView`, `ColorPickerSheet`, `AddCountdownSheet` — commit `0fd05b0`
+  - **Csoport 2 — NYITOTT**: `SnippetEditSheet`, `NotesSheet`
+  - **Csoport 3 — NYITOTT**: `CalculateView` (+ `LongPressStepperButton` call site-ok itt), `CountdownRowView`,
+    `SnippetsView`, `CountdownView`
 
 ---
 

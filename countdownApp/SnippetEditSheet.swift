@@ -58,6 +58,7 @@ private struct ProjectField: View {
             .frame(width: 36)
             .buttonStyle(.plain)
             .focusable(false)
+            .accessibilityLabel("Show project suggestions")
             .popover(isPresented: $showSuggestions, arrowEdge: .bottom) {
                 suggestionList
             }
@@ -189,7 +190,8 @@ struct SnippetEditSheet: View {
                 Spacer()
                 HStack(spacing: 8) {
                     headerButton(icon: copyFeedback ? "checkmark" : "doc.on.doc",
-                                 tint: copyFeedback ? AppTheme.background : Color.white.opacity(0.7)) {
+                                 tint: copyFeedback ? AppTheme.background : Color.white.opacity(0.7),
+                                 label: copyFeedback ? "Snippet copied" : "Copy snippet") {
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(snippetBody, forType: .string)
                         copyFeedback = true
@@ -198,13 +200,14 @@ struct SnippetEditSheet: View {
                             copyFeedback = false
                         }
                     }
-                    headerButton(icon: isEditing ? "checkmark" : "pencil") { isEditing.toggle() }
+                    headerButton(icon: isEditing ? "checkmark" : "pencil",
+                                 label: isEditing ? "Done editing" : "Edit snippet") { isEditing.toggle() }
                     if onDelete != nil {
-                        headerButton(icon: "trash") { showDeleteAlert = true }
+                        headerButton(icon: "trash", label: "Delete snippet") { showDeleteAlert = true }
                     }
                 }
                 Rectangle().fill(Color.white.opacity(0.12)).frame(width: 1, height: 22).padding(.horizontal, 6)
-                headerButton(icon: "xmark") { commitSave(); dismiss() }
+                headerButton(icon: "xmark", label: "Close") { commitSave(); dismiss() }
             }
             .padding(.bottom, 12)
 
@@ -224,6 +227,7 @@ struct SnippetEditSheet: View {
     @ViewBuilder
     private func headerButton(icon: String,
                               tint: Color = Color.white,
+                              label: String,
                               action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: icon)
@@ -235,6 +239,7 @@ struct SnippetEditSheet: View {
         }
         .buttonStyle(.plain)
         .focusable(false)
+        .accessibilityLabel(label)
     }
 
     // MARK: - Content
