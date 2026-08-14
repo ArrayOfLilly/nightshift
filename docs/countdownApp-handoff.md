@@ -24,7 +24,7 @@
 ## Következő session feladata
 
 **Buglist állapot összefoglaló** (`docs/buglist.md`) — nyitott tételek:
-- **ENH-HELP-1** 🟡 — S1 KÉSZ (BO session), **S2 következik** (HelpWindowID + HelpCommands + HelpView váz)
+- **ENH-HELP-1** 🟡 — S1 KÉSZ (BO), S2 KÉSZ (BP), **S3 következik** (HelpScreenshot komponens)
 - **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik
 - **ENH-DEVDOCS-2** 🟡 — README + install.md, projektnév egyeztetés
 - **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása (lokalizáció, Settings; About már kész)
@@ -34,10 +34,9 @@
   állapotot tükrözhetik
 
 **Következő session jelöltek:**
-- **ENH-HELP-1-S2** 🟡 — Help rendszer, 2/6 session: `HelpWindowID` enum + `HelpCommands` struct
-  (`CommandGroup(replacing: .help)`, `Cmd+Shift+/`) + `helpWindow` scene hozzáadása
-  `countdownAppApp.swift`-hez + `Views/Help/HelpView.swift` váz (lista szekciók/itemek + `.searchable`
-  id-alapú szűrés). S1 KÉSZ (BO session).
+- **ENH-HELP-1-S3** 🟡 — Help rendszer, 3/6 session: `Components/HelpScreenshot.swift` —
+  `focusRect: CGRect` (normalized) alapú kivágás/scale/offset számítás, egységes `targetSize`.
+  Tesztelés 1 valós screenshottal. S1 KÉSZ (BO), S2 KÉSZ (BP).
 - **ENH-DEVDOCS-2** — README + install.md (Distribution csomag); projektnév egyeztetés
 
 ---
@@ -63,6 +62,8 @@
 ```
 App/AppKeys.swift
 App/countdownAppApp.swift
+App/HelpWindowID.swift
+App/HelpCommands.swift
 Components/ComponentStepper.swift
 Components/CopyButton.swift
 Components/FocusedNSTextField.swift
@@ -78,6 +79,7 @@ Services/WindowHelpers.swift
 Theme/AppTheme.swift
 Views/ContentView.swift
 Views/AboutView.swift
+Views/Help/HelpView.swift
 Views/Calculate/CalculateView.swift
 Views/Calculate/DeadlineDetailSheet.swift
 Views/Calculate/SunPanel.swift

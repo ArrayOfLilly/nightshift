@@ -46,4 +46,36 @@
 
 ---
 
+## Session BP — 2026-08-14 (ENH-HELP-1-S2: HelpWindowID + HelpCommands + HelpView váz — LEZÁRVA)
+
+### Session BP — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` (ENH-HELP-1 szekció) elolvasva
+- [x] `countdownAppApp.swift` elolvasva (helpWindow scene + AboutCommands minta megértéséhez)
+- [x] `Views/AboutView.swift` elolvasva (AboutWindowID + AboutCommands minta)
+- [x] `Models/HelpContent.swift` elolvasva (S1 output, struktúra-ellenőrzés)
+- [x] **`App/HelpWindowID.swift`** létrehozva — `enum HelpWindowID`, `static let id = "nightshift-help"`
+- [x] **`App/HelpCommands.swift`** létrehozva — `struct HelpCommands: Commands`,
+  `CommandGroup(replacing: .help)`, `Cmd+Shift+/`, `@Environment(\.openWindow)`
+- [x] **`Views/Help/HelpView.swift`** létrehozva — `HelpView` (`.searchable`, id-alapú keyword szűrés,
+  `filteredSections`), `HelpItemRow` private struct (Label + body text + screenshot placeholder comment)
+- [x] **`Views/Help/` mappa** létrehozva (Filesystem MCP `create_directory`)
+- [x] **`countdownAppApp.swift`** módosítva:
+  - `.commands { ... }` blokkba `HelpCommands()` beillesztve (AboutCommands() után)
+  - `helpWindow` scene hozzáadva: `WindowGroup(id: HelpWindowID.id) { NavigationStack { HelpView() } }`
+    `.windowResizability(.contentMinSize)` + `.defaultSize(width: 560, height: 520)`
+- [x] **`Localizable.xcstrings`** frissítve: `"help.menu.item"` kulcs hozzáadva (EN: "NightShift Help")
+- [ ] Xcode project-be felvétel (3 új fájl): **FELHASZNÁLÓ FELADATA**
+  - `App/HelpWindowID.swift`
+  - `App/HelpCommands.swift`
+  - `Views/Help/HelpView.swift`
+- [ ] Build: **FELHASZNÁLÓ FELADATA**
+- [ ] Git commit: **FELHASZNÁLÓ FELADATA** (`ENH-HELP-1-S2: HelpWindowID + HelpCommands + HelpView`)
+- [x] `docs/buglist.md` ENH-HELP-1 frissítve (S2 ✅)
+- [x] `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
+
+**Következő session:** ENH-HELP-1-S3 — `Components/HelpScreenshot.swift` (focusRect-alapú kivágás/scale
+komponens), 1 valós screenshottal tesztelve.
+
+---
+
 

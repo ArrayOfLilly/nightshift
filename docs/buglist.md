@@ -187,9 +187,10 @@ A felhasználó felé javasolt megoldás (CSS `object-position` + `object-fit: c
   hanem egy külön `help-screenshots` mappa/névkonvenció kellene az előre vágott képeknek — ez a két út
   egymást kizárja, döntés szükséges
 
-**Státusz:** 🟡 FOLYAMATBAN — S1 KÉSZ (BO session): `Models/HelpContent.swift` + `Localizable.xcstrings`
-létrehozva (5 szekció, 11 item, EN placeholder szöveg). S2 következik (HelpWindowID + HelpCommands +
-HelpView váz).
+**Státusz:** 🟡 FOLYAMATBAN — S1 KÉSZ (BO session), S2 KÉSZ (BP session):
+- S1: `Models/HelpContent.swift` + `Localizable.xcstrings` (5 szekció, 11 item, EN placeholder szöveg)
+- S2: `App/HelpWindowID.swift` + `App/HelpCommands.swift` + `Views/Help/HelpView.swift` + `countdownAppApp.swift` módosítva
+- S3 következik: `Components/HelpScreenshot.swift` (focusRect-alapú kivágás komponens)
 
 ---
 

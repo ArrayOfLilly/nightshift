@@ -48,6 +48,7 @@ struct countdownAppApp: App {
         .windowResizability(.contentSize)
         .commands {
             AboutCommands()
+            HelpCommands()
             #if DEBUG
             CommandMenu("Debug") {
                 Button("Inject corrupt banner") {
@@ -70,6 +71,15 @@ struct countdownAppApp: App {
         }
         .windowResizability(.contentSize)
         .defaultSize(width: 300, height: 400)
+
+        // ENH-HELP-1-S2: Help window (Help menu → NightShift Help, Cmd+Shift+/)
+        WindowGroup(id: HelpWindowID.id) {
+            NavigationStack {
+                HelpView()
+            }
+        }
+        .windowResizability(.contentMinSize)
+        .defaultSize(width: 560, height: 520)
     }
 
     private static func registerBundledFonts() {
