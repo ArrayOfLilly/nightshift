@@ -11,7 +11,7 @@
 // - Pure presentation layer; no store or service access
 // - Opened via WindowGroup(id: HelpWindowID.id) in countdownAppApp.swift
 //
-// ENH-HELP-1-S2, ENH-HELP-1-S3
+// ENH-HELP-1-S2, ENH-HELP-1-S3, ENH-HELP-1-S4
 
 import SwiftUI
 
@@ -67,6 +67,7 @@ private struct HelpItemRow: View {
             Text(item.bodyKey)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+                .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true)
 
             if let imageName = item.imageName, let focusRect = item.focusRect {
@@ -77,6 +78,7 @@ private struct HelpItemRow: View {
                 )
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 4)
     }
 }
