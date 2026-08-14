@@ -108,11 +108,10 @@ komponens), 1 valós screenshottal tesztelve.
 - [x] **`Models/HelpContent.swift`** módosítva: `overview.what` item kiegészítve
   `imageName: "screenshot"` + `focusRect: CGRect(x: 0.15, y: 0.2, width: 0.5, height: 0.4)` —
   geometria teszteléséhez, build után vizuálisan ellenőrizhető
-- [ ] Xcode project-be felvétel (1 új fájl): **FELHASZNÁLÓ FELADATA**
-  - `Components/HelpScreenshot.swift`
-- [ ] Build: **FELHASZNÁLÓ FELADATA** — Help ablak megnyitása (Cmd+Shift+/), Overview szekció első
-  itemjénél ellenőrizni, hogy a screenshot crop/scale geometriailag helyes-e
-- [ ] Git commit: **FELHASZNÁLÓ FELADATA** (`ENH-HELP-1-S3: HelpScreenshot component + HelpView wiring`)
+- [x] Xcode project-be felvétel: **nem szükséges** — a target file system synchronized group
+  automatikusan felveszi az új fájlokat
+- [x] Build: OK (felhasználó megerősítette)
+- [x] Git commit: `857ceae` (`ENH-HELP-1-S3: HelpScreenshot component + HelpView wiring`)
 - [x] `docs/progress.md` frissítve
 - [x] `docs/countdownApp-handoff.md` frissítve
 
