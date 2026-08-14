@@ -1,72 +1,109 @@
 # countdownApp — Progress
 
-## Session BH — 2026-08-14 (ENH-ABOUT-1 + Display Name + verzió)
+## Session BN — 2026-08-14 (BUG-SNIPPEDITBEACHBALL-1 vizsgálat + BUG-SNIPPETSAVE-1 + BUG-SNIPPETDUP-1 root cause megerősítve — FOLYAMATBAN, implementáció NEM történt)
 
-### Session BH — LEZÁRVA
-- [x] iconKeeper `AboutView.swift` + `IconKeeperApp.swift` elolvasva (referencia)
-- [x] **Display Name:** `INFOPLIST_KEY_CFBundleDisplayName = NightShift` — Debug + Release blokkban
-- [x] **Verzió:** `MARKETING_VERSION = 0.9.2`, `CURRENT_PROJECT_VERSION = 2` — Debug + Release
-- [x] **ENH-ABOUT-1** — `AboutView.swift` új fájl (`Views/AboutView.swift`):
-  - `AboutWindowID` enum (`nightshift-about`)
-  - `AboutCommands` struct (`CommandGroup(replacing: .appInfo)`)
-  - `AboutView`: app ikon (`NSApp.applicationIconImage`), név, verzió/build,
-    tagline, Developer (mailto link), Images → Freepik (link), footer © 2026
-- [x] **countdownAppApp.swift** frissítve:
-  - `AboutCommands()` a fő `WindowGroup` `.commands` blokkjában
-  - `#if DEBUG CommandMenu` átkerült ugyanabba a `.commands` blokkba
-  - `WindowGroup(id: AboutWindowID.id)` új scene az About ablakhoz
-- [x] Build OK (icon group hiba javítva — Icon Composer-ben)
-- [x] Git commit: `7ab7b65`
+### Session BN — FOLYAMATBAN (kódolvasás + dokumentálás, implementáció még nem)
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` elolvasva
+- [x] `SnippetEditSheet.swift`, `Snippet.swift`, `SnippetsView.swift` elolvasva
+- [x] **BUG-SNIPPETSAVE-1** — root cause MEGERŐSÍTVE: `showDismissConfirm` alert "Save and quit" ága
+  (`commitSave(); dismiss()`) nem állítja `shouldSaveOnDisappear = false`-ra → `.onDisappear` a `dismiss()`
+  után még egyszer lefuttatja `commitSave()`-t. Fix: egy sor, `shouldSaveOnDisappear = false` hozzáadása
+  a "Save and quit" ágban, `commitSave()` elé (minta: "Quit without saving" ág). NEM implementálva.
+- [x] **BUG-SNIPPETDUP-1** — újraértelmezve: NEM flaky/gyors-kattintás hiba, hanem determinisztikus.
+  Root cause: `SnippetEditSheet.snippet` egy `let Snippet?`, új snippetnél `nil`, soha nem frissül a sheet
+  élettartama alatt → minden `commitSave()` új UUID-t generál (`Snippet.committed(from: nil, ...)`) →
+  `SnippetsView` `showNewSheet` `onSave` mindig `append`-el (nincs id-alapú upsert) → minden checkmark egy
+  ÚJ, külön snippetet hoz létre update helyett. Összeadódik BUG-SNIPPETSAVE-1 double-call hibájával.
+  Felhasználó által jelentett konkrét eset ("Új snippet, check, módosítás után újra check, 2-t ment
+  belőle") pontosan ez. Javasolt fix: `snippet` `let` → `@State private var`, `commitSave()` sikeres
+  mentés után `self.snippet = s`. NEM implementálva, egyeztetésre vár.
+- [x] **BUG-SNIPPEDITBEACHBALL-1** — a korábbi 3 elméletből 2 CÁFOLVA kódolvasással (nincs load()-hurok,
+  nincs concurrency-isolation gyanús kód), 1 RÉSZBEN MEGERŐSÍTVE (`.onDisappear` double-call — lásd
+  BUG-SNIPPETSAVE-1). Felhasználó ÚJ reprodukálást jelentett: app inaktív→aktív váltás közben a snippet
+  sheet már nyitva volt, görgetés előtt egy kattintásra azonnali beachball — ez egyik elmélettel sem
+  magyarázható közvetlenül, gyanús terület (még nem ellenőrzött): `MarkdownWebView` /
+  `SharedEditorComponents.swift` (WKWebView JS-bridge állapot ablak-aktiválás után). NYITOTT, külön
+  vizsgálat szükséges.
+- [x] **BUG-SNIPPEDITBEACHBALL-1 — HARMADIK repró** (felhasználó jelentése, session folytatás): meglévő
+  snippet szerkesztése → checkmark → X (sheet bezárva) → átváltás böngészőre (app inaktívvá vált) →
+  vissza az app ablakára kattintva → azonnali beachball. Különbség az előző reprótól: itt a sheet
+  MÁR zárva volt, tehát nem kizárólag a nyitva hagyott MarkdownWebView gyanús — app-szintű
+  (NSApplication activate) úton futó/befejezetlen munka is szóba jöhet. `docs/buglist.md`-be rögzítve.
+- [ ] Fix implementáció (BUG-SNIPPETSAVE-1 + BUG-SNIPPETDUP-1) — felhasználói jóváhagyásra vár
+- [x] `SharedEditorComponents.swift` elolvasva — nincs benne hurok/blokkoló hívás; a HARMADIK reprónál
+  (sheet már zárva) ez a fájl önmagában nem lehet ok, mert a WKWebView már nincs életben. Gyanú
+  áthelyezve WKWebView deinit időzítésére és/vagy `countdownAppApp.swift` AppDelegate lifecycle hookra.
+- [ ] `countdownAppApp.swift` (AppDelegate + WindowGroup lifecycle hook) elolvasása — következő lépés
+- [ ] Build, teszt, git commit — még nem történt
+- [x] `docs/buglist.md` frissítve (mindhárom bug root cause / repró szekciója)
+- [ ] `docs/countdownApp-handoff.md` frissítése — folyamatban
 
-**Következő session:** ENH-HELP-1 🟡
+**Következő lépés (session belül vagy session-határ után):** 1) felhasználói jóváhagyás a
+ BUG-SNIPPETSAVE-1 + BUG-SNIPPETDUP-1 fixekre (mindkettő javasolt megoldással fent, buglist.md-ben
+ részletezve), 2) `SharedEditorComponents.swift` elolvasása a beachball új reprodukálási módjának
+ vizsgálatához, 3) implementáció + build + git commit.
 
 ---
 
-## Session BG — 2026-08-14 (BUG-SUNPANEL-1 + buglist bővítés)
+## Session BL — 2026-08-14 (BUG-PROJECTDELETE-1)
 
-### Session BG — LEZÁRVA
+### Session BL — LEZÁRVA
 - [x] Claude.md, progress.md, countdownApp-handoff.md, buglist.md elolvasva
-- [x] `SunPanel.swift` + `CalculateView.swift` elolvasva
-- [x] **BUG-SUNPANEL-1** — hover trigger → click trigger:
-  - `hoverTask: Task<Void, Never>?` `@State` eltávolítva
-  - `.onHover` blokk eltávolítva
-  - Középső hold (index 4) `Button` wrappérbe csomagolva: `showSunPopover.toggle()`
-  - `.popover(isPresented: $showSunPopover)` a `Button`-ra kerül
-  - `.accessibilityLabel("Sun times")` hozzáadva
-  - Komment frissítve: SUN-1-B hivatkozás + BUG-SUNPANEL-1 magyarázat
-- [x] **Buglist bővítve** — 6 új bejegyzés: BUG-SUNPANEL-1 ✅, ENH-ABOUT-1 🟡,
-  ENH-HELP-1 🟡, ENH-L10N-1 🟢, ENH-SETTINGS-1 🟢, ENH-DEVDOCS-2 🟡
+- [x] Snippet.swift + SnippetsView.swift elolvasva — root cause azonosítva
+- [x] **BUG-PROJECTDELETE-1** — `SnippetsView.deleteProject(_:)`:
+  - Volt: `snippets.removeAll { $0.project == project }` (törlés, adatvesztés)
+  - Javítva: `snippets.map { s in ... s.project = "General" }` (`renameProject` mintája, target = "General")
+  - Adatvesztés nélkül, összes snippet "General" kategóriába kerül
 - [x] Build OK
-- [x] `docs/buglist.md` + `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
-- Git commit: `b0967ce`
-
-**Következő session:** ENH-ABOUT-1 🟡 (iconKeeper About forráskódja referencia) vagy ENH-HELP-1 🟡
-
----
-
-## Session BF — 2026-08-13 (ENH-NOTEBADGE-1 + UX-2 + BUG-MANUAL-1)
-
-### Session BF — LEZÁRVA
-- [x] Claude.md, progress.md, countdownApp-handoff.md elolvasva
-- [x] `CountdownRowView.swift` + `AppTheme.swift` + `CountdownItem.swift` elolvasva
-- [x] **ENH-NOTEBADGE-1** — `AppTheme.noteIndicator` token (orangered → polish: narancssárgára);
-  `CountdownRowView` label box `HStack`-jébe `eye.fill` SF Symbol ikon (`system(size: 10, weight: .medium)`,
-  `AppTheme.noteIndicator`), `!copyFeedback && !item.notes.isEmpty` feltétellel, `.accessibilityHidden(true)`
-- [x] **UX-2** — `AppTheme.windowMaxWidth` 520 → 600; comment frissítve; `ContentView` érintetlen
-- [x] **Badge polish** — `note.text` → `eye.fill`; szín `green: 0.27 → 0.45` (narancsosabb); copy alatt eltűnik
-- [x] **BUG-MANUAL-1** — manual frissítve:
-  - `05e` + eye badge leírás az "Active entry row" szekcióba
-  - `11b` + "Closing with unsaved changes" szekció a Notes részbe
-  - `17 Snippet Edtor - Exit.png` + "Closing with unsaved changes" szekció a Snippets részbe
-  - `manual_build.py` újrafuttatva → HTML regenerálva
-- [x] `docs/buglist.md` — ENH-NOTEBADGE-1 és UX-2 ✅ KÉSZ státuszra frissítve
+- [x] `docs/buglist.md` — BUG-PROJECTDELETE-1 ✅ KÉSZ státuszra frissítve
 - [x] `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
-- Git commit: `e6aa819` (badge+UX-2) + `d1ce48c` (badge polish) + `515aa7e` (manual)
+- Git commit: PENDING
 
-**Következő session:** ENH-DEVDOCS-1 🟡 vagy ENH-DEFERRED-1 🟢 — buglist tiszta, csak ezek maradtak
+**Következő session:** BUG-PROJECTRENAME-1 🔴 (snippet project mező nem frissül átnevezéskor) vagy BUG-SNIPPETSAVE-1 🔴 (save-and-quit nem őrzi meg a legutóbbi módosítást)
 
 ---
 
+## Session BM — 2026-08-14 (BUG-PROJECTRENAME-1 + BUG-DISPLAYNAME-1)
+
+### Session BM — LEZÁRVA
+- [x] Claude.md, progress.md, countdownApp-handoff.md, buglist.md elolvasva
+- [x] SnippetsView.swift elolvasva — root cause azonosítva
+- [x] **BUG-PROJECTRENAME-1** — `SnippetsView.renameProject(_:to:)`:
+  - Volt: editTarget ID-only snapshot helyett `Snippet` value snapshot
+  - Javítva: `editTarget: EditTarget?` (ID-only struct); `renameProject(_:to:)` map-pel frissíti a snippetek `project` mezőjét az új névre
+  - Sheet a sheet-open közben történő projekt átnevezés után is helyesen tükrözi az új projektnevet
+- [x] **BUG-DISPLAYNAME-1** — macOS title bar Display Name-ek összekeveredtek
+  - Calculate Tab: `.navigationTitle("Calculate")` CalculateView gyökerébe
+  - Snippets Tab: `.navigationTitle("Snippets")` SnippetsView gyökerébe
+  - Countdown Tab: már volt `.navigationTitle("Countdown")` (érintetlen)
+  - `CFBundleName` = `"NightShift"` fallback már nem jelenik meg helyesen ahol van explicit navigationTitle
+- [x] Build OK
+- [x] `docs/buglist.md` — BUG-PROJECTRENAME-1 + BUG-DISPLAYNAME-1 ✅ KÉSZ státuszra frissítve
+- [x] `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
+- Git commit: PENDING
+
+**Következő session:** BUG-SNIPPETSAVE-1 🔴 (save-and-quit) — root cause már azonosított, dokumentálás szükséges
+
+---
+
+## Session BK — 2026-08-14 (5 új bug dokumentálása, ENH-HELP-1 előkészítés)
+
+### Session BK — LEZÁRVA (dokumentáció only, implementáció nem történt)
+- [x] Claude.md elolvasva
+- [x] Felhasználó 5 új bugot jelentett, mind felvéve `buglist.md`-be (root cause hipotézisekkel, ahol volt):
+  - **BUG-PROJECTRENAME-1** 🔴 — project átnevezéskor a hozzá tartozó snippetek `project` mezője nem frissül
+  - **BUG-PROJECTDELETE-1** 🔴 — project törléskor a snippetek nem kerülnek át General alá (viselkedésváltás igény, korábbi döntés visszavonása)
+  - **BUG-SNIPPETSAVE-1** 🔴 — snippet save and quit csak a korábbi checkmarkolt állapotot őrzi meg, a legutóbbi módosítás elvész; gyanú: `BUG-CHECKMARKDIRTY-1`-hez hasonló baseline-frissítési hiba
+  - **BUG-SNIPPETDUP-1** 🟡 — új snippet néha duplikáltan jön létre, nem reprodukálható determinisztikusan; gyanú: hiányzó double-submit védelem gyors/ismételt checkmark kattintásnál
+  - **BUG-DISPLAYNAME-1** 🔴 — 3 tab közül 2 ugyanazt a Display Name-et ("NightShift") mutatja Snippets és Calculate tabon; feltehetően megosztott/nem tab-specifikus name forrás. Megjegyzés: az előző (BJ) sessionben történt PRODUCT_NAME → "NightShift" átnevezés (menüsor/Bundle ID) kontextusként releváns lehet, de a hiba az app-on belüli tab címekben van, nem a Bundle/menüsor szinten
+- [x] Egyik bug sem implementálva ebben a sessionben — mind NYITOTT, root cause ellenőrzés + egyeztetés a következő session(ek) feladata
+
+**Következő session:** felhasználói döntés szükséges a sorrendről — az 5 új bug egyike (javasolt: BUG-DISPLAYNAME-1
+vagy BUG-SNIPPETSAVE-1, mindkettő 🔴 és gyanítható root cause-szal rendelkezik) VAGY a help rendszer tervezésének
+folytatása (ENH-HELP-1, ld. BJ session hagyatéka). A felhasználó jelezte, hogy a bugok dokumentálása után a help
+rendszer tervezésére szeretne áttérni — ez legyen a következő fókusz, hacsak nincs sürgősebb bugfix igény.
+
+---
 ## Session BC — 2026-08-13 (BUG-CHECKMARKDIRTY-1 + BUG-NOTESDISMISS-1)
 
 ### Session BC — LEZÁRVA
@@ -94,12 +131,12 @@ BUG-DETAILDELETE-1 🔴 (CountdownDetailView törlés után nem navigál vissza)
 
 ### Session BB — LEZÁRVA
 - [x] `git log` alapján ellenőrizve: AN (F-3), AM (E-1), AO (F-9), AL (F-1/F-7/F-8), AS (D-5), Z+AA-b+AB,
-  Q–Y sessionok `progress.md`-ben “Git commit: PENDING/TODO” jelziként szerepeltek, de a kód valójában már
+  Q–Y sessionok `progress.md`-ben "Git commit: PENDING/TODO" jelziként szerepeltek, de a kód valójában már
   commitolva volt — mind a 9 hely frissítve tényleges hash-ekkel (`f09bd0c`, `dc656e3`, `822f154`, `ca4445a`,
   `37b1674`, `ebe890a`, `678bea6`, `25f7591`)
 - [x] `countdownApp-handoff.md` — AL session tévesen `4fd8eef`-et mutatott (az AK docs commit, nem AL) →
-  javítva `ca4445a`-ra; AN/AM/AO “TODO” jelzések frissítve; AS “PENDING” frissítve
-- [x] Uncommitted doc-only változások (BA sessionből maradt, AY commit hash + “Következő session feladata”
+  javítva `ca4445a`-ra; AN/AM/AO "TODO" jelzések frissítve; AS "PENDING" frissítve
+- [x] Uncommitted doc-only változások (BA sessionből maradt, AY commit hash + "Következő session feladata"
   szinkronizálás) — beleépítve ebbe a session commitba
 - [x] Mappastruktúra (Nyitott teendők #2) ellenőrizve `find` paranccsal: mind a 27 Swift fájl már
   végleges alkönyvtárban van (`App/`, `Components/`, `Models/`, `Services/`, `Theme/`, `Views/` +
@@ -120,7 +157,7 @@ BUG-DETAILDELETE-1 🔴 (CountdownDetailView törlés után nem navigál vissza)
   nélkül ment+dismiss, NEM követi a `SnippetEditSheet` (AZ session) dirty-check + confirm alert mintáját.
   Ez ellentmond a BA session bejegyzésének, amely tévesen állította, hogy a `NotesSheet` már helyes —
   a következő sessionben a tényleges kódot kell ellenőrizni, nem a korábbi feljegyzést készpénznek venni
-- [x] `countdownApp-handoff.md` “Következő session feladata” listája bővítve 7. pontként
+- [x] `countdownApp-handoff.md` "Következő session feladata" listája bővítve 7. pontként
 
 **Következő session:** prioritás felülvizsgálva — `BUG-TRASH-1`, `BUG-DETAILDELETE-1`, `BUG-NOTESDISMISS-1`
 mind 🔴 kritikus használhatósági hibák, elsőként ezek közül érdemes választani
@@ -128,7 +165,7 @@ mind 🔴 kritikus használhatósági hibák, elsőként ezek közül érdemes v
 **További utólagos kiegészítés:**
 - [x] `ENH-NOTEBADGE-1` 🟢 felvéve `docs/buglist.md`-be — vizuális jelzés (pl. pink dot badge a név mellett)
   a countdown itemen, ha van hozzá note; részletek (pozíció, szín, hol jelenjen meg) egyeztetendők
-- [x] `countdownApp-handoff.md` “Következő session feladata” listája bővítve 8. pontként
+- [x] `countdownApp-handoff.md` "Következő session feladata" listája bővítve 8. pontként
 
 ---
 ## Session BD — 2026-08-13 (BUG-DETAILDELETE-1)
@@ -183,3 +220,5 @@ ENH-NOTEBADGE-1 🟢 (note badge a countdown itemen) — egyeztetés alapján
 **Következő session:** ENH-HELP-1 🟡 — Help menü/ablak implementáció, IconKeeper mintája alapján;
   3 egyeztetési pont (HelpItem data model, .searchable keresés, szekciók: Overview/Countdown/Calculate/
   Snippets/Recovery) a felhasználó előzetes üzenetében már felvetve, jóváhagyás a következő session elején
+
+---

@@ -5,6 +5,64 @@ Prioritás-jelzés: 🔴 kritikus, 🟡 fontos, 🟢 nice-to-have
 
 ---
 
+## BUG-SNIPPEDITBEACHBALL-1: Meglévő snippet szerkesztésekor becsukás után beachballing 🔴 KRITIKUS
+
+Meglévő snippet szerkesztéskor, a szerkesztés után az ablak bezárása (X gomb, "Save and quit" választás) után az alkalmazás beachballing (spinning wait cursor) állapotba kerül, ami gyakorlatilag teljes lefagyást jelent — a felhasználónak kényszerített kilépésre kell lépnie.
+
+**Reprodukálási módok (felhasználó tapasztalata alapján):**
+1. Szerkesztés nélküli snippet (untitled, General kategória) megnyitása → cím + projekt hozzáadása → X → "Save and quit" → **beachballing**
+2. Meglévő snippet (van címe, projekt isméretlen) megnyitása → body szerkesztése → X → "Save and quit" → **beachballing**
+
+**Lehetséges root cause-ok — kódellenőrzés eredménye (BN session, SnippetEditSheet.swift + Snippet.swift + SnippetsView.swift elolvasva):**
+- CÁFOLVA — betöltési hurok: `Snippet.save()` NEM hív `load()`-ot, az `onSave` callback-ek sem (`SnippetsView.swift`, mindkét `.sheet` closure). Nincs save→load→save ciklus.
+- CÁFOLVA — Swift 6 concurrency isolation: a kód sima SwiftUI @State/View, nincs explicit background thread vagy nem-izolált closure a persistence úton. Nem valószínű root cause.
+- RÉSZBEN MEGERŐSÍTVE — .onDisappear double-call: a showDismissConfirm alert "Save and quit" ága (SnippetEditSheet.swift) ténylegesen NEM állítja shouldSaveOnDisappear = false-ra commitSave() előtt (ellentétben a "Quit without saving" ággal és a delete-alerttel, ahol ez megvan) → dismiss() után .onDisappear másodszor is lefuttatja commitSave()-t. Ez megerősíti/azonosítja BUG-SNIPPETSAVE-1 root cause-át, és emellett ez a duplikáció valódi oka is (ld. BUG-SNIPPETDUP-1 frissítve lent) — de önmagában két gyors, szinkron UserDefaults.set() hívás nem indokolna teljes beachballt/hangot.
+- ÚJ, MÉG NEM MAGYARÁZOTT reprodukálás (felhasználó jelentése, BN session): app inaktívból aktívba vált, eközben a snippet sheet/menü már nyitva volt (nem az X/Save and quit útvonal), a felhasználó még NEM görgetett, csak rákattintott valamire — azonnali beachball. Ez a 3 fenti elmélet egyikével sem magyarázható közvetlenül. Gyanús, még NEM ellenőrzött terület: MarkdownWebView (VIEW mód, SharedEditorComponents.swift — WKWebView-alapú, ott még nem néztünk kódot) JS-bridge/render állapota ablak-deaktiválás/aktiválás után, vagy a ProjectField popover state. Ez a repró külön ellenőrzést igényel — lehet, hogy ÖNÁLLÓ hiba, nem a dirty-save hurok variánsa.
+
+**HARMADIK reprodukálás (felhasználó jelentése, BN session folytatás):** Meglévő snippet szerkesztése →
+checkmark → X (sheet bezárva, nincs hibaüzenet/repró ekkor) → felhasználó átváltott a böngészőre (app
+inaktívvá vált) → visszakattintott az app ablakára → **azonnali beachball**. Fontos különbség az előző
+(inaktív→aktív) reprótól: itt a snippet sheet MÁR be volt zárva, mielőtt az app inaktívvá vált — tehát
+nem a nyitva hagyott sheet/MarkdownWebView az egyetlen gyanús eset, hanem maga a főablak (app-szintű)
+reaktiválása a checkmark+X utáni állapotban. Ez arra utal, hogy a gyanú nem korlátozódhat kizárólag a
+MarkdownWebView-ra nyitott sheet esetén — lehet, hogy egy, a commitSave()/dismiss() folyamat által
+indított aszinkron munka (pl. save I/O, WKWebView teardown, vagy egyéb) csak akkor akad el/blokkol,
+amikor az app NSApplication-szinten inaktívvá, majd újra aktívvá válik közben még fut/befejezetlen.
+
+**NEGYEDIK pontosítás (felhasználó jelentése, BN session folytatás — mind a 4 eddigi eset újraértékelve):**
+Mind a **4** eddig ismert reprónál a snippet sheet **már zárva volt**, amikor a beachball bekövetkezett —
+NINCS olyan eset, ahol a sheet még nyitva lett volna a beachballkor. A négy eset közül:
+- **2 eset**: a beachball **közvetlenül a bezáráskor** történt (X után azonnal)
+- **2 eset**: a beachball **később, ablak-reaktiváláskor** jelentkezett (böngészőre váltás után vissza az
+  appra kattintva), semmi speciális nem történt közben
+- **Mind a 4 esetben közös**: a felhasználó mindig ugyanazt a snippetet szerkesztette — a **"NEXT SESSION"**
+  nevű snippetet. Ez erős gyanút vet fel, hogy nem általános, minden snippetre érvényes hiba, hanem
+  valami ehhez a KONKRÉT snippethez kötődő tulajdonság (pl. tartalom mérete/hossza, gyakori
+  újraszerkesztése — esetleg BUG-SNIPPETDUP-1 miatt felhalmozódott duplikátumok ebből a snippetből,
+  ami megnagyobbítja a `UserDefaults`-ban tárolt JSON méretét és lassabbá/blokkolóvá teheti a
+  `synchronize`/JSON encode-decode műveletet).
+
+**Fontos következtetés:** mivel a sheet MINDIG zárva volt már a beachballkor, a `MarkdownWebView`
+(SharedEditorComponents.swift) VALÓSZÍNŰLEG NEM érintett — ELVETVE mint elsődleges gyanús terület.
+Új prioritás: (1) a "NEXT SESSION" snippet tartalmának/méretének/duplikátumszámának ellenőrzése
+(összefüggés BUG-SNIPPETDUP-1-gyel — ha ez a snippet többször duplikálódott, a tárolt adatméret is
+ megnőtt), (2) `commitSave()` / `Snippet.save()` perzisztencia útvonalának átvizsgálása nagy adatméret
+ esetére (szinkron `UserDefaults.set` + `synchronize` főszálon blokkolhat, ha a JSON nagy), (3) az
+ `countdownAppApp.swift` AppDelegate lifecycle hook még mindig releváns lehet, mert megmagyarázná,
+ miért csak ABLAK-REAKTIVÁLÁSKOR kerül felszínre egy már korábban elindított/függőben lévő lassaú
+ művelet (pl. ha egy async/queued munka csak akkor fut le a főszálon, amikor az app újra aktiválódik).
+
+**Státusz:** 🔴 KRITIKUS — a .onDisappear double-call elmélet megerősítve kódolvasásból (ld. BUG-SNIPPETSAVE-1
+fix javaslat), ez valószínűleg a duplikációt és a beachball egy részét magyarázza. `MarkdownWebView`
+ELVETVE mint gyanús terület (lásd fent, mind a 4 repró sheet-zárva állapotban történt). ÚJ fókusz:
+a "NEXT SESSION" snippet adatmérete/duplikátumai + a perzisztencia útvonal főszál-blokkolása nagy
+adatméret esetén. Következő lépés: `Snippet.swift` `save()`/`load()` és `AppKeys.swift` átvizsgálása,
+valamint a felhasználótól kérdezni: kb hány "NEXT SESSION" című snippet látszik jelenleg a listában
+(BUG-SNIPPETDUP-1 miatt felhalmozódott példányszám ellenőrzése).
+
+---
+
+
 ## UX-1: Max-szélesség korlátok hiánya 🟡
 
 **Érintett területek:**
@@ -198,9 +256,61 @@ Verzió beállítása is szükséges (összeegyeztetni az `Info.plist`-tel).
 
 iconKeeper mintájára. Tartalom: a manual anyaga, de megvágott képekkel (csak az érintett terület látszik,
 nem a teljes képernyő). Képek csak ott, ahol valóban nem magától értetődő a feature (pl. notes badge,
-középső holdacska mint SunPanel trigger). Implementációs mód egyeztetés szükséges.
+középső holdacska mint SunPanel trigger).
 
-**Státusz:** NYITOTT — egyeztetés szükséges (iconKeeper Help mód referencia)
+### IconKeeper referencia minta (BJ/BK sessionek közt gyűjtve, `IconKeeperApp.swift` alapján)
+
+- **`HelpItem`**: `id: String`, `titleKey: LocalizedStringKey`, `bodyKey: LocalizedStringKey`, `icon: String`
+- **`HelpSection`**: `id: String`, `titleKey: LocalizedStringKey`, `items: [HelpItem]`
+- **`HelpCommands`**: külön `Commands` struct (`@Environment(\.openWindow)` mert kell az env),
+  `CommandGroup(replacing: .help)`, gomb label `NSLocalizedString("help.menu.item", ...)`,
+  `.keyboardShortcut("/", modifiers: [.command, .shift])`
+- **Help ablak**: külön `WindowGroup(id: HelpWindowID.id) { NavigationStack { HelpView() } }`,
+  `.windowResizability(.contentMinSize)`, `.defaultSize(width: 560, height: 520)`, `.windowStyle(.titleBar)`;
+  `HelpWindowID` enum `static let id = "..."` mintára (NightShiftnél pl. `"nightshift-help"`)
+- **Keresés**: IconKeeperben az `id` mező alapján szűr, keyword-alapú, NEM full-text
+- Az About ablak ugyanezt a mintát követi (`AboutWindowID`, `AboutCommands`) — NightShiftnél az About
+  már kész (ld. BH session), tehát a Help window scene bevezetése ahhoz hasonló mintát követhet
+
+### Nyitott egyeztetési pontok (még NINCS döntés, következő sessionben tisztázandó)
+
+1. **L10n bevezetése ehhez kapcsolódva** — a felhasználó jelezte hogy az EGÉSZ appot lokalizálni akarja
+   (nem csak a Help-et), tehát ez összefonja az `ENH-L10N-1` és `ENH-HELP-1` döntéseket. Két út:
+   - **A)** `LocalizedStringKey` + `Localizable.xcstrings` LETREHOZVA MOST, kitöltve (legalább EN,
+     esetleg HU is) — teljesen az IconKeeper mintán, azonnal működő lokalizációs alap
+   - **B)** `LocalizedStringKey` használat MOST, de az `xcstrings` tartalma (fordítások) LATER —
+     addig a nézet üres label-eket renderelne tartalom nélkül, ez kockázatos
+   - A "plain String" opció (nem lokalizált, csak sima String a modellben) korábban már ELVETVE,
+     mert az egész app lokalizációs iránya ellene szól — a döntés A vagy B között áll
+2. **`imageName` mező kelljen-e a `HelpItem`-be MOST**, vagy later adódjon hozzá (IconKeeperben nincs
+   ilyen mező, NightShiftnél viszont explicit igény van screenshot-alapú magyarázatra bizonyos itemeknél)
+3. **Keresés mélysége**: elég-e az IconKeeper-mintájú `id`-alapú keyword szűrés, vagy kell egy külön
+   `searchTokens: [String]` mező a `HelpItem`-ben (hu/en kulcsszólista), hogy a keresés ne csak az
+   angol azonosítóra találjon, hanem magyar kifejezésekre is
+
+### Screenshot megjelenítés — tervezett irány (még NEM végleges, 4. egyeztetési pont)
+
+A felhasználó felé javasolt megoldás (CSS `object-position` + `object-fit: cover` SwiftUI-megfelelője):
+
+- A screenshotok **teljes méretben** kerülnek be az `Assets.xcassets`-be — NEM előre kézzel vágott részletek
+- A "melyik rész látszódjon" döntés **kódba** kerül, mint egy normalizált fókusz-rect: `CGRect` 0–1 közötti
+  x/y/width/height értékekkel, a kép relátív koordinátáiban (pl. `CGRect(x: 0.3, y: 0.1, width: 0.4, height: 0.3)`)
+- Új komponens: **`HelpScreenshot`** (munkanév; a vázlatban `MaskedScreenshot` is felmerült) —
+  `imageName: String`, `focusRect: CGRect` (normalized), `targetSize: CGSize` (egységes méret minden
+  help képnek); `GeometryReader` + `Image(imageName).resizable().scaledToFill()` + a `focusRect`-ből
+  számolt `scaleEffect`/`.offset`, hogy pont a kijelölt rész töltse ki a `targetSize`-t; `.clipShape` lekerekítve
+- Előnyök: mindig egységes méretű kivágás help-elemenként függetlenül az eredeti screenshot arányától;
+  nincs pixelbe égetett kivágás (ha a UI változik, csak a számokat kell finomhangolni, nem újra vágni);
+  nincs minőségvesztés/duplikált asset (ugyanabból a screenshotból több help-item is kivághat más-más részt)
+- `HelpItem` modellben: az `imageName` mező mellett egy `focusRect: CGRect?` mező is kellene (opcionális,
+  csak azoknak az itemeknek ahol van screenshot)
+- **Alternatíva** (ha a felhasználó inkább kézzel vágja meg képszerkesztőben): akkor NEM kell `focusRect`,
+  hanem egy külön `help-screenshots` mappa/névkonvenció kellene az előre vágott képeknek — ez a két út
+  egymást kizárja, döntés szükséges
+
+**Státusz:** NYITOTT — tervezés folyában (BJ/BK sessionek), 4 egyeztetési pont vár felhasználói döntésre
+mielőtt implementáció kezdődhetne. Következő lépés: a felhasználó válaszol a fenti 4 pontra, azután
+HelpItem/HelpSection modell + HelpView + HelpCommands implementáció jöhet.
 
 ---
 
@@ -243,5 +353,118 @@ Több deferred téma nincs formálisan dokumentálva:
 - **Help menü**: nincs
 
 **Státusz:** NYITOTT — csak dokumentálás, nincs implementációs döntés; scope + prioritás egyeztetése szükséges
+
+---
+
+## BUG-PROJECTRENAME-1: Project átnevezéskor a snippetek Project mezője nem frissül 🔴
+
+Projekt átnevezésekor az addig alá tartozó snippetek helyesen az új projekt alá kerülnek (asszociáció korrekt), de a snippet `project` mezőjének megjelenített/tárolt neve nem frissül az új névre — kézzel kell minden érintett snippetet átszerkeszteni.
+
+**Root cause:** `SnippetsView.deleteProject(_:)` / `renameProject(_:to:)` — a projekt-snippet kapcsolat név-string alapú (nincs stabil ID). Átnevezéskor a `renameProject` map-pel frissíti a snippetek `project` mezőjét, de az eredeti kód nem tette ezt meg. Fix: az `editTarget` state `Snippet` value snapshot helyett `EditTarget: Identifiable { let id: UUID }` — a sheet closure az aktuális `snippets` tömbből keresi fel az ID alapján a snippetet, így egy átnevezés a tap és a sheet-open között is helyesen tükröződik. A `renameProject(_:to:)` a `snippets` tömböt map-peli és a `project` mezőt az új névre állítja minden érintett snippetnél.
+
+**Fix (BM session):**
+- `SnippetsView`: `editTarget: EditTarget?` (volt: `Snippet?`) — ID-only snapshot
+- `renameProject(_:to:)` — map + project field update minden érintett snippetnél
+- Build OK
+
+**Státusz:** ✅ KÉSZ — BM session
+
+---
+
+## BUG-PROJECTDELETE-1: Project törléskor a hozzá tartozó snippetek elvesznek / nem kerülnek Generalba 🔴
+
+Projekt törlésekor az addig az adott projekt alatt lévő snippeteknek a General alá kellene kerülniük, de ez jelenleg nem történik meg. Felhasználói megjegyzés: az eredeti (jelenlegi) viselkedés az ő korábbi döntése volt, de utólag rossz döntésnek bizonyult — a kívánt viselkedés mostantól: törléskor automatikus átmozgatás Generalba, adatvesztés nélkül.
+
+**Root cause:** `SnippetsView.deleteProject(_:)` — `snippets.removeAll { $0.project == project }` helyett a snippeteket "General"-ba kellene mozgatni. Kontrast: `renameProject` helyesen mapol, csak a célprojekt neve másik.
+
+**Fix (BL session):**
+- `deleteProject` — `removeAll` helyett `map` + "General" project-eset
+- Minta: `renameProject` funkció, csak target = "General"
+- Adatvesztés nélkül, összes snippet megtartva
+- Build OK
+
+**Státusz:** ✅ KÉSZ — BL session
+
+---
+
+## BUG-SNIPPETSAVE-1: Snippet módosítás mentés (save and quit) csak az első módosítást őrzi meg 🔴
+
+Meglévő snippet szerkesztésekor: módosítás → checkmark (menti, estado frissül) → újra módosítás → X → "Save and quit" — a végeredményben az utolsó módosítás elveszik; a snippet csak az előző checkmarkolt állapotot őrzi meg.
+
+**Root cause (felhasználó által azonosított, erősítendő):**
+
+A "Save and quit" ág a dismiss alertban:
+```swift
+Button("Save and quit") { commitSave(); dismiss() }
+```
+
+Ez `commitSave()`-t hív és rögtön `dismiss()`-t is hív. A mentés elméletileg megtörténik, de valódi probléma máshol van: a `.onDisappear` hook:
+```swift
+.onDisappear { if shouldSaveOnDisappear { commitSave() } }
+```
+
+A "Save and quit" ágban `shouldSaveOnDisappear` **`true` marad** (nem állítja senki `false`-ra), ezért a `dismiss()` után az `.onDisappear` **másodszor is meghívja a `commitSave()`-t**. Ezt követően már a sheet el van tüntetve, és a jelenlegi State értékek (`title/project/snippetBody`) nem feltétlenül ugyanazok, mint az alert megjelenésekor voltak (SwiftUI lifecycle sajátossága). Az `.onDisappear`-ben a `commitSave()` a jelenlegi State értékeket használja — de `dismiss()` után a SwiftUI-nak jogában áll módosítani a view state-et a dismiss folyamat közben.
+
+**Praktikus forgatókönyv:**
+1. Checkmark: `commitSave()` lefut, `originalTitle/Project/Body` frissül (BC session fix miatt), `isEditing = false`
+2. Újabb módosítás: `snippetBody` változik (még egyszer azelőtt, hogy az X-re kattint)
+3. X → "Save and quit": `commitSave()` + `dismiss()`
+4. `.onDisappear`: `commitSave()` **újra lefut** — de a `snippetBody` state már esetleg nem reliably a step 2-es érték (vagy üres, vagy egy korábbi state-érték, amit SwiftUI állított meg az .onDisappear futása előtt)
+
+**Ajánlott fix:**
+A "Save and quit" ágban `shouldSaveOnDisappear = false` hozzáadása a `commitSave()` előtt — pontosan mint a "Quit without saving" ágban (`shouldSaveOnDisappear = false`), csak ott `commitSave()` nincs. Ez meg szünteti a double-call-t és garantálja, hogy az utolsó beírt érték ténylegesen mentésre kerül (csak egyszer).
+
+**Root cause — MEGERŐSÍTVE (BN session, kódolvasás):** `SnippetEditSheet.swift`, `showDismissConfirm` alert:
+```swift
+Button("Save and quit") { commitSave(); dismiss() }
+```
+nincs `shouldSaveOnDisappear = false` előtte (ellentétben a "Quit without saving" és a delete-alert ágakkal, ahol ez megvan) → `.onDisappear { if shouldSaveOnDisappear { commitSave() } }` a `dismiss()` után MÉG EGYSZER lefut. A gyanú pontosan igazolódott — ez az egysoros fix hiányzik, semmi más nem tér el a leírt elmélettől. Ez a bug egyben **BUG-SNIPPETDUP-1** valódi (determinisztikus) root cause-ának is része új snippetnél, ld. ott.
+
+**Státusz:** 🔴 NYITOTT, ROOT CAUSE MEGERŐSÍTVE — fix: egy sor (`shouldSaveOnDisappear = false` a "Save and quit" ágban, a `commitSave()` elé). Implementáció + build test egyeztetésre vár.
+
+---
+
+## BUG-SNIPPETDUP-1: Új snippet néha duplikáltan jön létre (ugyanaz a tartalom kétszer) 🔴
+
+Új snippet létrehozásakor előfordult, hogy két (vagy több), különböző állapotú snippet jött létre ugyanabból a szerkesztési munkamenetből (pl. a módosítás előtti és utáni változat külön bejegyzésként).
+
+**Root cause — MEGERŐSÍTVE és ÚJRAÉRTELMEZVE (BN session, kódolvasás: `SnippetEditSheet.swift` + `Snippet.swift` + `SnippetsView.swift`).**
+Ez NEM flaky/gyors-kattintás hiba, hanem determinisztikus, szerkezeti bug új snippet esetén:
+
+- `SnippetEditSheet.snippet` egy `let Snippet?` — új snippetnél `nil`-lel inicializálva, és **soha nem frissül** a sheet élettartama alatt, még az első sikeres mentés után sem.
+- `commitSave()` mindig `Snippet.committed(from: snippet, ...)`-et hív, ahol `snippet` új bejegyzésnél MINDIG `nil` marad.
+- `Snippet.committed(from: nil, ...)` (`Snippet.swift`) ága: `var s = existing ?? Snippet(title: "", body: "", project: "")` — mivel `existing` = `nil`, **minden egyes hívás új `UUID()`-t generál**.
+- `SnippetsView.swift`, `showNewSheet` sheet `onSave` closure:
+  ```swift
+  SnippetEditSheet(snippet: nil, ..., onSave: { new in
+      snippets.append(new)   // MINDIG append, nincs id-alapján upsert (szemben a meglevő snippet szerkesztés ágával, ott firstIndex(where:) van)
+      Snippet.save(snippets)
+  }, onDelete: nil)
+  ```
+- Eredmény: ha egy új snippet sheeten belifogy többször checkmarkol (pl. checkmark #1 a cím/kategória felvételéhez, aztán céruza → body szerkesztés → checkmark #2), MINDEN checkmark egy új, külön UUID-jű snippetet appendel — nem ugyanazt frissíti. Ugyanez történik akkor is, ha csak EGY checkmark van, de a **BUG-SNIPPETSAVE-1** double-call hibája miatt a `.onDisappear` még egyszer lefuttatja `commitSave()`-t — ez is egy MEGA új UUID-jű példányt hoz létre, tehát a két hiba összeadódik.
+- Ez pontosan illeszkedik a felhasználó legutóbbi leírására: "Új snippet, check, módosítás után újra check, 2-t ment belőle, a módosítás előttit is, meg az utánit is, külön."
+
+**Ajánlott fix (egyeztetésre vár, több lehetséges irány):**
+1. `SnippetEditSheet.snippet`-et `let`-ről `@State private var snippet: Snippet?`-re váltani, és `commitSave()`-ben az első sikeres mentés után `self.snippet = s` — ezáltal a következő `commitSave()` hívás már `existing`-ként látja és update-eli, nem újat hoz létre.
+2. VAGY: a `SnippetsView` `showNewSheet` `onSave` closure-át is id-alapján upsert-elni (mint a meglevő szerkesztés ágnál), így ha ugyanaz a `Snippet` állítólag "új" UUID-vel jönne, az legalább az ID egyezése alapján szűrhető — de ez nem oldja meg a valódi hibát (még mindig különböző UUID-k jönnek létre), csak tapasztó megoldás lenne.
+**Javasolt: 1-es opció, mert ez szünteti meg a tényleges okot.** Emellett **BUG-SNIPPETSAVE-1** fix-je (`shouldSaveOnDisappear = false` a "Save and quit" ágban) is szükséges — a két hiba együtt adja a teljes képet, együtt érdemes javítani és tesztelni.
+
+**Státusz:** 🔴 KRITIKUS, ROOT CAUSE MEGERŐSÍTVE és DETERMINISZTIKUSNAK BIZONYULT (nem flaky) — fix irány egyeztetésre vár, azután implementáció + build test
+
+---
+
+## BUG-DISPLAYNAME-1: Tab Display Name-ek összekeveredtek átnevezés után 🔴
+
+Három tab, három Display Name várt lenne, de a tényleges állapot: 1. Calculate Tab → "NightShift", 2. Countdown Tab → "Countdown", 3. Snippets Tab → "NightShift". A Snippets Tab helyesen nem "NightShift"-et kéne mutasson. Felhasználói megjegyzés: átnevezés előtt is hibás volt az állapot, csak akkor a Snippets Tab helyén "Countdown" szerepelt (ami szintén hibás volt) — ezért nem tűnt fel korábban, mert nem volt annyira feltűnő az ismétlődés.
+
+**Root cause:** a macOS ablak title bar a `WindowGroup` aktív view-jának `.navigationTitle`-jéből olvassa a nevet. Ha nincs ilyen, a `CFBundleName` = `"NightShift"` jelenik meg alapértelmezettként. A `CountdownView` egy `NavigationStack`-be van csomagolva (ezért volt ott `.navigationTitle("Countdown")`), de a `CalculateView` és `SnippetsView` nem — ezért azok `"NightShift"`-et mutattak.
+
+**Fix (BM session):**
+- `CalculateView` gyökerébe: `.navigationTitle("Calculate")` (NavigationStack nélkül — macOS-on a modifier önállóan is hat a title bar-ra)
+- `SnippetsView` gyökerébe: `.navigationTitle("Snippets")` (ugyanaz a minta)
+- `CountdownView` és `ContentView` érintetlen
+- Build OK
+
+**Státusz:** ✅ KÉSZ — BM session
 
 ---

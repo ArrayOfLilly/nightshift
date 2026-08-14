@@ -37,6 +37,10 @@
   saveButton chevron, deadlineDetailContent xmark/pencil/trash), `CountdownRowView` (toggle),
   `SnippetsView` (3 gomb), `CountdownView` (nincs teendő). Build OK. **G-5 és G kategória LEZÁRVA ✅**
   (commit `963f387`)
+- **BK session**: Doksi-only — 5 új bug felvéve `buglist.md`-be (BUG-PROJECTRENAME-1, BUG-PROJECTDELETE-1,
+  BUG-SNIPPETSAVE-1, BUG-SNIPPETDUP-1, BUG-DISPLAYNAME-1), mind NYITOTT, kód nem változott. Git commit
+  MÉG NEM történt meg erre a 3 doc fájlra (buglist.md, progress.md, handoff.md) — következő lépés: help
+  rendszer tervezése (felhasználói kérés szerint), utána egy közös commit mindkét részre.
 - **AJ session**: F-2 + F-5 side-fix + B-2 straggler —
   `CopyButton.swift` új shared komponens (`@ViewBuilder label: (Bool) -> Label`);
   `CountdownDetailView`, `NotesSheet`, `SnippetEditSheet` — `@State copyFeedback` eltávolítva,

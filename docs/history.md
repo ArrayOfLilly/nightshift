@@ -1,6 +1,6 @@
 # countdownApp — History
 
-## Session AZ — 2026-08-13 (SnippetEditSheet editor button behavior)
+
 
 ## Session BA — 2026-08-13 (ellenőrzés + dokumentáció szinkronizálás)
 
@@ -14,6 +14,8 @@
 - Nincs git commit (dokumentáció-only session, kódváltozás nélkül)
 
 **Következő session:** Inline HTML/CSS string literálok (`SharedEditorComponents.swift`) VAGY mappastruktúra — egyeztetés alapján
+
+## Session AZ — 2026-08-13 (SnippetEditSheet editor button behavior)
 
 ### Session AZ — LEZÁRVA
 - [x] **SnippetEditSheet** — pipa/X viselkedés implementálva:
