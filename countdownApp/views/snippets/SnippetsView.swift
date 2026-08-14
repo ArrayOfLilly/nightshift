@@ -14,8 +14,13 @@ import AppKit
 
 struct SnippetsView: View {
 
+    // BUG-PROJECTRENAME-1: editTarget stores the snippet's UUID only, not a Snippet value snapshot.
+    // The sheet closure looks up the current Snippet from snippets state by ID, so a rename that
+    // runs between tap and sheet-open is reflected correctly.
+    private struct EditTarget: Identifiable { let id: UUID }
+
     @State private var snippets:    [Snippet] = []
-    @State private var editTarget:  Snippet?       // sheet for editing
+    @State private var editTarget:  EditTarget?    // sheet for editing — ID only
     @State private var showNewSheet = false
     @State private var copiedID:    UUID?          // per-row copy feedback
 
@@ -30,6 +35,11 @@ struct SnippetsView: View {
 
     // Recovery banner
     @State private var corruptedFragments: [String] = []
+
+    private var deleteProjectMessage: String {
+        let count = snippets.filter { $0.project == projectToDelete }.count
+        return "This will permanently delete all \(count) snippet\(count == 1 ? "" : "s") in \"\(projectToDelete)\"."
+    }
 
     private var projectKeys: [String] {
         // Case-insensitive alpha sort; "General" (any casing) always last.
@@ -71,33 +81,42 @@ struct SnippetsView: View {
             Button("Rename") { renameProject(from: projectToRename, to: renameText) }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("All snippets in “\(projectToRename)” will be moved to the new name.")
+            Text("All snippets in \"\(projectToRename)\" will be moved to the new name.")
         }
         .alert("Delete project?", isPresented: $showDeleteProjectConfirm) {
             Button("Delete", role: .destructive) { deleteProject(projectToDelete) }
             Button("Cancel", role: .cancel) { }
         } message: {
-            let count = snippets.filter { $0.project == projectToDelete }.count
-            Text("This will permanently delete all \(count) snippet\(count == 1 ? "" : "s") in “\(projectToDelete)”.")
+            Text(deleteProjectMessage)
         }
+        .navigationTitle("Snippets")
         .sheet(isPresented: $showNewSheet, onDismiss: { snippets = Snippet.load() }) {
             SnippetEditSheet(snippet: nil, existingProjects: projectKeys, onSave: { new in
                 snippets.append(new)
                 Snippet.save(snippets)
             }, onDelete: nil)
         }
-        .sheet(item: $editTarget, onDismiss: { snippets = Snippet.load() }) { target in
-            SnippetEditSheet(snippet: target, existingProjects: projectKeys, onSave: { updated in
-                if let i = snippets.firstIndex(where: { $0.id == updated.id }) {
-                    snippets[i] = updated
-                } else {
-                    snippets.append(updated)
-                }
-                Snippet.save(snippets)
-            }, onDelete: { id in
-                snippets.removeAll { $0.id == id }
-                Snippet.save(snippets)
-            })
+        .sheet(item: $editTarget, onDismiss: {
+            snippets = Snippet.load()
+        }) { target in
+            // Look up the current Snippet by ID so that any rename that happened between
+            // the tap and the sheet presentation is reflected in the initial state.
+            if let snippet = snippets.first(where: { $0.id == target.id }) {
+                SnippetEditSheet(snippet: snippet, existingProjects: projectKeys, onSave: { updated in
+                    if let i = snippets.firstIndex(where: { $0.id == updated.id }) {
+                        snippets[i] = updated
+                    } else {
+                        snippets.append(updated)
+                    }
+                    Snippet.save(snippets)
+                }, onDelete: { id in
+                    snippets.removeAll { $0.id == id }
+                    Snippet.save(snippets)
+                })
+            } else {
+                // Snippet was deleted between tap and sheet open — dismiss immediately.
+                Color.clear.onAppear { editTarget = nil }
+            }
         }
     }
 
@@ -195,7 +214,7 @@ struct SnippetsView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
                     ForEach(projectKeys, id: \.self) { project in
                         sectionHeader(project)
                         ForEach(rows(for: project)) { snippet in
@@ -262,14 +281,19 @@ struct SnippetsView: View {
     }
 
     private func deleteProject(_ project: String) {
-        snippets.removeAll { $0.project == project }
+        snippets = snippets.map { s in
+            guard s.project == project else { return s }
+            var updated = s
+            updated.project = "General"
+            return updated
+        }
         Snippet.save(snippets)
     }
 
     private func snippetRow(_ snippet: Snippet) -> some View {
         HStack(spacing: 12) {
-            // Tap area → edit sheet
-            Button { editTarget = snippet } label: {
+            // Tap area → edit sheet (store ID only; sheet resolves fresh Snippet from state)
+            Button { editTarget = EditTarget(id: snippet.id) } label: {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(snippet.title.isEmpty ? "Untitled" : snippet.title)
                         .font(AppTheme.alienLeague(14))

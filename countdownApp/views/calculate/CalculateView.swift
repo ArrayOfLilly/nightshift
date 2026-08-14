@@ -188,6 +188,7 @@ struct CalculateView: View {
         // E-1: single .sheet(item:) on CalculationModal — impossible to open saveSheet and
         //      deadlineDetail simultaneously (was: two separate .sheet modifiers).
         // E-2: onDismiss: loadDeadlines keeps namedDeadlines fresh after any sheet dismissal.
+        .navigationTitle("Calculate")
         .sheet(item: $activeModal, onDismiss: { namedDeadlines = NamedDeadline.load() }) { modal in
             switch modal {
             case .saveSheet:

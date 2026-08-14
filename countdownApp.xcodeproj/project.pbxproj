@@ -24,7 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		AB699A0C3025257000A7F242 /* countdownApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = countdownApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB699A0C3025257000A7F242 /* countdownApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = countdownApp.app; path = NightShift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB699A193025257100A7F242 /* countdownAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = countdownAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB699A233025257100A7F242 /* countdownAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = countdownAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
