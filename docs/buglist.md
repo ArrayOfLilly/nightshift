@@ -163,6 +163,75 @@ következik, miután minden más, UI-t érintő változás (bugfix vagy enhancem
 
 ---
 
+## BUG-SUNPANEL-1: SunPanel popover bezárul egérelhúzásra 🔴
+
+A `CalculateView` holdsor `.onHover` triggerrel nyitotta a `SunPanel` popovert, és `showSunPopover = false`-ra
+állított amikor az egér elhagyta a holdsort — a popover nem maradt nyitva, amint a felhasználó a tartalomra
+mozgatta az egeret.
+
+**Root cause:** hover-alapú trigger + `onHover { inside in ... showSunPopover = inside }` mintája nem egyeztethető
+össze a macOS popover „kívülre kattintva zár" viselkedésével. A popover bezárult mielőtt a felhasználó
+bármit olvashatott volna.
+
+**Fix (BG session):**
+- `hoverTask: Task<Void, Never>?` `@State` eltávolítva
+- `.onHover` blokk eltávolítva az egész holdsorról
+- Középső hold (index 4, `pink_moon_5`) `Button` wrappérbe csomagolva: kattintásra `showSunPopover.toggle()`
+- `.popover(isPresented: $showSunPopover)` átkerült a középső hold `Button`-jára
+- Nem-középső holdak változatlanok (sima `Image`)
+- `.accessibilityLabel("Sun times")` a középső holdra
+
+**Státusz:** ✅ KÉSZ — BG session: click trigger, `hoverTask` eltávolítva. Build OK.
+
+---
+
+## ENH-ABOUT-1: About ablak 🟡
+
+iconKeeper mintájára: verzió, szerző, attribution. Attribution itt: `images` (nem Freepik/Megnific mint az iconKeepernél).
+Verzió beállítása is szükséges (összeegyeztetni az `Info.plist`-tel).
+
+**Státusz:** NYITOTT — egyeztetés szükséges implementáció előtt (iconKeeper About forráskódja referencia)
+
+---
+
+## ENH-HELP-1: Help menü 🟡
+
+iconKeeper mintájára. Tartalom: a manual anyaga, de megvágott képekkel (csak az érintett terület látszik,
+nem a teljes képernyő). Képek csak ott, ahol valóban nem magától értetődő a feature (pl. notes badge,
+középső holdacska mint SunPanel trigger). Implementációs mód egyeztetés szükséges.
+
+**Státusz:** NYITOTT — egyeztetés szükséges (iconKeeper Help mód referencia)
+
+---
+
+## ENH-L10N-1: Lokalizáció HU/EN 🟢
+
+Elkülönített locales és UI nyelv. iconKeeper mintájára. Kapcsolódik: ENH-SETTINGS-1 (Settings menü
+ahol a language/locale választható).
+
+**Státusz:** NYITOTT — deferred, egyeztetés előtt nem indul el
+
+---
+
+## ENH-SETTINGS-1: Settings menü — UI Language, Locales 🟢
+
+UI Language és locale-választék a Settings menüben. iconKeeper mintájára. Előfeltétel: ENH-L10N-1.
+
+**Státusz:** NYITOTT — deferred, egyeztetés előtt nem indul el
+
+---
+
+## ENH-DEVDOCS-2: Distribution csomag 🟡
+
+- `install.md` (EN, GitHub-ra feltölve)
+- README: sideproject management tool framing — development on a budget, ingyenes accountok felszabadítása,
+  hajnali fejlesztési szokás (első fény = húzás aludni), context management sessionok között (snippets).
+  Jobb projektnevet is ki kell találni (a "countdownApp" csak munkacím).
+
+**Státusz:** NYITOTT — README szöveg + install.md megírása külön session; projektnév egyeztetés szükséges
+
+---
+
 ## ENH-DEFERRED-1: Deferred taskok dokumentálása (lokalizáció, Settings, About, Help) 🟢
 
 Több deferred téma nincs formálisan dokumentálva:

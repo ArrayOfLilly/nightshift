@@ -1,5 +1,27 @@
 # countdownApp — Progress
 
+## Session BG — 2026-08-14 (BUG-SUNPANEL-1 + buglist bővítés)
+
+### Session BG — LEZÁRVA
+- [x] Claude.md, progress.md, countdownApp-handoff.md, buglist.md elolvasva
+- [x] `SunPanel.swift` + `CalculateView.swift` elolvasva
+- [x] **BUG-SUNPANEL-1** — hover trigger → click trigger:
+  - `hoverTask: Task<Void, Never>?` `@State` eltávolítva
+  - `.onHover` blokk eltávolítva
+  - Középső hold (index 4) `Button` wrappérbe csomagolva: `showSunPopover.toggle()`
+  - `.popover(isPresented: $showSunPopover)` a `Button`-ra kerül
+  - `.accessibilityLabel("Sun times")` hozzáadva
+  - Komment frissítve: SUN-1-B hivatkozás + BUG-SUNPANEL-1 magyarázat
+- [x] **Buglist bővítve** — 6 új bejegyzés: BUG-SUNPANEL-1 ✅, ENH-ABOUT-1 🟡,
+  ENH-HELP-1 🟡, ENH-L10N-1 🟢, ENH-SETTINGS-1 🟢, ENH-DEVDOCS-2 🟡
+- [x] Build OK
+- [x] `docs/buglist.md` + `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
+- Git commit: PENDING
+
+**Következő session:** ENH-ABOUT-1 🟡 (iconKeeper About forráskódja referencia) vagy ENH-HELP-1 🟡
+
+---
+
 ## Session BF — 2026-08-13 (ENH-NOTEBADGE-1 + UX-2 + BUG-MANUAL-1)
 
 ### Session BF — LEZÁRVA

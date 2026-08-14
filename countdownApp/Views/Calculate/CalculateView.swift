@@ -33,9 +33,8 @@ struct CalculateView: View {
     // Recovery banner
     @State private var corruptedFragments: [String] = []
 
-    // SUN-1-B: hover trigger state for sun popover
+    // SUN-1-B: click trigger state for sun popover (BUG-SUNPANEL-1: was hover, popover closed on mouse-out)
     @State private var showSunPopover = false
-    @State private var hoverTask: Task<Void, Never>?
     @State private var todaySunTimes: SunTimes? = nil
 
     // CALC-SAVE: modal state — enum prevents simultaneous saveSheet + deadlineDetail presentation.
@@ -124,7 +123,10 @@ struct CalculateView: View {
                         saveButton
                     }
 
-                    // Illustration — moon phases in a U-arc
+                    // Illustration — moon phases in a U-arc.
+                    // Middle moon (index 4) is a button that opens the SunPanel popover on click.
+                    // BUG-SUNPANEL-1: replaced onHover trigger with click — popover now stays open
+                    // until the user clicks outside, which is standard macOS popover behaviour.
                     GeometryReader { geo in
                         let count = 9
                         let w = geo.size.width
@@ -134,28 +136,32 @@ struct CalculateView: View {
                             ForEach(0..<count, id: \.self) { i in
                                 let t = CGFloat(i) / CGFloat(count - 1)
                                 let arcOffset = arcDepth * (4 * t * t - 4 * t)
-                                Image("pink_moon_\(i + 1)")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: moonSize)
-                                    .opacity(AppTheme.alpha90)
+                                if i == 4 {
+                                    Button {
+                                        showSunPopover.toggle()
+                                    } label: {
+                                        Image("pink_moon_\(i + 1)")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: moonSize)
+                                            .opacity(AppTheme.alpha90)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .focusable(false)
                                     .offset(y: -arcOffset)
-                            }
-                        }
-                        .onHover { inside in
-                            hoverTask?.cancel()
-                            if inside {
-                                hoverTask = Task {
-                                    try? await Task.sleep(for: .milliseconds(200))
-                                    guard !Task.isCancelled else { return }
-                                    showSunPopover = true
+                                    .accessibilityLabel("Sun times")
+                                    .popover(isPresented: $showSunPopover) {
+                                        sunPopoverContent
+                                    }
+                                } else {
+                                    Image("pink_moon_\(i + 1)")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: moonSize)
+                                        .opacity(AppTheme.alpha90)
+                                        .offset(y: -arcOffset)
                                 }
-                            } else {
-                                showSunPopover = false
                             }
-                        }
-                        .popover(isPresented: $showSunPopover) {
-                            sunPopoverContent
                         }
                     }
                     .frame(height: 80)
@@ -640,7 +646,7 @@ struct CalculateView: View {
         ]
     }
 
-    // MARK: - Sun popover (SUN-1-C)
+    // MARK: - Sun popover (SUN-1-C / BUG-SUNPANEL-1)
 
     @ViewBuilder
     private var sunPopoverContent: some View {

@@ -65,6 +65,9 @@
 - **BC session**: BUG-CHECKMARKDIRTY-1 + BUG-NOTESDISMISS-1 — `SnippetEditSheet`: `let` → `var` az
   `original*` property-ken, `commitEdit()` baseline refresh; `NotesSheet`: debounce eltávolítva,
   `originalNotes` baseline bevezetve, `handleDismiss()` egységesítve — mindkét sheet X viselkedése azonos.
+- **BG session**: BUG-SUNPANEL-1 — hover trigger → click trigger a középső holdra; `hoverTask` eltávolítva;
+  `.popover` a `Button`-ra kerül; `.accessibilityLabel("Sun times")`; buglist: 6 új bejegyzés (BUG-SUNPANEL-1 ✅,
+  ENH-ABOUT-1, ENH-HELP-1, ENH-L10N-1, ENH-SETTINGS-1, ENH-DEVDOCS-2). Build OK. Git commit: PENDING
 - **BF session**: ENH-NOTEBADGE-1 + UX-2 + BUG-MANUAL-1 — `AppTheme.noteIndicator` token (narancssárga);
   `CountdownRowView` `eye.fill` badge (`!copyFeedback && !item.notes.isEmpty`);
   `AppTheme.windowMaxWidth` 520 → 600; manual: `05e` + eye badge leírás, `11b` + Notes unsaved-changes
@@ -106,7 +109,13 @@ a manual (`BUG-MANUAL-1`) MINDIG UTOLSÓ, mert screenshotjai csak a végleges UI
    kezelése; ehhez Settings menü + About + Help menü (még egyik sincs megvalósítva)
 9. ~~**BUG-MANUAL-1**~~ ✅ KÉSZ (BF session) — `05e` + eye badge, `11b` + Notes unsaved-changes, `17 Exit` + Snippets unsaved-changes; HTML regenerálva. Git: `515aa7e`
 
-**Buglist tiszta** — nyitott: ENH-DEVDOCS-1 🟡, ENH-DEFERRED-1 🟢 (nem bugok, dokumentáció/deferred)
+**Buglist** — nyitott: ENH-DEVDOCS-1 🟡, ENH-DEFERRED-1 🟢, ENH-ABOUT-1 🟡, ENH-HELP-1 🟡,
+ENH-L10N-1 🟢, ENH-SETTINGS-1 🟢, ENH-DEVDOCS-2 🟡 (nem bugok — feature/deferred/docs)
+
+**Következő session jelöltek:**
+- **ENH-ABOUT-1** — iconKeeper About forráskódja szükséges referenciának
+- **ENH-HELP-1** — iconKeeper Help megvalósítása szükséges referenciának
+- **ENH-DEVDOCS-2** — README + install.md (Distribution csomag); projektnév egyeztetés
 
 ---
 
