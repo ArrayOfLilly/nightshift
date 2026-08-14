@@ -16,7 +16,7 @@
   - `#if DEBUG CommandMenu` átkerült ugyanabba a `.commands` blokkba
   - `WindowGroup(id: AboutWindowID.id)` új scene az About ablakhoz
 - [x] Build OK (icon group hiba javítva — Icon Composer-ben)
-- [x] Git commit: PENDING
+- [x] Git commit: `7ab7b65`
 
 **Következő session:** ENH-HELP-1 🟡
 

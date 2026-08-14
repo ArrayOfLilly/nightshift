@@ -17,7 +17,7 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `515aa7e` (BF session: ENH-NOTEBADGE-1 + UX-2 + BUG-MANUAL-1)
+- Git: **naprakész** — legutóbbi commit `7ab7b65` (BH session: ENH-ABOUT-1 + display name + version + icon fix)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
@@ -81,7 +81,7 @@
   `.windowResizability(.contentSize)` + `.defaultSize(width: 300, height: 400)`.
   Display Name: `INFOPLIST_KEY_CFBundleDisplayName = NightShift` (Debug + Release).
   Verzió: `MARKETING_VERSION = 0.9.2`, `CURRENT_PROJECT_VERSION = 2` (Debug + Release).
-  Icon group hiba javítva (Icon Composer). Git commit: [PENDING]
+  Icon group hiba javítva (Icon Composer). Git commit: `7ab7b65`
 - **AY session**: Nyitott teendők #1 — inline HTML/CSS kiemelés `SharedEditorComponents.swift`-ből:
   `resources/markdown-template.html` + `resources/markdown-style.css` új bundle resource-ok (placeholder csere
   + `var(--theme-amber)`); globális `markdownCSS` var törölve; `reload(_:into:)` bundle-ből olvas +
