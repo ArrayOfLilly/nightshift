@@ -16,7 +16,7 @@
   ENH-HELP-1 🟡, ENH-L10N-1 🟢, ENH-SETTINGS-1 🟢, ENH-DEVDOCS-2 🟡
 - [x] Build OK
 - [x] `docs/buglist.md` + `docs/progress.md` + `docs/countdownApp-handoff.md` frissítve
-- Git commit: PENDING
+- Git commit: `b0967ce`
 
 **Következő session:** ENH-ABOUT-1 🟡 (iconKeeper About forráskódja referencia) vagy ENH-HELP-1 🟡
 

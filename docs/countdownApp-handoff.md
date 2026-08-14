@@ -67,7 +67,7 @@
   `originalNotes` baseline bevezetve, `handleDismiss()` egységesítve — mindkét sheet X viselkedése azonos.
 - **BG session**: BUG-SUNPANEL-1 — hover trigger → click trigger a középső holdra; `hoverTask` eltávolítva;
   `.popover` a `Button`-ra kerül; `.accessibilityLabel("Sun times")`; buglist: 6 új bejegyzés (BUG-SUNPANEL-1 ✅,
-  ENH-ABOUT-1, ENH-HELP-1, ENH-L10N-1, ENH-SETTINGS-1, ENH-DEVDOCS-2). Build OK. Git commit: PENDING
+  ENH-ABOUT-1, ENH-HELP-1, ENH-L10N-1, ENH-SETTINGS-1, ENH-DEVDOCS-2). Build OK. Git commit: `b0967ce`
 - **BF session**: ENH-NOTEBADGE-1 + UX-2 + BUG-MANUAL-1 — `AppTheme.noteIndicator` token (narancssárga);
   `CountdownRowView` `eye.fill` badge (`!copyFeedback && !item.notes.isEmpty`);
   `AppTheme.windowMaxWidth` 520 → 600; manual: `05e` + eye badge leírás, `11b` + Notes unsaved-changes
