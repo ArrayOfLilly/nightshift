@@ -17,7 +17,8 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `7ab7b65` (BH session: ENH-ABOUT-1 + display name + version + icon fix)
+- Git: **naprakész** — legutóbbi commit `PENDING` (BJ session: Bundle ID `com.arrayoflilly.nightshift` +
+  `PRODUCT_NAME` = `NightShift`) — előző `7ab7b65` (BH session: ENH-ABOUT-1 + display name + version + icon fix)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
 - **Z session**: Codable model fix, `AppKeys` bevezetve minden persistence path-on
@@ -82,6 +83,10 @@
   Display Name: `INFOPLIST_KEY_CFBundleDisplayName = NightShift` (Debug + Release).
   Verzió: `MARKETING_VERSION = 0.9.2`, `CURRENT_PROJECT_VERSION = 2` (Debug + Release).
   Icon group hiba javítva (Icon Composer). Git commit: `7ab7b65`
+- **BJ session**: Distribution előkészítés — `project.pbxproj` fő target Debug+Release blokk:
+  `PRODUCT_BUNDLE_IDENTIFIER` `com.arrayoflilly.countdownApp` → `com.arrayoflilly.nightshift`;
+  `PRODUCT_NAME` `$(TARGET_NAME)` → `NightShift` (ez adja a menüsor nevet, `CFBundleDisplayName`-től függetlenül).
+  Tests/UITests target érintetlen. Build OK (`xcodebuild` + PlistBuddy verifikálva). Git commit: `PENDING`
 - **AY session**: Nyitott teendők #1 — inline HTML/CSS kiemelés `SharedEditorComponents.swift`-ből:
   `resources/markdown-template.html` + `resources/markdown-style.css` új bundle resource-ok (placeholder csere
   + `var(--theme-amber)`); globális `markdownCSS` var törölve; `reload(_:into:)` bundle-ből olvas +
@@ -125,6 +130,14 @@ ENH-L10N-1 🟢, ENH-SETTINGS-1 🟢, ENH-DEVDOCS-2 🟡 (nem bugok — feature/
 - **ENH-HELP-1** 🟡 — Help menü + ablak; iconKeeper mintájára: `HelpView.swift` + `HelpContent.swift`
   (expandable sections, optional screenshot per item, plain String — nem LocalizedStringKey);
   szekciók: Overview, Countdown, Calculate, Snippets, Recovery; képek: csak ahol non-obvious feature
+  (screenshotok kivágott/kicsi részletek lesznek, nem teljes képernyők — BJ session utolsó felhasználói
+  üzenetében egyeztetve). **BJ session elején még nyitott 3 döntés implementáció előtt:**
+  1) `HelpItem` data model — `struct HelpItem: Identifiable { let id: String; let title: String; let body: String;
+     let icon: String; let imageName: String? }` (plain String, nincs L10n még) — jóváhagyásra vár;
+  2) `.searchable` toolbar bevezetése-e (IconKeeper mintája) — jóváhagyásra vár;
+  3) szekciólista (Overview/Countdown/Calculate/Snippets/Recovery, lásd fent) — jóváhagyásra vár,
+     hiányzó/felesleges pont eldöntendő. **A következő session ezekkel a kérdésekkel kezdődik, csak
+     jóváhagyás után implementál.**
 - **ENH-DEVDOCS-2** — README + install.md (Distribution csomag); projektnév egyeztetés
 
 ---

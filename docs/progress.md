@@ -160,3 +160,26 @@ ENH-NOTEBADGE-1 🟢 (note badge a countdown itemen) — egyeztetés alapján
 - [x] docs frissítve
 
 **Következő session:** ENH-NOTEBADGE-1 🟢 vagy UX-2 🟡 — egyeztetés alapján
+
+---
+
+## Session BJ — 2026-08-14 (Distribution előkészítés: PRODUCT_NAME + Bundle ID)
+
+### Session BJ — LEZÁRVA
+- [x] Claude.md, progress.md, countdownApp-handoff.md elolvasva (előző session token-limitben megszakadt,
+  ez a folytatás/lezárás)
+- [x] Root cause: menüsorban "countdownApp" jelent meg NightShift helyett — `INFOPLIST_KEY_CFBundleDisplayName`
+  csak a Finder/Launchpad nevet állítja, a menüsort a `CFBundleName` (= `PRODUCT_NAME`, alapból `$(TARGET_NAME)`) adja
+- [x] **Bundle ID + PRODUCT_NAME** — `project.pbxproj`, fő target (`countdownApp`) Debug (AB699A2E) és
+  Release (AB699A2F) build config blokkjában: `PRODUCT_BUNDLE_IDENTIFIER` `com.arrayoflilly.countdownApp` →
+  `com.arrayoflilly.nightshift`; `PRODUCT_NAME` `$(TARGET_NAME)` → `NightShift`. Tests/UITests target blokkok
+  (AB699A31/32/34/35) érintetlenek — bundle ID-juk `com.arrayoflilly.countdownAppTests` /
+  `com.arrayoflilly.countdownAppUITests` marad, `PRODUCT_NAME` marad `$(TARGET_NAME)`
+- [x] Ellenőrzés: `git diff` — csak 4 sor változott (2 blokk × 2 kulcs), Tests blokkok nem szerepelnek a diffben
+- [x] Build ellenőrzés: `xcodebuild -scheme countdownApp -configuration Debug build` → **BUILD SUCCEEDED**,
+  termék `NightShift.app`, `CFBundleIdentifier` = `com.arrayoflilly.nightshift` (PlistBuddy-vel megerősítve)
+- [x] Git commit: `pending` (ez a session zárja le)
+
+**Következő session:** ENH-HELP-1 🟡 — Help menü/ablak implementáció, IconKeeper mintája alapján;
+  3 egyeztetési pont (HelpItem data model, .searchable keresés, szekciók: Overview/Countdown/Calculate/
+  Snippets/Recovery) a felhasználó előzetes üzenetében már felvetve, jóváhagyás a következő session elején

@@ -406,8 +406,8 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 0.9.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.arrayoflilly.countdownApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.arrayoflilly.nightshift;
+				PRODUCT_NAME = NightShift;
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -453,8 +453,8 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 0.9.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.arrayoflilly.countdownApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.arrayoflilly.nightshift;
+				PRODUCT_NAME = NightShift;
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
