@@ -46,8 +46,9 @@ struct countdownAppApp: App {
                 .environmentObject(sunService)
         }
         .windowResizability(.contentSize)
-        #if DEBUG
         .commands {
+            AboutCommands()
+            #if DEBUG
             CommandMenu("Debug") {
                 Button("Inject corrupt banner") {
                     let fakeFragments = [
@@ -60,8 +61,15 @@ struct countdownAppApp: App {
                 }
                 .keyboardShortcut("d", modifiers: [.command, .shift])
             }
+            #endif
         }
-        #endif
+
+        // ENH-ABOUT-1: custom About panel (App menu → About NightShift)
+        WindowGroup(id: AboutWindowID.id) {
+            AboutView()
+        }
+        .windowResizability(.contentSize)
+        .defaultSize(width: 300, height: 400)
     }
 
     private static func registerBundledFonts() {

@@ -1,48 +1,110 @@
 {
   "color-space-for-untagged-svg-colors" : "display-p3",
-  "fill" : "system-dark",
+  "fill-specializations" : [
+    {
+      "value" : {
+        "linear-gradient" : [
+          "extended-gray:0.00000,1.00000",
+          "display-p3:0.50702,0.45073,0.71034,1.00000"
+        ],
+        "orientation" : {
+          "start" : {
+            "x" : 0.5,
+            "y" : 0
+          },
+          "stop" : {
+            "x" : 0.5,
+            "y" : 0.7
+          }
+        }
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "linear-gradient" : [
+          "extended-gray:0.00000,1.00000",
+          "display-p3:0.35130,0.31230,0.49217,1.00000"
+        ],
+        "orientation" : {
+          "start" : {
+            "x" : 0.5,
+            "y" : 0
+          },
+          "stop" : {
+            "x" : 0.5,
+            "y" : 0.7
+          }
+        }
+      }
+    }
+  ],
   "groups" : [
     {
       "layers" : [
         {
-          "fill" : {
-            "solid" : "extended-gray:1.00000,1.00000"
-          },
-          "image-name" : "sand-clock_16701966.png",
-          "name" : "sand-clock_16701966",
-          "position-specializations" : [
-            {
-              "idiom" : "macOS",
-              "value" : {
-                "scale" : 0.65,
-                "translation-in-points" : [
-                  0,
-                  0
-                ]
-              }
-            }
-          ]
-        }
-      ],
-      "position-specializations" : [
-        {
-          "idiom" : "macOS",
-          "value" : {
-            "scale" : 0.85,
-            "translation-in-points" : [
-              0,
-              0
-            ]
-          }
+          "image-name" : "4.3 – layer.svg",
+          "name" : "4.3 – layer"
         }
       ],
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.5
       },
-      "specular" : false,
       "translucency" : {
-        "enabled" : false,
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "image-name" : "3.2 – layer.svg",
+          "name" : "3.2 – layer"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "image-name" : "2.1 – layer.svg",
+          "name" : "2.1 – layer"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "image-name" : "3.2 – layer.svg",
+          "name" : "3.2 – layer"
+        },
+        {
+          "image-name" : "2.1 – layer.svg",
+          "name" : "2.1 – layer"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
         "value" : 0.5
       }
     }

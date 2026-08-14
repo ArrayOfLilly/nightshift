@@ -73,6 +73,15 @@
   `AppTheme.windowMaxWidth` 520 → 600; manual: `05e` + eye badge leírás, `11b` + Notes unsaved-changes
   szekció, `17 Exit` + Snippets unsaved-changes szekció; HTML regenerálva.
   Git commit: `e6aa819` + `d1ce48c` + `515aa7e`
+- **BH session**: ENH-ABOUT-1 — `AboutView.swift` új fájl (`Views/AboutView.swift`):
+  `AboutWindowID` enum (`nightshift-about`); `AboutCommands` struct (`CommandGroup(replacing: .appInfo)`);
+  `AboutView`: app ikon (`NSApp.applicationIconImage`), név, verzió/build, tagline, Developer mailto link,
+  Images → Freepik link, © 2026 footer. `countdownAppApp.swift`: `AboutCommands()` +
+  `#if DEBUG CommandMenu` egy `.commands` blokkban; `WindowGroup(id: AboutWindowID.id)` +
+  `.windowResizability(.contentSize)` + `.defaultSize(width: 300, height: 400)`.
+  Display Name: `INFOPLIST_KEY_CFBundleDisplayName = NightShift` (Debug + Release).
+  Verzió: `MARKETING_VERSION = 0.9.2`, `CURRENT_PROJECT_VERSION = 2` (Debug + Release).
+  Icon group hiba javítva (Icon Composer). Git commit: [PENDING]
 - **AY session**: Nyitott teendők #1 — inline HTML/CSS kiemelés `SharedEditorComponents.swift`-ből:
   `resources/markdown-template.html` + `resources/markdown-style.css` új bundle resource-ok (placeholder csere
   + `var(--theme-amber)`); globális `markdownCSS` var törölve; `reload(_:into:)` bundle-ből olvas +
@@ -113,8 +122,9 @@ a manual (`BUG-MANUAL-1`) MINDIG UTOLSÓ, mert screenshotjai csak a végleges UI
 ENH-L10N-1 🟢, ENH-SETTINGS-1 🟢, ENH-DEVDOCS-2 🟡 (nem bugok — feature/deferred/docs)
 
 **Következő session jelöltek:**
-- **ENH-ABOUT-1** — iconKeeper About forráskódja szükséges referenciának
-- **ENH-HELP-1** — iconKeeper Help megvalósítása szükséges referenciának
+- **ENH-HELP-1** 🟡 — Help menü + ablak; iconKeeper mintájára: `HelpView.swift` + `HelpContent.swift`
+  (expandable sections, optional screenshot per item, plain String — nem LocalizedStringKey);
+  szekciók: Overview, Countdown, Calculate, Snippets, Recovery; képek: csak ahol non-obvious feature
 - **ENH-DEVDOCS-2** — README + install.md (Distribution csomag); projektnév egyeztetés
 
 ---
@@ -191,6 +201,7 @@ Services/SunTimesService.swift
 Services/WindowHelpers.swift
 Theme/AppTheme.swift
 Views/ContentView.swift
+Views/AboutView.swift
 Views/Calculate/CalculateView.swift
 Views/Calculate/DeadlineDetailSheet.swift
 Views/Calculate/SunPanel.swift

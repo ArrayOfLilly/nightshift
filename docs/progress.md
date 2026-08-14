@@ -1,5 +1,27 @@
 # countdownApp — Progress
 
+## Session BH — 2026-08-14 (ENH-ABOUT-1 + Display Name + verzió)
+
+### Session BH — LEZÁRVA
+- [x] iconKeeper `AboutView.swift` + `IconKeeperApp.swift` elolvasva (referencia)
+- [x] **Display Name:** `INFOPLIST_KEY_CFBundleDisplayName = NightShift` — Debug + Release blokkban
+- [x] **Verzió:** `MARKETING_VERSION = 0.9.2`, `CURRENT_PROJECT_VERSION = 2` — Debug + Release
+- [x] **ENH-ABOUT-1** — `AboutView.swift` új fájl (`Views/AboutView.swift`):
+  - `AboutWindowID` enum (`nightshift-about`)
+  - `AboutCommands` struct (`CommandGroup(replacing: .appInfo)`)
+  - `AboutView`: app ikon (`NSApp.applicationIconImage`), név, verzió/build,
+    tagline, Developer (mailto link), Images → Freepik (link), footer © 2026
+- [x] **countdownAppApp.swift** frissítve:
+  - `AboutCommands()` a fő `WindowGroup` `.commands` blokkjában
+  - `#if DEBUG CommandMenu` átkerült ugyanabba a `.commands` blokkba
+  - `WindowGroup(id: AboutWindowID.id)` új scene az About ablakhoz
+- [x] Build OK (icon group hiba javítva — Icon Composer-ben)
+- [x] Git commit: PENDING
+
+**Következő session:** ENH-HELP-1 🟡
+
+---
+
 ## Session BG — 2026-08-14 (BUG-SUNPANEL-1 + buglist bővítés)
 
 ### Session BG — LEZÁRVA
