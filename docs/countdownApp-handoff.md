@@ -49,6 +49,34 @@
 
 ---
 
+## Az app koncepciója — NightShift
+
+Az app neve **NightShift** (nem "countdownApp" — az csak a repo/projekt technikai neve marad,
+amíg az ENH-DEVDOCS-2 alatt formalizáljuk az átnevezést; a UI-ban már most is "NightShift Help"
+szerepel a S2 óta létező `help.menu.item` kulcsban).
+
+Használati forgatókönyv, ami minden Help-szövegnek/UX döntésnek keretet ad:
+
+- A felhasználó **éjjel** fejleszt side projekteket, ingyenes AI modellekkel (mert nappal mást
+  csinál). Amikor kezd világosodni, aludni kell — az app ezt a napi ablakot menedzseli.
+- **Calculate fül** — a side project deadline-jai ide kerülnek; a sun time (napkelte) mondja meg,
+  meddig lehet aznap még dolgozni. Ez nem általános "time distance calculator", hanem
+  konkrétan az éjszakai munkaablak végének a jelzése.
+- **Countdown fül** — NEM általános célú countdown lista. Az egyes ingyenes AI modell/account
+  cooldownjait tartja nyilván (pl. Claude, Codex, ChatGPT, DeepSeek, Qwen/QLM, Kimi, stb.) —
+  amikor melyik szolgáltatás szabadul fel újra.
+- **Snippets fül** — session-átadásra való: ha egy munkamenetet át akar adni (más eszköz/session),
+  ide menti a handoffot/egyéb infot.
+- **Notes** (countdown itemeken) — ha helyben kell folytatni egy megszakított munkát, ide írja fel
+  a felhasználó a folytatáshoz szükséges emlékeztetőt; a jegyzet meglétét a számára láthatóvá
+  teszi a létező `noteIndicator` (eye.fill badge) a countdown soron.
+
+**Hatás a Help tartalomra (ENH-HELP-1-S4)**: az Overview szekció jelenlegi 2 itemje túl általános
+("personal time-management tool") — nem tükrözi ezt a konkrét használati mintát. Az S4 során a
+tartalmat erre alapozva kell újraírni, nem az eredeti IconKeeper-mintát követve szó szerint.
+
+---
+
 ## Kritikus tudás
 
 - `CountdownItem`, `Snippet`, `NamedDeadline` — custom `init(from decoder:)`. **Soha ne adj hozzá mezőt `decodeIfPresent` + default nélkül.**
