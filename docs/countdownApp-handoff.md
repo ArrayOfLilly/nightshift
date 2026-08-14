@@ -17,7 +17,7 @@
 
 - Audit pipeline: **mind a 16 kész** ✅ — `docs/audit_files/`
 - Manual: **kész** ✅ — `docs/manual/countdownApp-manual.md`, Data Recovery szekció (18/18b/18c screenshotok) hozzáadva (AD session)
-- Git: **naprakész** — legutóbbi commit `PENDING` (BJ session: Bundle ID `com.arrayoflilly.nightshift` +
+- Git: **naprakész** — legutóbbi commit `e5e771a` (BJ session: Bundle ID `com.arrayoflilly.nightshift` +
   `PRODUCT_NAME` = `NightShift`) — előző `7ab7b65` (BH session: ENH-ABOUT-1 + display name + version + icon fix)
 - `Claude.md` megírva a gyökérbe
 - `refactor-plan.md` teljes findings listával (7 kategória, A–G, 35+ finding)
@@ -86,7 +86,7 @@
 - **BJ session**: Distribution előkészítés — `project.pbxproj` fő target Debug+Release blokk:
   `PRODUCT_BUNDLE_IDENTIFIER` `com.arrayoflilly.countdownApp` → `com.arrayoflilly.nightshift`;
   `PRODUCT_NAME` `$(TARGET_NAME)` → `NightShift` (ez adja a menüsor nevet, `CFBundleDisplayName`-től függetlenül).
-  Tests/UITests target érintetlen. Build OK (`xcodebuild` + PlistBuddy verifikálva). Git commit: `PENDING`
+  Tests/UITests target érintetlen. Build OK (`xcodebuild` + PlistBuddy verifikálva). Git commit: `e5e771a`
 - **AY session**: Nyitott teendők #1 — inline HTML/CSS kiemelés `SharedEditorComponents.swift`-ből:
   `resources/markdown-template.html` + `resources/markdown-style.css` új bundle resource-ok (placeholder csere
   + `var(--theme-amber)`); globális `markdownCSS` var törölve; `reload(_:into:)` bundle-ből olvas +

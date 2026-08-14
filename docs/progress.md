@@ -178,7 +178,7 @@ ENH-NOTEBADGE-1 🟢 (note badge a countdown itemen) — egyeztetés alapján
 - [x] Ellenőrzés: `git diff` — csak 4 sor változott (2 blokk × 2 kulcs), Tests blokkok nem szerepelnek a diffben
 - [x] Build ellenőrzés: `xcodebuild -scheme countdownApp -configuration Debug build` → **BUILD SUCCEEDED**,
   termék `NightShift.app`, `CFBundleIdentifier` = `com.arrayoflilly.nightshift` (PlistBuddy-vel megerősítve)
-- [x] Git commit: `pending` (ez a session zárja le)
+- [x] Git commit: `e5e771a`
 
 **Következő session:** ENH-HELP-1 🟡 — Help menü/ablak implementáció, IconKeeper mintája alapján;
   3 egyeztetési pont (HelpItem data model, .searchable keresés, szekciók: Overview/Countdown/Calculate/
