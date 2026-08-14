@@ -78,4 +78,47 @@ komponens), 1 valós screenshottal tesztelve.
 
 ---
 
+## Session BQ — 2026-08-14 (ENH-HELP-1-S3: HelpScreenshot komponens + HelpView bekötés — LEZÁRVA)
+
+### Session BQ — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `Claude.md` elolvasva
+- [x] `Views/Help/HelpView.swift` elolvasva (jelenlegi állapot, S2 output)
+- [x] `Models/HelpContent.swift` elolvasva (HelpItem struktúra, imageName/focusRect mezők)
+- [x] `resources/Assets.xcassets` listázva — `screenshot.imageset` (timer.png) választva teszt assetnek
+- [x] **`Components/HelpScreenshot.swift`** létrehozva — v1: `GeometryReader` +
+  `Image(imageName).resizable().scaledToFill()`, majd `.scaleEffect(x: 1/focusRect.width,
+  y: 1/focusRect.height, anchor: UnitPoint(focusRect.midX, focusRect.midY))`
+- [x] **Vizuális ellenőrzés (felhasználó screenshot)** — a `scaledToFill()` már önmagában
+  aránytorzítva illesztette a képet a konténerhez (ismeretlen intrinsic aspect vs. targetSize
+  aspect), a rákövetkező `scaleEffect` ezt tovább torzította → a render **nyújtott/torzított**
+  régiót mutatott a `focusRect`-nek megfelelő helyett (megerősítve felhasználói screenshot
+  összehasonlítással: "torzítva és megnövelve" vs. "ha csak vágva lenne")
+- [x] **`Components/HelpScreenshot.swift`** javítva (v2, még ugyanebben a session-ben) — a
+  `scaledToFill`+`scaleEffect` kombináció eldobva. Új megközelítés: `NSImage(named:)?.size` a
+  valós intrinsic méret lekérdezésére → `cropRect` számítás pont-térben a `focusRect`-ből →
+  **egyetlen egyenletes (nem x/y-független) `scale` faktor** = `max(targetSize.width/cropRect.width,
+  targetSize.height/cropRect.height)` → `ZStack(alignment: .topLeading)` + `.offset(-cropRect.minX*scale,
+  -cropRect.minY*scale)` a pozicionáláshoz. Eredmény: tiszta vágás + egyenletes nagyítás, nulla
+  torzítás. Ha a `focusRect` aránya nem egyezik a `targetSize` arányával, a többlet jobbra/lentre
+  vágódik (top-leading anchor) — dokumentálva a fájl fejlécében
+  `.clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))` lekerekítéshez (változatlan)
+- [x] **`Views/Help/HelpView.swift`** módosítva: `HelpItemRow`-ban a screenshot placeholder comment
+  kicserélve valós `HelpScreenshot(imageName:focusRect:targetSize:)` hívásra
+  (`targetSize: CGSize(width: 460, height: 220)`); fájl header frissítve (S2, S3 tag)
+- [x] **`Models/HelpContent.swift`** módosítva: `overview.what` item kiegészítve
+  `imageName: "screenshot"` + `focusRect: CGRect(x: 0.15, y: 0.2, width: 0.5, height: 0.4)` —
+  geometria teszteléséhez, build után vizuálisan ellenőrizhető
+- [ ] Xcode project-be felvétel (1 új fájl): **FELHASZNÁLÓ FELADATA**
+  - `Components/HelpScreenshot.swift`
+- [ ] Build: **FELHASZNÁLÓ FELADATA** — Help ablak megnyitása (Cmd+Shift+/), Overview szekció első
+  itemjénél ellenőrizni, hogy a screenshot crop/scale geometriailag helyes-e
+- [ ] Git commit: **FELHASZNÁLÓ FELADATA** (`ENH-HELP-1-S3: HelpScreenshot component + HelpView wiring`)
+- [x] `docs/progress.md` frissítve
+- [x] `docs/countdownApp-handoff.md` frissítve
+
+**Következő session:** ENH-HELP-1-S4 — valós tartalom (title/body szövegek) az Overview szekcióhoz,
+valós screenshot asset(ek) becsatolása a teszt `screenshot` asset helyett.
+
+---
+
 

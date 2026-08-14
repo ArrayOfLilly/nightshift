@@ -4,14 +4,14 @@
 // Help window root view. Lists all HelpSection / HelpItem entries from
 // HelpContent.sections. Supports id-based keyword search via .searchable —
 // filters items whose id contains the lowercased search query (IconKeeper pattern).
-// Screenshots (HelpScreenshot) are wired in ENH-HELP-1-S3.
+// Screenshots (HelpScreenshot) wired in ENH-HELP-1-S3.
 // Real string content is filled in ENH-HELP-1-S4 through S6.
 //
 // Architectural role:
 // - Pure presentation layer; no store or service access
 // - Opened via WindowGroup(id: HelpWindowID.id) in countdownAppApp.swift
 //
-// ENH-HELP-1-S2
+// ENH-HELP-1-S2, ENH-HELP-1-S3
 
 import SwiftUI
 
@@ -69,10 +69,13 @@ private struct HelpItemRow: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            // Screenshot placeholder — wired in ENH-HELP-1-S3
-            // if let imageName = item.imageName, let focusRect = item.focusRect {
-            //     HelpScreenshot(imageName: imageName, focusRect: focusRect)
-            // }
+            if let imageName = item.imageName, let focusRect = item.focusRect {
+                HelpScreenshot(
+                    imageName: imageName,
+                    focusRect: focusRect,
+                    targetSize: CGSize(width: 460, height: 220)
+                )
+            }
         }
         .padding(.vertical, 4)
     }

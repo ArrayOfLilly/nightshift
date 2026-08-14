@@ -67,7 +67,11 @@ enum HelpContent {
                 id: "overview.what",
                 titleKey: "help.overview.what.title",
                 bodyKey: "help.overview.what.body",
-                icon: "star"
+                icon: "star",
+                // Geometry test asset for HelpScreenshot (ENH-HELP-1-S3).
+                // Real countdownApp screenshots are added in ENH-HELP-1-S4 through S6.
+                imageName: "screenshot",
+                focusRect: CGRect(x: 0.15, y: 0.2, width: 0.5, height: 0.4)
             ),
             HelpItem(
                 id: "overview.views",

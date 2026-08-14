@@ -24,7 +24,8 @@
 ## Következő session feladata
 
 **Buglist állapot összefoglaló** (`docs/buglist.md`) — nyitott tételek:
-- **ENH-HELP-1** 🟡 — S1 KÉSZ (BO), S2 KÉSZ (BP), **S3 következik** (HelpScreenshot komponens)
+- **ENH-HELP-1** 🟡 — S1 KÉSZ (BO), S2 KÉSZ (BP), S3 KÉSZ (BQ), **S4 következik** (valós tartalom +
+  valós screenshotok)
 - **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik
 - **ENH-DEVDOCS-2** 🟡 — README + install.md, projektnév egyeztetés
 - **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása (lokalizáció, Settings; About már kész)
@@ -34,10 +35,17 @@
   állapotot tükrözhetik
 
 **Következő session jelöltek:**
-- **ENH-HELP-1-S3** 🟡 — Help rendszer, 3/6 session: `Components/HelpScreenshot.swift` —
-  `focusRect: CGRect` (normalized) alapú kivágás/scale/offset számítás, egységes `targetSize`.
-  Tesztelés 1 valós screenshottal. S1 KÉSZ (BO), S2 KÉSZ (BP).
+- **ENH-HELP-1-S4** 🟡 — Help rendszer, 4/6 session: valós title/body szövegek az Overview
+  szekcióhoz (`Localizable.xcstrings` EN placeholder → végleges szöveg), valós countdownApp
+  screenshot asset(ek) becsatolása a `screenshot`/timer.png teszt asset helyett. S1–S3 KÉSZ.
 - **ENH-DEVDOCS-2** — README + install.md (Distribution csomag); projektnév egyeztetés
+
+**Felsüggesztett — felhasználó feladata (BQ session):**
+- `Components/HelpScreenshot.swift` Xcode target-hez adása
+- Build + vizuális ellenőrzés (Help ablak, Cmd+Shift+/, Overview első itemje — screenshot crop
+  geometria helyessége)
+- Git commit (`ENH-HELP-1-S3: HelpScreenshot component + HelpView wiring`), hash visszaírása
+  `docs/progress.md`-be
 
 ---
 
@@ -67,6 +75,7 @@ App/HelpCommands.swift
 Components/ComponentStepper.swift
 Components/CopyButton.swift
 Components/FocusedNSTextField.swift
+Components/HelpScreenshot.swift
 Components/LongPressStepperButton.swift
 Components/SharedEditorComponents.swift
 Models/CountdownItem.swift
