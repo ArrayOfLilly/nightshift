@@ -109,7 +109,11 @@ private struct ProjectField: View {
 
 struct SnippetEditSheet: View {
 
-    let snippet: Snippet?
+    // FIX (BUG-SNIPPETDUP-1): was `let`, so new-snippet commitSave() always saw `nil` as
+    // `existing` and generated a fresh UUID on every checkmark/save. Now @State so commitSave()
+    // can assign the saved result back — subsequent saves update the same snippet instead of
+    // creating a new one.
+    @State private var snippet: Snippet?
     let existingProjects: [String]
     let onSave: (Snippet) -> Void
     let onDelete: ((UUID) -> Void)?
@@ -142,7 +146,7 @@ struct SnippetEditSheet: View {
          existingProjects: [String],
          onSave: @escaping (Snippet) -> Void,
          onDelete: ((UUID) -> Void)?) {
-        self.snippet          = snippet
+        _snippet               = State(initialValue: snippet)
         self.existingProjects = existingProjects
         self.onSave           = onSave
         self.onDelete         = onDelete
@@ -208,7 +212,13 @@ struct SnippetEditSheet: View {
                 shouldSaveOnDisappear = false
                 dismiss()
             }
-            Button("Save and quit") { commitSave(); dismiss() }
+            Button("Save and quit") {
+                // FIX (BUG-SNIPPETSAVE-1): without this, .onDisappear (still true) ran
+                // commitSave() a second time after dismiss(), using stale/inconsistent state.
+                shouldSaveOnDisappear = false
+                commitSave()
+                dismiss()
+            }
         } message: {
             Text("You have unsaved changes. What would you like to do?")
         }
@@ -363,6 +373,9 @@ struct SnippetEditSheet: View {
     private func commitSave() {
         if let s = Snippet.committed(from: snippet, title: title, body: snippetBody, project: project) {
             onSave(s)
+            // FIX (BUG-SNIPPETDUP-1): remember the saved snippet (with its assigned id) so the
+            // next commitSave() updates it instead of creating another new one.
+            snippet = s
         }
     }
 }

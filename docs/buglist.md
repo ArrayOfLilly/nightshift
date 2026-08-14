@@ -52,13 +52,22 @@ NINCS olyan eset, ahol a sheet még nyitva lett volna a beachballkor. A négy es
  miért csak ABLAK-REAKTIVÁLÁSKOR kerül felszínre egy már korábban elindított/függőben lévő lassaú
  művelet (pl. ha egy async/queued munka csak akkor fut le a főszálon, amikor az app újra aktiválódik).
 
-**Státusz:** 🔴 KRITIKUS — a .onDisappear double-call elmélet megerősítve kódolvasásból (ld. BUG-SNIPPETSAVE-1
-fix javaslat), ez valószínűleg a duplikációt és a beachball egy részét magyarázza. `MarkdownWebView`
-ELVETVE mint gyanús terület (lásd fent, mind a 4 repró sheet-zárva állapotban történt). ÚJ fókusz:
-a "NEXT SESSION" snippet adatmérete/duplikátumai + a perzisztencia útvonal főszál-blokkolása nagy
-adatméret esetén. Következő lépés: `Snippet.swift` `save()`/`load()` és `AppKeys.swift` átvizsgálása,
-valamint a felhasználótól kérdezni: kb hány "NEXT SESSION" című snippet látszik jelenleg a listában
-(BUG-SNIPPETDUP-1 miatt felhalmozódott példányszám ellenőrzése).
+**ÖTÖDIK frissítés (felhasználó jelentése, külön session):** a felhasználó egy általános, app-szintű
+beachball/hang hibát korábban javított a `LazyVStack` → `VStack` cserével (lásd `countdownApp-handoff.md`
+"beachball/hang fix" bejegyzés). A felhasználó szerint ez a csere a snippet-editing beachball jelenséget
+is megszüntette — azóta nem tapasztalta újra. Ez ELLENTMOND a "NEXT SESSION" adatméret/duplikátum
+elméletnek mint kizárólagos oknak: ha a `LazyVStack`→`VStack` csere (ami feltehetően egy lista-renderelési,
+nem persistence-útvonalbeli hiba volt) megszüntette a jelenséget, akkor a root cause valószínűbben a
+lista-renderelés (`LazyVStack` lazy-load + WKWebView/MarkdownWebView instantiation race ablak-reaktiváláskor)
+volt, nem a JSON encode/decode mérete. MEGERŐSÍTÉS MÉG SZÜKSÉGES: a felhasználó nem tesztelte szisztematikusan
+(csak azt figyelte meg, hogy a csere óta nem jött elő), úgyhogy a bug egyelőre NEM zárható le automatikusan.
+
+**Státusz:** 🟡 VALÓSZÍNŰLEG MEGOLDVA (nem megerősítve) — a `LazyVStack` → `VStack` csere (általános
+hang-fix, lásd handoff.md) feltehetően megszüntette ezt a jelenséget is, mellékhatásként. A korábbi
+.onDisappear double-call elmélet (ld. BUG-SNIPPETSAVE-1) továbbra is valós, önálló hiba (duplikációt okoz),
+de már NEM tekintjük elsődleges beachball-gyanúsnak. "NEXT SESSION" adatméret-elmélet ELVETVE mint fő ok.
+Következő lépés: felhasználói megerősítés több session/reprodukálási kísérlet után, mielőtt ✅ KÉSZ-re
+zárnánk. Addig NYITOTT marad, de alacsonyabb prioritással.
 
 ---
 

@@ -91,8 +91,16 @@ struct SnippetsView: View {
         }
         .navigationTitle("Snippets")
         .sheet(isPresented: $showNewSheet, onDismiss: { snippets = Snippet.load() }) {
+            // FIX (BUG-SNIPPETDUP-1): id-based upsert instead of unconditional append.
+            // With the SnippetEditSheet fix, a second commitSave() during the same new-snippet
+            // session now reuses the same id — without this upsert it would still append a
+            // second array entry with that id.
             SnippetEditSheet(snippet: nil, existingProjects: projectKeys, onSave: { new in
-                snippets.append(new)
+                if let i = snippets.firstIndex(where: { $0.id == new.id }) {
+                    snippets[i] = new
+                } else {
+                    snippets.append(new)
+                }
                 Snippet.save(snippets)
             }, onDelete: nil)
         }
