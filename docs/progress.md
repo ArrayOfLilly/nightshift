@@ -1,5 +1,31 @@
 # countdownApp — Progress
 
+## Session BR — 2026-08-15 (ENH-HELP-1-S4: HelpItemRow text wrapping fix — FOLYAMATBAN)
+
+### Session BR — FOLYAMATBAN
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` (ENH-HELP-1 szekció) elolvasva
+- [x] `Views/Help/HelpView.swift` elolvasva (S3 output, jelenlegi állapot)
+- [x] `Models/HelpContent.swift` elolvasva (S1–S3 output)
+- [x] **Felhasználó észrevétele:** a Help overview items szövegei egy sorban jelennek meg, nincsen
+  word wrapping/tördelés, ergo tagolatlan hatás — valójában az `Localizable.xcstrings` EN
+  szövegei teljesen helyesek és értelmes hosszúsággúak, a probléma a UI layout-ban van
+- [x] **`Views/Help/HelpView.swift`** módosítva — `HelpItemRow` VStack text wrapping javítása:
+  - `Text(item.bodyKey)` mezőhöz `.lineLimit(nil)` hozzáadása (explicit word wrapping engedélyezés)
+  - `VStack(alignment: .leading, spacing: 6)` omlóhoz `.frame(maxWidth: .infinity, alignment: .leading)`
+    hozzáadása (List context-ban explicit szélességi constraint szükséges)
+  - Hatás: szövegek Most szóköz/word-wrapped megjelennek a rendelkezésre álló szélességen belül
+  - Fájl header frissítve S4 tag hozzáadásával
+- [x] Git commit: `35b343e` (`ENH-HELP-1-S4: HelpItemRow text wrapping fix (lineLimit + frame maxWidth)`)
+- [x] `docs/progress.md` frissítve (ez a szekció)
+
+**Megjegyzés:** S4 full scope (valós Overview screenshot asszetek, egyéb Overview item body-szöveg
+refinement, stb.) FÜGGŐBEN marad — az azonnali probléma (text wrapping) meg van oldva. Következő
+lépések S4-ben vagy S5-ben: screenshot asset becsatolása, Overview itemek további refinement-je.
+
+**Következő session:** ENH-HELP-1-S4 folyamata (valós screenshotok, stb.) vagy másik task.
+
+---
+
 ## Session BN — 2026-08-14 (BUG-SNIPPETSAVE-1 + BUG-SNIPPETDUP-1 implementálva; BUG-SNIPPEDITBEACHBALL-1 valószínűleg megoldva mellékhatásként — LEZÁRVA)
 
 ### Session BN — LEZÁRVA
@@ -119,5 +145,3 @@ komponens), 1 valós screenshottal tesztelve.
 valós screenshot asset(ek) becsatolása a teszt `screenshot` asset helyett.
 
 ---
-
-
