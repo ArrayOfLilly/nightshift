@@ -24,7 +24,7 @@
 ## Következő session feladata
 
 **Buglist állapot összefoglaló** (`docs/buglist.md`) — nyitott tételek:
-- **ENH-HELP-1** ✅ — KÉSZ (S1–S6 lezárva, BV session)
+- **ENH-HELP-1** ✅ — KÉSZ (S1–S6 + BW session: 4 hiányzó xcstrings, UI méret/font/hierárchia, 2x/3x asetek; commit `3f9ed21`)
 - **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik
 - **ENH-DEVDOCS-2** 🟡 — README + install.md, projektnév egyeztetés
 - **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása (lokalizáció, Settings; About már kész)
@@ -34,6 +34,17 @@
   állapotot tükrözhetik
 
 **Következő session jelöltek:**
+- **ENH-L10N-1 implementálás** 🟢 — lokalizáció, **audit LEZÁRVA** (BY+BZ session), teljes
+  hiánylista `docs/buglist.md` ENH-L10N-1 szekciójában. Javasolt darabolás (session-méretben):
+  1. 14 xcstrings HU fordítás pótlása (listát lásd buglist.md #1)
+  2. eredeti 4 + új kb. 13 hiányzó kulcs xcstrings-be felvétele (buglist.md #2 — AboutView,
+     SnippetsView, CountdownDetailView, CountdownRowView, stepper label-ek 3 helyen, NotesSheet,
+     ColorPickerSheet swatch, SunPanel napszak-címkék)
+  3. 4 kód-szintű hiba javítása (buglist.md #3 — ContentView rawValue, AboutView Version,
+     2× corruption banner, új: ComponentStepper Increase/Decrease unit)
+  4. maradék audit lezárása: `CalculateView.swift` saját stringjei, `SnippetEditSheet.swift`
+     teljes fájl (buglist.md #6), plusz `SunTimesService.swift` "Invalid request URL" nyitott
+     kérdés tisztázása (buglist.md #5)
 - **ENH-DEVDOCS-2** 🟡 — README + install.md (Distribution csomag); projektnév egyeztetés
 - **BUG-MANUAL-1** 🟡 — manual frissítés (snippet save/dismiss logika, project delete, app név)
 

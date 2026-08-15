@@ -1,5 +1,169 @@
 # countdownApp — Progress
 
+## Session BZ — 2026-08-15 (ENH-L10N-1 audit befejezve, folytatás a BY session megszakadt pontjáról — LEZÁRVA)
+
+### Session BZ — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` elolvasva
+- [x] **Kontextus**: a BY session auditja a chat-ben (nem dokumentumban) tovább futott a
+  progress.md-be már beírt 14+4+3 találaton túl (CountdownDetailView, CountdownRowView,
+  AddCountdownSheet, NotesSheet, ColorPickerSheet, DeadlineDetailSheet, SunPanel), de
+  session limit miatt ez sosem került be a progress.md-be — ez a session ezt pótolja,
+  plusz elolvasta az utolsó tervezett fájlt (`ComponentStepper.swift`)
+- [x] `Components/ComponentStepper.swift` elolvasva — megerősítve: a `label`/`unit` paraméterek
+  a hívó felektől jönnek (AddCountdownSheet/CountdownDetailView/CalculateView), a komponens maga
+  nem tartalmaz hardcoded UI-szöveget, DE **új találat**: `accessibilityLabel: "Increase \(unit)"`
+  / `"Decrease \(unit)"` — format-stringek, plain interpoláció, NINCSENEK xcstrings-ben
+  (ugyanaz a minta, mint a corruption banner — `String(localized:)` kell)
+- [x] **Teljes, összesített ENH-L10N-1 hiánylista összeállítva** (lásd lent) — ez most a
+  hiteles, teljes lista, felváltja a BY session részleges listáját
+- [x] `docs/buglist.md` ENH-L10N-1 szekció frissítve a teljes listával
+- [x] `docs/countdownApp-handoff.md` "Következő session feladata" frissítve
+- [x] `docs/progress.md` frissítve (ez a szekció)
+
+#### ÚJ találatok a BY session megszakadt auditjából (eddig sehol nem voltak leírva)
+
+**Teljesen hiányzó xcstrings kulcsok (kód-szintű string, nincs az xcstrings-ben):**
+| String / minta | Hol | Megjegyzés |
+|---|---|---|
+| `"Countdown"` | `CountdownDetailView.swift` — üres label fallback | lokalizálandó |
+| `"Copy label"`, `"Label copied"` | `CountdownDetailView.swift` — `CopyButton` accessibility | lokalizálandó |
+| `"EXPIRED"` | `CountdownDetailView.swift` | lokalizálandó |
+| `"COPIED"` | `CountdownRowView.swift` — copy feedback | lokalizálandó |
+| `"YEAR"/"MON"/"DAY"/"HOUR"/"MIN"` + `"year"/"month"/"day"/"hour"/"minute"` | `AddCountdownSheet.swift`, `CountdownDetailView.swift`, `CalculateView.swift` — mind a 3 hívja a közös `ComponentStepper`-t, mindhárom helyen ugyanaz a hardcoded label/unit szett ismétlődik | lokalizálandó, 3 helyen |
+| `"Copy notes"`, `"Notes copied"`, `"Done editing"`, `"Edit notes"`, `"Delete notes"` | `NotesSheet.swift` | lokalizálandó |
+| `"(\(color)) color"` swatch accessibility formátum | `ColorPickerSheet.swift` | accessibility-only, alacsony prioritás |
+| `"First light"`, `"Dawn"`, `"Sunrise"` stb. napszak-címkék | `SunPanel.swift` | adatcímkék, nem core UI chrome, alacsony prioritás |
+
+**Kód-szintű hiba (interpolált string, `String(localized:)` kellene — ugyanaz a minta, mint a
+corruption banner az eredeti listában):**
+| Hely | Probléma |
+|---|---|
+| `ComponentStepper.swift` | `accessibilityLabel: "Increase \(unit)"` / `"Decrease \(unit)"` — plain interpoláció |
+
+**Ellenőrizve és rendben találva (nem kell módosítás):**
+- `AddCountdownSheet.swift`: Cancel/Add/LABEL/DEADLINE/placeholder-ek — HU fordítással együtt megvannak
+- `DeadlineDetailSheet.swift`: Close/CANCEL/RENAME/Rename deadline/Delete deadline — megvannak
+- `ColorPickerSheet.swift`: "PICK A COLOR" + close accessibility — megvannak
+- `SunPanel.swift`: "LOADING"/"NO DATA" — megvannak
+- `NotesSheet.swift` delete-confirm/cancel/delete/unsaved-changes/quit/save szövegei — xcstrings-ben
+  megvannak, csak a HU fordítás hiányzik (már szerepel az eredeti 14-es listában)
+- `SnippetEditSheet.swift` "Title" mező — megvan, csak HU fordítás hiányzik (eredeti 14-es lista)
+- `SunTimesService.swift` "Invalid request URL" — `lastError`-ban tárolt belső hibaszöveg;
+  **még nyitott kérdés**, hogy ez valaha megjelenik-e a UI-n — ha igen, lokalizálandó, ha nem,
+  nem szükséges (következő session nézze meg, hol van felhasználva a `lastError`)
+- `Snippet.swift` `"General"` alapértelmezett projektnév — szekció-fejlécként jelenik meg, de
+  **döntés**: ez adat-alapértelmezés, nem UI chrome, marad lokalizálatlan
+- `SharedEditorComponents.swift`, `CopyButton.swift` — tisztának találva (belső HTML/CSS/JS,
+  ill. hívó által adott accessibility label-ek, nincs saját hardcoded string)
+
+**Még mindig nem (teljesen) auditált:**
+- `CalculateView.swift` saját (nem ComponentStepper-től örökölt) stringjei
+- `SnippetEditSheet.swift` teljes fájl (csak a "Title" mező lett eddig ellenőrizve)
+
+**Következő session:** implementáció indítható — az összesített lista a `docs/buglist.md`
+ENH-L10N-1 szekciójában található, onnan dolgozható fel darabokban (pl. 1) 14 HU fordítás
+pótlása, 2) eredeti 4 + új ~13 hiányzó kulcs felvétele xcstrings-be, 3) 4 kód-szintű hiba
+javítása [ContentView rawValue, AboutView Version, 2× corruption banner, ComponentStepper
+Increase/Decrease], 4) CalculateView + SnippetEditSheet maradék auditja).
+
+---
+
+## Session BY — 2026-08-15 (Lokalizáció audit — LEZÁRVA)
+
+### Session BY — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md` elolvasva
+- [x] `docs/buglist.md` elolvasva (ENH-L10N-1 státusz: NYITOTT, deferred)
+- [x] `Localizable.xcstrings` teljes tartalom elolvasva — jelenlegi HU lefedettség felmérve
+- [x] `Views/ContentView.swift`, `Views/AboutView.swift`,
+  `Views/Snippets/SnippetsView.swift`, `Views/Countdown/CountdownView.swift` elolvasva
+  — hardcoded stringek és rossz lokalizáció-használat felmérve
+- [x] **Audit eredmény: Localizable.xcstrings HU hiányok** — 14 string nincs HU-ra fordítva
+  (részletes lista lent, "xcstrings HU gaps" szekció)
+- [x] **Audit eredmény: xcstrings-ből hiányzó stringek** — 4 string nincs az xcstrings-ben
+  (részletes lista lent)
+- [x] **Audit eredmény: kód-szintű lokalizációs hibák** — 3 hely ahol a xcstrings kulcs
+  megvan, de a Swift kód nem használja helyesen (részletes lista lent)
+- [x] **FIGYELEM: felmérés részleges** — Calculate views (`CalculateView.swift`,
+  `DeadlineDetailSheet.swift`, `SunPanel.swift`), Countdown sub-views
+  (`CountdownRowView.swift`, `CountdownDetailView.swift`, `AddCountdownSheet.swift`,
+  `ColorPickerSheet.swift`, `NotesSheet.swift`), `SnippetEditSheet.swift`,
+  `SharedEditorComponents.swift` még nem lett megvizsgálva — ezekben is lehetnek
+  hardcoded stringek
+- [x] `docs/progress.md` frissítve (ez a szekció)
+
+#### xcstrings HU gaps (HU fordítás hiányzik)
+| xcstrings kulcs | EN érték |
+|---|---|
+| `"Snippets"` | Snippets (tab name) |
+| `"SNIPPETS"` | SNIPPETS (view title) |
+| `"Sun times unavailable"` | Sun times unavailable |
+| `"Switch to date display"` | Switch to date display (accessibility) |
+| `"Switch to remaining time"` | Switch to remaining time (accessibility) |
+| `"Tap + to add a snippet."` | Tap + to add a snippet. |
+| `"Tap to start writing."` | Tap to start writing. |
+| `"This cannot be undone."` | This cannot be undone. |
+| `"This clears the notes for this slot. This cannot be undone."` | (alert body) |
+| `"This deadline will be permanently removed."` | (alert body) |
+| `"Title"` | Title (snippet label) |
+| `"Unsaved changes"` | Unsaved changes (alert title) |
+| `"Version %@ (%@)"` | EN state:new — HU hiányzik |
+| `"You have unsaved changes. What would you like to do?"` | (alert body) |
+
+#### xcstrings-ből teljesen hiányzó stringek
+| String | Hol van | Megjegyzés |
+|---|---|---|
+| `"Developer"` | `AboutView.swift` infoRow label | lokalizálandó |
+| `"Images"` | `AboutView.swift` infoRow label | lokalizálandó |
+| `"Untitled"` | `SnippetsView.swift` snippet cím fallback | lokalizálandó |
+| `"This will permanently delete all %lld snippet%@ in \"%@\"."` | `SnippetsView.swift` deleteProjectMessage | singling/plural format, lokalizálandó |
+
+#### Kód-szintű lokalizációs hibák (xcstrings kulcs megvan, de rossz a használat)
+| Hely | Probléma | Fix |
+|---|---|---|
+| `ContentView.swift` `modeButton` | `Text(mode.rawValue)` — rawValue nem fut át lokalizáción | `Text(LocalizedStringKey(mode.rawValue))` |
+| `AboutView.swift` | `"Version \(version) (\(build))"` — sima string interpoláció, nem lokalizált | `String(localized: "Version %@ (%@)", ...)` |
+| `CountdownView.swift` + `SnippetsView.swift` corruption banner | `"\(count) item\(count == 1 ? \"\" : \"s\") could not be loaded"` — plain interpoláció | `String(localized: "%lld item%@ could not be loaded", ...)` |
+
+**Következő session:** lokalizáció implementálása — 1) HU fordítások pótlása xcstrings-be
+(14 gap), 2) hiányzó stringek xcstrings-be felvétele (4 db), 3) kód-szintű hibák javítása
+(3 db), 4) még nem vizsgált Swift fájlok átnézése (Calculate, Countdown sub-views,
+SnippetEditSheet, SharedEditorComponents).
+
+---
+
+## Session BX — 2026-08-15 (Help ablak max-szélesség fix + szekció cím padding fix — LEZÁRVA)
+
+### Session BX — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md` elolvasva
+- [x] `App/countdownAppApp.swift`, `Views/Help/HelpView.swift`, `Views/ContentView.swift`, `Theme/AppTheme.swift`
+  elolvasva (Help ablak jelenlegi frame-je + főablak min/max mintájának megértéséhez)
+- [x] **Felhasználói kérés #1**: a Help ablak szélessége jelenleg teljesen lezárt volt
+  (`minWidth: 640, maxWidth: 640` — nem átméretezhető); legyen inkább egy min/max tartomány,
+  mint a főablaknak (`AppTheme.windowMinWidth`/`windowMaxWidth` = 460–600), csak szélesebb
+- [x] **`Theme/AppTheme.swift`** módosítva — 2 új konstans a `windowMaxWidth` mellé:
+  - `helpWindowMinWidth: CGFloat = 640` (a jelenlegi lezárt érték, a 560pt screenshot +
+    20pt row padding miatt indokolt minimum)
+  - `helpWindowMaxWidth: CGFloat = 900` (szélesebb, mint a főablak max 600pt-je)
+- [x] **`Views/Help/HelpView.swift`** módosítva:
+  - `.frame(minWidth: 640, maxWidth: 640, minHeight: 560)` →
+    `.frame(minWidth: AppTheme.helpWindowMinWidth, maxWidth: AppTheme.helpWindowMaxWidth, minHeight: 560)`
+  - a "width is locked" komment lecserélve, elmagyarázva az új min/max viselkedést
+- [x] **Felhasználói kérés #2**: a szekció címek (`Section(header:)`) kilógtak a paddingen
+  túl (a List `.sidebar` style alapértelmezett header inset-je kisebb volt, mint a
+  `HelpItemRow` 20pt horizontal padding-je, ezért a címek kevesebbé voltak behúzódva, mint
+  a sorok tartalma)
+- [x] **`Views/Help/HelpView.swift`** módosítva — a `Section(header: Text(...))` címéhez
+  `.padding(.horizontal, 16)` hozzáadva
+- [ ] Build + vizuális ellenőrzés Xcode-ban: **FELHASZNÁLÓ FELADATA**
+- [ ] Git commit: **FELHASZNÁLÓ FELADATA** (javasolt üzenet: `Help window: resizable min/max
+  width range (wider than main window), section header padding fix`)
+- [x] `docs/progress.md` frissítve (ez a szekció)
+
+**Session session limit előtt ért véget** — lokalizáció nem kezdődött el; BY session végezte el
+ az auditot.
+
+---
+
 ## Session BW — 2026-08-15 (ENH-HELP-1 hiányzó xcstrings: 4 countdown item — LEZÁRVA)
 
 ### Session BW — LEZÁRVA
@@ -22,8 +186,7 @@
   - `help.countdown.toggle.title`: "Time display toggle"
   - `help.countdown.toggle.body`: clock/calendar gomb → remaining↔deadline date, per-item mentve
 - [ ] Build + vizuális ellenőrzés Help ablakban: **FELHASZNÁLÓ FELADATA**
-- [ ] Git commit: **FELHASZNÁLÓ FELADATA**
-  (javasolt üzenet: `ENH-HELP-1: add missing xcstrings for countdown expand/copy/toggle/free`)
+- [x] Git commit: `3f9ed21` (`ENH-HELP-1: Help window wider/taller, larger fonts, hierarchy, padding, fix screenshot quality (2x/3x assets)`)
 - [x] **`Views/Help/HelpView.swift`** módosítva (UI méret + font + padding):
   - frame: `minWidth/maxWidth 560 → 640`, `minHeight 480 → 560`
   - item title font: `.system(.body, weight: .semibold)` → `.title3.semibold`

@@ -203,7 +203,56 @@ A felhasználó felé javasolt megoldás (CSS `object-position` + `object-fit: c
 Elkülönített locales és UI nyelv. iconKeeper mintájára. Kapcsolódik: ENH-SETTINGS-1 (Settings menü
 ahol a language/locale választható).
 
-**Státusz:** NYITOTT — deferred, egyeztetés előtt nem indul el
+**Audit LEZÁRVA** (BY + BZ session, teljes kódbejárás) — implementációra vár. Teljes, összesitett
+hiánylista:
+
+### 1) HU fordítás hiányzik xcstrings-ből (14 kulcs, EN megvan)
+"Snippets", "SNIPPETS", "Sun times unavailable", "Switch to date display",
+"Switch to remaining time", "Tap + to add a snippet.", "Tap to start writing.",
+"This cannot be undone.", "This clears the notes for this slot. This cannot be undone.",
+"This deadline will be permanently removed.", "Title", "Unsaved changes",
+"Version %@ (%@)", "You have unsaved changes. What would you like to do?"
+
+### 2) Xcstrings-ből teljesen hiányzó stringek (nincs kulcs se EN-re se HU-ra)
+- `AboutView.swift`: "Developer", "Images" (infoRow label-ek)
+- `SnippetsView.swift`: "Untitled" (snippet cím fallback), `"This will permanently delete all
+  %lld snippet%@ in \"%@\"."` (deleteProjectMessage, plural form)
+- `CountdownDetailView.swift`: "Countdown" (üres label fallback), "Copy label"/"Label copied"
+  (CopyButton accessibility), "EXPIRED"
+- `CountdownRowView.swift`: "COPIED" (copy feedback)
+- `AddCountdownSheet.swift` + `CountdownDetailView.swift` + `CalculateView.swift`
+  (mindhárom a közös `ComponentStepper`-t hívja, mindenhol ismétlődik): "YEAR"/"MON"/"DAY"/
+  "HOUR"/"MIN" display label-ek + "year"/"month"/"day"/"hour"/"minute" accessibility unit nevek
+- `NotesSheet.swift`: "Copy notes", "Notes copied", "Done editing", "Edit notes", "Delete notes"
+- `ColorPickerSheet.swift`: swatch accessibility formátum "(\(color)) color" — alacsony prioritás
+- `SunPanel.swift`: "First light", "Dawn", "Sunrise" stb. napszak-adatcímkék — alacsony prioritás
+
+### 3) Kód-szintű hiba (xcstrings kulcs megvan/kellene, de a Swift kód nem megfelelően használja)
+- `ContentView.swift` `modeButton`: `Text(mode.rawValue)` → `Text(LocalizedStringKey(mode.rawValue))`
+- `AboutView.swift`: `"Version \(version) (\(build))"` → `String(localized: "Version %@ (%@)", ...)`
+- `CountdownView.swift` + `SnippetsView.swift` corruption banner:
+  `"\(count) item\(count == 1 ? \"\" : \"s\") could not be loaded"` →
+  `String(localized: "%lld item%@ could not be loaded", ...)`
+- `ComponentStepper.swift`: `accessibilityLabel: "Increase \(unit)"` / `"Decrease \(unit)"` →
+  `String(localized:)` formátum kellene
+
+### 4) Ellenőrizve, rendben (nincs teendő)
+`AddCountdownSheet.swift` Cancel/Add/LABEL/DEADLINE/placeholder, `DeadlineDetailSheet.swift`
+Close/CANCEL/RENAME/Rename deadline/Delete deadline, `ColorPickerSheet.swift` "PICK A COLOR"+close,
+`SunPanel.swift` LOADING/NO DATA, `SharedEditorComponents.swift`, `CopyButton.swift` (belső
+HTML/CSS/JS ill. hívó-adott accessibility label, nincs saját hardcoded string), `Snippet.swift`
+"General" default projektnév (döntés: adat-default, nem UI chrome, marad lokalizálatlan).
+
+### 5) Nyitott kérdés
+`SunTimesService.swift` "Invalid request URL" (`lastError`) — tisztázandó, megjelenik-e valaha
+a UI-n; ha igen, lokalizálandó.
+
+### 6) Még nem (teljesen) auditált fájlok
+`CalculateView.swift` saját stringjei (a ComponentStepper-től független rész), `SnippetEditSheet.swift`
+teljes fájl (csak a "Title" mező lett eddig ellenőrizve).
+
+**Státusz:** NYITOTT — audit kész, implementáció még nem kezdődött el. Részletek:
+`docs/progress.md` Session BY + BZ szekció.
 
 ---
 
