@@ -36,7 +36,8 @@ struct HelpView: View {
             ForEach(filteredSections) { section in
                 Section(header: Text(section.titleKey)
                     .font(.title2)
-                    .fontWeight(.bold)) {
+                    .fontWeight(.bold)
+                    .padding(.horizontal, 16)) {
                     ForEach(section.items) { item in
                         HelpItemRow(item: item)
                     }
@@ -46,10 +47,12 @@ struct HelpView: View {
         .listStyle(.sidebar)
         .searchable(text: $searchQuery, prompt: Text("Search help…"))
         .navigationTitle("NightShift Help")
-        // Width is locked (not just a minimum) so the fixed-width
-        // screenshots and the wrapped body text always line up the same
-        // way; only height is free to grow as content is added.
-        .frame(minWidth: 640, maxWidth: 640, minHeight: 560)
+        // Min/max range (not locked to one value) so the window behaves like the main
+        // window (AppTheme.windowMinWidth/windowMaxWidth) — resizable within bounds —
+        // just wider, since Help content benefits from more room on large displays.
+        // The 560pt-wide screenshots and 20pt HelpItemRow padding still line up correctly
+        // at any width in this range since they don't depend on the window's exact size.
+        .frame(minWidth: AppTheme.helpWindowMinWidth, maxWidth: AppTheme.helpWindowMaxWidth, minHeight: 560)
     }
 }
 
@@ -84,5 +87,6 @@ private struct HelpItemRow: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 12)
+        .padding(.horizontal, 20)
     }
 }

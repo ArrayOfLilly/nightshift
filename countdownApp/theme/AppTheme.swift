@@ -100,6 +100,14 @@ enum AppTheme {
     /// Raised from 520 to 600pt (UX-2): gives more breathing room for snippet text and countdown
     /// name rows without letting the layout spread too wide on large displays.
     static let windowMaxWidth: CGFloat = 600
+    /// Minimum Help window width — matches the width the fixed-width screenshots (560pt) and
+    /// HelpItemRow horizontal padding (20pt each side) were tuned for.
+    static let helpWindowMinWidth: CGFloat = 640
+    /// Maximum Help window width — deliberately wider than the main window's `windowMaxWidth`
+    /// (600pt): the Help window is read-only reference content, so it benefits from extra
+    /// horizontal room on large displays without the layout-spreading concerns that cap the
+    /// main window (steppers, list rows).
+    static let helpWindowMaxWidth: CGFloat = 900
     /// Margin subtracted from the window dimension so sheets never overhang the window edges
     static let windowSheetMargin: CGFloat = 24
     /// Fallback sheet width used when the main window cannot be resolved
