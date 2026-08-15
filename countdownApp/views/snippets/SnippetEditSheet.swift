@@ -49,6 +49,10 @@ private struct ProjectField: View {
     let suggestions: [String]
     @State private var showSuggestions = false
 
+    private var filteredSuggestions: [String] {
+        text.isEmpty ? suggestions : suggestions.filter { $0.localizedCaseInsensitiveContains(text) }
+    }
+
     var body: some View {
         HStack(spacing: 0) {
             TextField("Project", text: $text)
@@ -80,7 +84,7 @@ private struct ProjectField: View {
 
     private var suggestionList: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(suggestions, id: \.self) { s in
+            ForEach(filteredSuggestions, id: \.self) { s in
                 Button {
                     text = s
                     showSuggestions = false
@@ -287,6 +291,7 @@ struct SnippetEditSheet: View {
         .buttonStyle(.plain)
         .focusable(false)
         .accessibilityLabel(label)
+        .help(label)
     }
 
     // MARK: - Content

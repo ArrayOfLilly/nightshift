@@ -135,6 +135,7 @@ struct NotesSheet: View {
         .buttonStyle(.plain)
         .focusable(false)
         .accessibilityLabel(label)
+        .help(label)
     }
 
     // MARK: - Content

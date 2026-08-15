@@ -154,6 +154,7 @@ struct CalculateView: View {
                                     .focusable(false)
                                     .offset(y: -arcOffset)
                                     .accessibilityLabel("Sun times")
+                                    .help("Sun times")
                                     .popover(isPresented: $showSunPopover) {
                                         sunPopoverContent
                                     }
@@ -389,6 +390,7 @@ struct CalculateView: View {
         }
         .buttonStyle(.plain)
         .focusable(false)
+        .help(displayMode == "days" ? String(localized: "Switch to calendar display") : String(localized: "Switch to days display"))
     }
 
     // MARK: - CALC-SAVE: Save / Edit split button
@@ -415,6 +417,7 @@ struct CalculateView: View {
             }
             .buttonStyle(.plain)
             .focusable(false)
+            .help(String(localized: "Save current TO date as a named deadline"))
 
             Rectangle()
                 .fill(Color.white.opacity(0.2))
@@ -439,6 +442,7 @@ struct CalculateView: View {
             .buttonStyle(.plain)
             .focusable(false)
             .accessibilityLabel("Show saved deadlines")
+            .help(String(localized: "Show saved deadlines"))
             .popover(isPresented: $showDeadlineListPopover) {
                 deadlineListPopoverContent
             }

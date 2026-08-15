@@ -1,3 +1,80 @@
+## Session CI — 2026-08-15 (UX-SUNPANEL-ICONS SF Symbols + UX-SNIPPETS-PROJECT-AUTOCOMPLETE — LEZÁRVA)
+
+### Session CI — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` elolvasva
+- [x] **UX-SUNPANEL-ICONS** (ikon félrevezető → SF Symbols egységes):
+  - `SunPanel.swift` `sectionHeader` helper átírva: `(icon: String, title: LocalizedStringKey)` paraméterek
+  - `HStack(spacing: 4)` + `Image(systemName: icon)` + `Text(title)` 
+  - **5 szekció ikonja** (SF Symbols — egységes):
+    - Morning: `sun.min` (félnap, napkelte után)
+    - Evening: `sun.min` (félnap, napnyugta körül)
+    - Day: `sun.max.fill` (teljes nap)
+    - Moon: `moon` (hold)
+    - Golden/Blue Hour: `camera.aperture` (fotó)
+  - Összes 5 hívás frissítve (`morningSection`/`eveningSection`/`daySection`/`moonSection`/`goldenBlueSection`)
+  - Az xcstrings kulcsok (EN+HU) sértetlenek — szöveg nem változott, csak az ikon
+- [x] **UX-SNIPPETS-PROJECT-AUTOCOMPLETE** (projekt mező nem szűr begépeléskor):
+  - `Views/Snippets/SnippetEditSheet.swift` `ProjectField` struct-hoz `filteredSuggestions` computed var hozzáadva
+  - `filteredSuggestions`: `text.isEmpty ? suggestions : suggestions.filter { $0.localizedCaseInsensitiveContains(text) }`
+  - `suggestionList` `ForEach(suggestions)` → `ForEach(filteredSuggestions)` — élő szűrés begépeléskor
+- [x] **Dokumentáció** `docs/buglist.md`-ben: 2 új UX bejegyzés (UX-SUNPANEL-ICONS, UX-SNIPPETS-PROJECT-AUTOCOMPLETE)
+- [ ] Build (Xcode Command Line Tools `xcodebuild` nem futtatható ebben az env-ben): **FELHASZNÁLÓ FELADATA**
+- [ ] Git commit (javasolt üzenet: `UX-SUNPANEL-ICONS SF Symbols + UX-SNIPPETS-PROJECT-AUTOCOMPLETE`): **FELHASZNÁLÓ FELADATA**
+- [x] `docs/progress.md` frissítve
+
+**Megjegyzés:** az eredeti emoji-k (`⚖️`, `🌆`) véglegesen helyettesítve SF Symbols egységes set-tel — az emoji-k valóban értelmetlen kombinációk voltak (balance ikon a nappal, city silhuette az estével). SF Symbols konzisztens, professzionális, és macOS-hoz illő. A hierarchia: sun.min (reggel/este félnap) < sun.max.fill (teljes nap) + moon (hold).
+
+**Következő session:** ENH-TOOLTIP-1 (`.help()` modifer minden interaktív elemhez), vagy egyeztetés alapján más prioritás.
+
+---
+
+## Session CH — 2026-08-15 (ENH-L10N-1 lezárva + SunPanel fix méret — LEZÁRVA)
+
+### Session CH — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` elolvasva
+- [x] ENH-L10N-1 maradék pontok (#2, #3, #5, #6, #9) a tényleges kódon átvizsgálva (nem csak
+  a docs-on) — valódi hiányosságokat találtam a dokumentáltnál is:
+  - **`Components/ComponentStepper.swift`** — valódi bug: `label: String` paraméter +
+    `Text(label)` sosem lokalizált, mert a `Text(_ content: String)` overload verbatim
+    renderel (nem xcstrings-lookup, csak a `LocalizedStringKey` init lokalizál) — a
+    YEAR/MON/DAY/HOUR/MIN xcstrings kulcsok megvoltak (Session CD óta), de a kód soha nem
+    használta őket. Fix: új `localizedLabel` computed var (a meglévő `localizedUnit` mintájára)
+  - **`Views/AboutView.swift`** — `"Version \(version) (\(build))"` interpolált string a
+    meglévő `"Version %@ (%@)"` formátum-kulcs helyett → `String(format:)`-tal javítva
+  - **`Views/Countdown/CountdownView.swift` + `Views/Snippets/SnippetsView.swift` +
+    `Views/Calculate/CalculateView.swift`** — corruption banner szövege
+    (`"\(count) item... could not be loaded"`) mindhárom helyen ugyanígy hardcoded volt a
+    meglévő `"%lld item%@ could not be loaded"` kulcs mellett → mindhárom javítva
+  - **`Views/Calculate/CalculateView.swift`** — `deadlineRemainingString` `"EXPIRED"`
+    hardcoded return → `String(localized: "EXPIRED")`
+  - **`Views/Countdown/ColorPickerSheet.swift`** — swatch accessibility label
+    (`"\(label) color"` / `"Color \(n)"`) sosem lokalizált → javítva + 2 új xcstrings kulcs
+    (`"%@ color"`, `"Color %d"`)
+  - **`Views/Snippets/SnippetEditSheet.swift`** — teljes fájl audit (korábban csak "Title"
+    volt ellenőrizve): `CopyButton` (`"Copy snippet"`/`"Snippet copied"`) és `headerButton`
+    (`"Done editing"`/`"Edit snippet"`/`"Delete snippet"`) String-típusú accessibility label-jei
+    nem lokalizáltak → javítva + 3 új xcstrings kulcs (`"Delete snippet"`, `"Edit snippet"`,
+    `"Snippet copied"`; `"Copy snippet"` már megvolt)
+  - **`Views/ContentView.swift`** (#9) — ellenőrizve, már korábban helyesen `LocalizedStringKey`
+  - **`Services/SunTimesService.swift`** (#5, nyitott kérdés) — tisztázva: `lastError` sosem
+    jelenik meg a UI-n (`SunPanel` csak `sunTimes`/`isLoading`-ot használ, generikus "NO DATA"
+    állapottal) — nincs teendő
+- [x] `Localizable.xcstrings` — JSON validálva (`python3 -c "import json..."` → OK)
+- [x] **`Views/Calculate/SunPanel.swift`** — felhasználói kérés: fix méret, scroll nélkül.
+  `ScrollView` + `maxHeight: 600` cap (G-3, korábbi védelem rövid képernyőkre) eltávolítva —
+  a tartalom véglegesített (5 fix szekció, nincs dinamikus lista növekedés), ezért sosem nő
+  túl nagyra. Helyette `.frame(width: 380, height: 560)` fix keret.
+- [x] Build: **SIKERES** (`xcodebuild -project countdownApp.xcodeproj -scheme countdownApp
+  -configuration Debug build` → BUILD SUCCEEDED)
+- [x] Git commit: `a0e9f17` (ENH-L10N-1 lezárás + SunPanel fix + a Session CA–CG felhalmozott,
+  addig nem commitolt munkája együtt)
+- [x] `docs/buglist.md` ENH-L10N-1 → ✅ KÉSZ
+
+**Következő session:** ENH-TOOLTIP-1 (felhasználói kérés) — `.help()` tooltip minden
+interaktív elemhez, `docs/buglist.md` ENH-TOOLTIP-1 szekció szerint.
+
+---
+
 ## Session CG — 2026-08-15 (BUG-KNOWNREGIONS-1 + tabnév-átírás — LEZÁRVA)
 
 ### Session CG — LEZÁRVA

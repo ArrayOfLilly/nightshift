@@ -43,6 +43,7 @@ struct ColorPickerSheet: View {
                 .buttonStyle(.plain)
                 .focusable(false)
                 .accessibilityLabel("Close")
+                .help("Close")
                 .padding(.top, 12)
                 .padding(.trailing, 14)
             }
@@ -116,5 +117,6 @@ struct ColorPickerSheet: View {
         .focusable(false)
         .accessibilityLabel(accessibilityText)
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+        .help(accessibilityText)
     }
 }

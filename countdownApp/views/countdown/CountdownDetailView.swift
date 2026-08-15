@@ -164,6 +164,7 @@ struct CountdownDetailView: View {
                     }
                         .buttonStyle(.plain)
                         .focusable(false)
+                        .help(showRemaining ? String(localized: "Switch to date display") : String(localized: "Switch to remaining time"))
 
                     HStack(spacing: 8) {
                         // ── Color picker — only for free (expired) slots ──
@@ -180,6 +181,7 @@ struct CountdownDetailView: View {
                                 .buttonStyle(.plain)
                                 .focusable(false)
                                 .accessibilityLabel("Pick color")
+                                .help(String(localized: "Pick color"))
                                 .sheet(isPresented: $showColorPicker) {
                                 ColorPickerSheet(selectedIndex: $item.accentColorIndex)
                             }
@@ -203,6 +205,7 @@ struct CountdownDetailView: View {
                             .buttonStyle(.plain)
                             .focusable(false)
                             .accessibilityLabel(item.soundEnabled ? "Mute sound" : "Unmute sound")
+                            .help(item.soundEnabled ? String(localized: "Mute sound") : String(localized: "Unmute sound"))
 
                         // ── Notes — all slot types (SLOT-NOTES) ───────────────
                         // note.text.fill + amber tint when non-empty; dim when empty.
@@ -221,6 +224,7 @@ struct CountdownDetailView: View {
                             .buttonStyle(.plain)
                             .focusable(false)
                             .accessibilityLabel(item.notes.isEmpty ? "Add notes" : "View notes")
+                            .help(item.notes.isEmpty ? String(localized: "Add notes") : String(localized: "View notes"))
                             .sheet(isPresented: $showNotes) {
                             NotesSheet(slotLabel: item.label, notes: $item.notes)
                         }
@@ -236,6 +240,7 @@ struct CountdownDetailView: View {
                         .buttonStyle(.plain)
                         .focusable(false)
                         .accessibilityLabel("Delete countdown")
+                        .help(String(localized: "Delete countdown"))
                         .alert("Delete \"\(item.label)\"?", isPresented: $showDeleteConfirm) {
                             Button("Delete", role: .destructive) { onDelete(); dismiss() }
                             Button("Cancel", role: .cancel) { }

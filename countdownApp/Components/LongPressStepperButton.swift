@@ -45,6 +45,7 @@ struct LongPressStepperButton: View {
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
             .accessibilityLabel(accessibilityLabel)
             .accessibilityAddTraits(.isButton)
+            .help(accessibilityLabel)
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in

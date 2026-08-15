@@ -332,6 +332,7 @@ struct CountdownView: View {
         .buttonStyle(.plain)
         .focusable(false)
         .padding(.vertical, 18)
+        .help(String(localized: "Add a new countdown"))
     }
 
     // MARK: - Persistence

@@ -88,7 +88,7 @@ struct SunPanel: View {
 
     private func morningSection(_ st: SunTimes) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            sectionHeader("☀️  MORNING")
+            sectionHeader(icon: "sun.min", title: "MORNING")
             timeRow(label: "First light", date: st.firstLight)
             timeRow(label: "Dawn",        date: st.dawn)
             timeRow(label: "Sunrise",     date: st.sunrise)
@@ -101,7 +101,7 @@ struct SunPanel: View {
 
     private func eveningSection(_ st: SunTimes) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            sectionHeader("🌆  EVENING")
+            sectionHeader(icon: "sun.min", title: "EVENING")
             timeRow(label: "Sunset",     date: st.sunset)
             timeRow(label: "Dusk",       date: st.dusk)
             timeRow(label: "Last light", date: st.lastLight)
@@ -114,7 +114,7 @@ struct SunPanel: View {
 
     private func daySection(_ st: SunTimes) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            sectionHeader("⚖️  DAY")
+            sectionHeader(icon: "sun.max.fill", title: "DAY")
             timeRow(label: "Solar noon", date: st.solarNoon)
             labelRow(label: "Day length", value: dayLengthString(st.dayLength))
         }
@@ -126,7 +126,7 @@ struct SunPanel: View {
 
     private func moonSection(_ st: SunTimes) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            sectionHeader("🌙  MOON")
+            sectionHeader(icon: "moon", title: "MOON")
             if let mr = st.moonrise {
                 timeRow(label: "Moonrise", date: mr)
             } else {
@@ -151,7 +151,7 @@ struct SunPanel: View {
 
     private func goldenBlueSection(_ st: SunTimes) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            sectionHeader("📷  GOLDEN / BLUE HOUR")
+            sectionHeader(icon: "camera.aperture", title: "GOLDEN / BLUE HOUR")
             windowRow(label: "Morning golden", window: st.goldenHourMorning)
             windowRow(label: "Morning blue",   window: st.blueHourMorning)
             windowRow(label: "Evening golden", window: st.goldenHourEvening)
@@ -189,11 +189,16 @@ struct SunPanel: View {
 
     // MARK: - Row helpers
 
-    private func sectionHeader(_ title: LocalizedStringKey) -> some View {
-        Text(title)
-            .font(AppTheme.alienLeague(11))
-            .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
-            .padding(.bottom, 2)
+    private func sectionHeader(icon: String, title: LocalizedStringKey) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Color.white.opacity(0.8))
+            Text(title)
+                .font(AppTheme.alienLeague(11))
+        }
+        .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
+        .padding(.bottom, 2)
     }
 
     /// Label + HH:mm time value, value in amber

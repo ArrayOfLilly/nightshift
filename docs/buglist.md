@@ -5,6 +5,50 @@ Prioritás-jelzés: 🔴 kritikus, 🟡 fontos, 🟢 nice-to-have
 
 ---
 
+## UX-SUNPANEL-ICONS: SunPanel szekciócímek ikonijai félrevezetőek 🟢
+
+A SunPanel négy szekciójának fejléce emoji-val jelölt napszakokat (Session CI-ben megoldva SF Symbols-szel):
+
+**Eredeti (félrevezető emoji-k):**
+- `⚖️  DAY` — balance/mérlege? (napra nem illeszkedik)
+- `🌆  EVENING` — city silhuette/napernyő? (este nem ezt szimbolizálja)
+
+**Megoldva SF Symbols-szel (Session CI) — egységes set:**
+- `sun.min` (MORNING) — félnap, napkelte után
+- `sun.min` (EVENING) — félnap, napnyugta körül
+- `sun.max.fill` (DAY) — teljes nap
+- `moon` (MOON) — egyszerű hold
+- `camera.aperture` (GOLDEN/BLUE HOUR) — meglevő fotoapertúra
+
+`SunPanel.swift` `sectionHeader` helper módosítva: `(icon: String, title: LocalizedStringKey)` paraméterek,
+`HStack` + `Image(systemName:)` + `Text()` kombináció.
+
+**Státusz:** ✅ KÉSZ (implementaóló session: CI)
+
+---
+
+## UX-SNIPPETS-PROJECT-AUTOCOMPLETE: Snippet project field nem szűr az existing projectek alapján 🟢
+
+A `SnippetEditSheet`-ben a Project mező egy `ProjectField` komponens (custom TextField + popover dropdown):
+- A mező tetején egy `TextField` (*User types here*) + `ChevronDown` gomb a popover-hez
+- A popover egy lista az összes `existingProjects`-ből — **korrigálva Session CI-ben** ✅
+
+Probléma (előtte): Ha pl. a meglévő projektek: `["AI Research", "Swift Dev", "Rust Utils"]`, és a felhasználó
+bekezd gépelni "swift"-et, a popover továbbra is mind a 3 projektet mutatja, nem csak az
+"Swift Dev"-et.
+
+**Megoldva (Session CI):** `ProjectField`-ben egy `filteredSuggestions` computed var:
+```swift
+private var filteredSuggestions: [String] {
+    text.isEmpty ? suggestions : suggestions.filter { $0.localizedCaseInsensitiveContains(text) }
+}
+```
+A popover `ForEach` a `suggestions` helyett `filteredSuggestions`-t iterálja — élő szajtás begépeléskor.
+
+**Státusz:** ✅ KÉSZ (implementaóló session: CI)
+
+---
+
 ## BUG-SNIPPEDITBEACHBALL-1: Meglévő snippet szerkesztésekor becsukás után beachballing 🔴 KRITIKUS
 
 Meglévő snippet szerkesztéskor, a szerkesztés után az ablak bezárása (X gomb, "Save and quit" választás) után az alkalmazás beachballing (spinning wait cursor) állapotba kerül, ami gyakorlatilag teljes lefagyást jelent — a felhasználónak kényszerített kilépésre kell lépnie.
@@ -198,13 +242,21 @@ A felhasználó felé javasolt megoldás (CSS `object-position` + `object-fit: c
 
 ---
 
-## ENH-L10N-1: Lokalizáció HU/EN 🟢
+## ENH-L10N-1: Lokalizáció HU/EN 🟢 ✅ KÉSZ
 
 Elkülönített locales és UI nyelv. iconKeeper mintájára. Kapcsolódik: ENH-SETTINGS-1 (Settings menü
 ahol a language/locale választható).
 
-**Audit LEZÁRVA** (BY + BZ session, teljes kódbejárás) — implementációra vár. Teljes, összesitett
-hiánylista:
+**LEZÁRVA (Session CH)** — a maradék #2/#3/#5/#6/#9 pontok a tényleges kódon átvizsgálva és javítva:
+- `AboutView.swift`, `CountdownView.swift`, `SnippetsView.swift`, `CalculateView.swift`: interpolált
+  stringek a meglévő xcstrings formátum-kulcsokra állítva
+- `ComponentStepper.swift`: valódi bug — `label: String` + `Text(label)` sosem lokalizált (a `String`
+  overload verbatim renderel), a YEAR/MON/DAY/HOUR/MIN kulcsok megvoltak, de nem futottak le soha
+- `ColorPickerSheet.swift`, `SnippetEditSheet.swift`: hiányzó accessibility label lokalizáció + 5 új
+  xcstrings kulcs (`%@ color`, `Color %d`, `Delete snippet`, `Edit snippet`, `Snippet copied`)
+- `ContentView.swift` (#9): ellenőrizve, már korábban helyesen `LocalizedStringKey`
+- `SunTimesService.swift` (#5): `lastError` sosem jelenik meg a UI-n — nincs teendő
+- Build: SIKERES (xcodebuild). Git commit: `a0e9f17`.
 
 ### 1) HU fordítás hiányzik xcstrings-ből (14 kulcs, EN megvan) — ✅ KÉSZ (Session CA)
 ~~"Snippets", "SNIPPETS", "Sun times unavailable", "Switch to date display",

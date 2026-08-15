@@ -39,6 +39,7 @@ struct CopyButton<Label: View>: View {
             .buttonStyle(.plain)
             .focusable(false)
             .accessibilityLabel(isCopied ? copiedAccessibilityLabel : defaultAccessibilityLabel)
+            .help(isCopied ? copiedAccessibilityLabel : defaultAccessibilityLabel)
     }
 
     private func performCopy() {
