@@ -1,3 +1,27 @@
+## Session CK — 2026-08-15 (ENH-TOOLTIP-1 lezárva — LEZÁRVA)
+
+### Session CK — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` elolvasva
+- [x] **Teljes audit**: minden érintett Swift fájl átnézve — a `.help()` modifier szinte mindenhol
+  már megvolt korábbi sessionokból (CH és előzők). Valódi hiányok:
+  - `ContentView.swift` `modeButton` — nem volt `.help()`
+  - `SnippetsView.swift` `snippetRow` edit button — nem volt `.help()`
+- [x] **`Localizable.xcstrings`** — 3 új kulcs beillesztve EN+HU-val:
+  - `"Switch to Calculate"` → `"Váltás a Kalkulációra"`
+  - `"Switch to Countdown"` → `"Váltás az Időzítőre"`
+  - `"Switch to Snippets"` → `"Váltás a Gyorsszövegekre"`
+- [x] **`Views/ContentView.swift`** — `modeButton`-ra `.help(String(localized: String.LocalizationValue("Switch to \(mode.rawValue)")))` hozzáadva; az interpolált string exact match az xcstrings kulcsokra
+- [x] **`Views/Snippets/SnippetsView.swift`** — `snippetRow` edit button-ra `.help(String(localized: "Edit snippet"))` hozzáadva (`"Edit snippet"` xcstrings kulcs már megvolt)
+- [x] Git commit `05c1460`: `ENH-TOOLTIP-1: modeButton .help() + snippetRow edit .help() + 3 xcstrings keys`
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` frissítve
+- [ ] Build: **FELHASZNÁLÓ FELADATA**
+
+**Megjegyzés:** az ENH-TOOLTIP-1 scope-ban felsorolt összes többi elem (CopyButton, NotesSheet, SnippetEditSheet, ColorPickerSheet, CalculateView gombok, CountdownDetailView gombok, CountdownRowView, SnippetsView plus/copy/project gombok, CountdownView add gomb) már mind rendelkezett `.help()`-pel korábbi sessionokból — a session audit ezt megerősítette.
+
+**Következő session:** egyeztetés alapján (BUG-SNIPPEDITBEACHBALL-1 megerősítése, ENH-DEVDOCS-1/2, BUG-MANUAL-1).
+
+---
+
 ## Session CI — 2026-08-15 (UX-SUNPANEL-ICONS SF Symbols + UX-SNIPPETS-PROJECT-AUTOCOMPLETE — LEZÁRVA)
 
 ### Session CI — LEZÁRVA

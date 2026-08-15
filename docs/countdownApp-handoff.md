@@ -31,7 +31,7 @@
 - **ENH-L10N-1** 🟢 — FOLYAMATBAN, szüneteltetve. Audit LEZÁRVA (BY+BZ+BU bővítés: #7 CalculateView, #8 SunPanel, #9 General). #1 (14 HU fordítás) commitolva `e6185ed`. Következő: #2 hiányzó xcstrings kulcsok
 - **ENH-SETTINGS-1** ✅ — KÉSZ, commitolva `e6185ed` (Session CB)
 - **ENH-SETTINGS-2** ✅ — KÉSZ, commitolva `e6185ed` (Session BU + CC)
-- **ENH-TOOLTIP-1** 🟢 — Tooltipek minden interaktív elemhez, dokumentálva Session BU-ban
+- **ENH-TOOLTIP-1** ✅ — KÉSZ (Session CK): modeButton + snippetRow edit `.help()` hozzáadva; 3 xcstrings kulcs; audit megerősítette hogy minden más elem már megvolt
 - **BUG-MANUAL-1** 🟡 — újranyitva (3 frissítési ok felhalmozódott: snippet save/dismiss logika,
   project delete, app név változás) — MINDIG UTOLSÓ, mert a screenshotok csak a végleges UI
   állapotot tükrözhetik

@@ -441,8 +441,10 @@ accessibility/discoverability pattern. Az aktuális kód sehol nem használ `.he
 - `ComponentStepper.swift`-ben a increment/decrement `LongPressStepperButton` hívásain belül
   kell elhelyezni — ott van a `unit` paraméter, ami az accessibility label alapja is
 
-**Státusz:** NYITOTT — dokumentálva, implementáció egy dedikált session-ben (ENH-L10N-1 után,
-mivel a tooltip szövegek is xcstrings kulcsok lesznek)
+**Státusz:** ✅ KÉSZ (Session CK, commit `05c1460`) — teljes audit elvégezve; az összes scope-beli
+elem rendelkezett `.help()`-pel (korábbi sessionokból), kivéve:
+- `ContentView.swift` `modeButton` → `.help()` hozzáadva, 3 új xcstrings kulcs (`Switch to Calculate/Countdown/Snippets`, HU fordításokkal)
+- `SnippetsView.swift` snippetRow edit button → `.help(String(localized: "Edit snippet"))` hozzáadva
 
 ---
 
