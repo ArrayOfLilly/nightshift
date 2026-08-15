@@ -210,7 +210,7 @@ struct CountdownView: View {
                 .foregroundStyle(AppTheme.background)
                 .font(.system(size: 14, weight: .semibold))
 
-            Text("\(corruptedFragments.count) item\(corruptedFragments.count == 1 ? "" : "s") could not be loaded")
+            Text(String(format: String(localized: "%lld item%@ could not be loaded"), corruptedFragments.count, corruptedFragments.count == 1 ? "" : "s"))
                 .font(AppTheme.alienLeague(13))
                 .foregroundStyle(AppTheme.background)
                 .frame(maxWidth: .infinity, alignment: .leading)

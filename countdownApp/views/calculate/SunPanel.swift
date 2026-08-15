@@ -19,24 +19,21 @@ struct SunPanel: View {
     let isLoading: Bool
 
     var body: some View {
-        // G-3: popover has no ScrollView, so on short screens (or when
-        // positioned near a screen edge) the content could be clipped by
-        // the system with no way to reach the rest. Capping maxHeight and
-        // scrolling keeps it fully reachable regardless of screen size.
-        ScrollView {
-            VStack(spacing: 0) {
-                sunIcon
-                if let st = sunTimes {
-                    dataContent(st)
-                } else if isLoading {
-                    loadingState
-                } else {
-                    noDataState
-                }
+        // FIXED SIZE (user request, Session CH): the panel's content is finalized
+        // (5 fixed sections, no dynamic list growth), so it never needs to scroll —
+        // a fixed frame replaces the old G-3 ScrollView + maxHeight cap.
+        VStack(spacing: 0) {
+            sunIcon
+            if let st = sunTimes {
+                dataContent(st)
+            } else if isLoading {
+                loadingState
+            } else {
+                noDataState
             }
-            .padding(.vertical, 20)
         }
-        .frame(minWidth: 360, maxHeight: 600)
+        .padding(.vertical, 20)
+        .frame(width: 380, height: 560)
         .background(
             LinearGradient(
                 stops: [
@@ -192,7 +189,7 @@ struct SunPanel: View {
 
     // MARK: - Row helpers
 
-    private func sectionHeader(_ title: String) -> some View {
+    private func sectionHeader(_ title: LocalizedStringKey) -> some View {
         Text(title)
             .font(AppTheme.alienLeague(11))
             .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
@@ -200,7 +197,7 @@ struct SunPanel: View {
     }
 
     /// Label + HH:mm time value, value in amber
-    private func timeRow(label: String, date: Date) -> some View {
+    private func timeRow(label: LocalizedStringKey, date: Date) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             Text(label)
                 .font(AppTheme.alienLeague(12))
@@ -213,7 +210,7 @@ struct SunPanel: View {
     }
 
     /// Label + arbitrary string value, value in amber
-    private func labelRow(label: String, value: String) -> some View {
+    private func labelRow(label: LocalizedStringKey, value: String) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             Text(label)
                 .font(AppTheme.alienLeague(12))
@@ -227,7 +224,7 @@ struct SunPanel: View {
     }
 
     /// HH:mm–HH:mm window row
-    private func windowRow(label: String, window: TimeWindow) -> some View {
+    private func windowRow(label: LocalizedStringKey, window: TimeWindow) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             Text(label)
                 .font(AppTheme.alienLeague(12))

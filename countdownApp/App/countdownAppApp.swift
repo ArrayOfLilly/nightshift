@@ -38,6 +38,11 @@ struct countdownAppApp: App {
     @AppStorage(AppKeys.fontSizeStep) private var fontSizeStep: Int = 0
 
     init() {
+        // Self-heal AppleLanguages: if the system-level override got lost (fresh app
+        // container after a rebuild, external reset, etc.) while preferredLanguage
+        // is still persisted, re-derive AppleLanguages from it here so the *next*
+        // launch shows the correct language again instead of silently staying English.
+        AppKeys.syncAppleLanguagesOverride()
         Self.registerBundledFonts()
     }
 

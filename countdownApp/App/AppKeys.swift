@@ -36,6 +36,24 @@ enum AppKeys {
     /// Applied via .dynamicTypeSize() on ContentView; no restart required.
     static let fontSizeStep      = "nightshift.fontSizeStep"
 
+    /// Writes (or clears) the macOS `AppleLanguages` override based on the currently
+    /// persisted `preferredLanguage` value. Called both reactively (SettingsView's
+    /// Picker `.onChange`) and unconditionally at every app launch (countdownAppApp.init)
+    /// so a lost/reset `AppleLanguages` entry — e.g. from a fresh app container after
+    /// a rebuild, or any other external reset — self-heals on the next launch instead
+    /// of silently reverting to English forever while the Language picker still shows
+    /// the user's actual choice (since `preferredLanguage` and `AppleLanguages` are two
+    /// separate UserDefaults keys that can otherwise drift out of sync).
+    static func syncAppleLanguagesOverride() {
+        let defaults = UserDefaults.standard
+        let lang = defaults.string(forKey: preferredLanguage) ?? ""
+        if lang.isEmpty {
+            defaults.removeObject(forKey: "AppleLanguages")
+        } else {
+            defaults.set([lang], forKey: "AppleLanguages")
+        }
+    }
+
     // MARK: - Recovery
     /// Accumulates raw JSON fragments of items that failed to decode.
     /// Each entry is a single JSON-object string representing one corrupt item.

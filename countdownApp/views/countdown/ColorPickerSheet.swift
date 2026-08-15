@@ -80,7 +80,9 @@ struct ColorPickerSheet: View {
         // child, so VoiceOver needs an explicit description. The "AUTO" swatch already
         // has a visible Text label that SwiftUI folds into the button's accessibility
         // label automatically, but we still normalize it here for a consistent voice.
-        let accessibilityText = label.map { "\($0) color" } ?? "Color \((index ?? 0) + 1)"
+        let accessibilityText: String = label.map {
+            String(format: String(localized: "%@ color"), $0)
+        } ?? String(format: String(localized: "Color %d"), (index ?? 0) + 1)
         Button {
             selectedIndex = index
             dismiss()

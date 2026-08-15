@@ -237,8 +237,8 @@ struct SnippetEditSheet: View {
                 HStack(spacing: 8) {
                     CopyButton(
                         value: snippetBody,
-                        defaultAccessibilityLabel: "Copy snippet",
-                        copiedAccessibilityLabel: "Snippet copied"
+                        defaultAccessibilityLabel: String(localized: "Copy snippet"),
+                        copiedAccessibilityLabel: String(localized: "Snippet copied")
                     ) { isCopied in
                         Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
                             .font(.system(size: 15, weight: .medium))
@@ -248,9 +248,9 @@ struct SnippetEditSheet: View {
                             .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                     headerButton(icon: isEditing ? "checkmark" : "pencil",
-                                 label: isEditing ? "Done editing" : "Edit snippet") { commitEdit() }
+                                 label: isEditing ? String(localized: "Done editing") : String(localized: "Edit snippet")) { commitEdit() }
                     if onDelete != nil {
-                        headerButton(icon: "trash", label: "Delete snippet") { showDeleteConfirm = true }
+                        headerButton(icon: "trash", label: String(localized: "Delete snippet")) { showDeleteConfirm = true }
                     }
                 }
                 Rectangle().fill(Color.white.opacity(AppTheme.alpha12)).frame(width: 1, height: 22).padding(.horizontal, 6)

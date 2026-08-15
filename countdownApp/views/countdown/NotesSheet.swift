@@ -97,8 +97,8 @@ struct NotesSheet: View {
             HStack(spacing: 8) {
                 CopyButton(
                     value: draft,
-                    defaultAccessibilityLabel: "Copy notes",
-                    copiedAccessibilityLabel: "Notes copied"
+                    defaultAccessibilityLabel: String(localized: "Copy notes"),
+                    copiedAccessibilityLabel: String(localized: "Notes copied")
                 ) { isCopied in
                     Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
                         .font(.system(size: 15, weight: .medium))
@@ -108,8 +108,8 @@ struct NotesSheet: View {
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                 }
                 headerButton(icon: isEditing ? "checkmark" : "pencil",
-                             label: isEditing ? "Done editing" : "Edit notes") { commitEdit() }
-                headerButton(icon: "trash", label: "Delete notes") { showDeleteConfirm = true }
+                             label: isEditing ? String(localized: "Done editing") : String(localized: "Edit notes")) { commitEdit() }
+                headerButton(icon: "trash", label: String(localized: "Delete notes")) { showDeleteConfirm = true }
             }
             Rectangle().fill(Color.white.opacity(AppTheme.alpha12)).frame(width: 1, height: 22).padding(.horizontal, 6)
             headerButton(icon: "xmark", label: "Close") { handleDismiss() }

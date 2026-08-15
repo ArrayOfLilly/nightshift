@@ -95,7 +95,7 @@ struct CalculateView: View {
                         get: { fromDate },
                         set: { fromInterval = snapToMinute($0).timeIntervalSince1970 }
                     ))
-                    nowButton(label: "RESET FROM NOW") {
+                    nowButton(label: String(localized: "RESET FROM NOW")) {
                         fromInterval = snapToMinute(Date()).timeIntervalSince1970
                     }
 
@@ -106,7 +106,7 @@ struct CalculateView: View {
                         get: { toDate },
                         set: { toInterval = snapToMinute($0).timeIntervalSince1970 }
                     ))
-                    nowButton(label: "RESET TO NOW") {
+                    nowButton(label: String(localized: "RESET TO NOW")) {
                         toInterval = snapToMinute(Date()).timeIntervalSince1970
                     }
 
@@ -228,7 +228,7 @@ struct CalculateView: View {
                 .foregroundStyle(AppTheme.background)
                 .font(.system(size: 14, weight: .semibold))
 
-            Text("\(corruptedFragments.count) item\(corruptedFragments.count == 1 ? "" : "s") could not be loaded")
+            Text(String(format: String(localized: "%lld item%@ could not be loaded"), corruptedFragments.count, corruptedFragments.count == 1 ? "" : "s"))
                 .font(AppTheme.alienLeague(13))
                 .foregroundStyle(AppTheme.background)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -547,7 +547,7 @@ struct CalculateView: View {
 
             // Body — name field + action buttons
             VStack(spacing: 16) {
-                TextField("Name...", text: $saveTitleDraft)
+                TextField(String(localized: "Name..."), text: $saveTitleDraft)
                     .textFieldStyle(.plain)
                     .font(AppTheme.alienLeague(15))
                     .foregroundStyle(AppTheme.background)
@@ -615,7 +615,7 @@ struct CalculateView: View {
 
     private var isFuture:    Bool         { toDate > fromDate }
     private var difference:  TimeInterval { abs(toDate.timeIntervalSince(fromDate)) }
-    private var resultLabel: String       { isFuture ? "Remaining time:" : "Elapsed time:" }
+    private var resultLabel: String       { isFuture ? String(localized: "Remaining time:") : String(localized: "Elapsed time:") }
 
     private struct TimePart { let quantity: String; let unit: String }
 
@@ -687,7 +687,7 @@ struct CalculateView: View {
     /// Returns "EXPIRED" for dates in the past.
     private func deadlineRemainingString(for date: Date) -> String {
         let now = Date()
-        guard date > now else { return "EXPIRED" }
+        guard date > now else { return String(localized: "EXPIRED") }
         let comps = cal.dateComponents(
             [.year, .month, .day, .hour, .minute],
             from: now, to: date
@@ -701,7 +701,7 @@ struct CalculateView: View {
         ]
         let nonZero = pairs.filter { $0.0 > 0 }
         let top = nonZero.prefix(2)
-        guard !top.isEmpty else { return "< 1M" }
+        guard !top.isEmpty else { return String(localized: "< 1M") }
         return top.map { "\($0.0)\($0.1)" }.joined(separator: " ")
     }
 }

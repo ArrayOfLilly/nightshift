@@ -33,7 +33,7 @@ struct CountdownRowView: View {
             HStack(alignment: .center, spacing: 10) {
 
                 HStack(spacing: 8) {
-                    Text(copyFeedback ? "COPIED" : (item.label.isEmpty ? "—" : item.label))
+                    Text(copyFeedback ? String(localized: "COPIED") : (item.label.isEmpty ? "—" : item.label))
                         .font(AppTheme.alienLeague(14))
                         .foregroundStyle(Color.white.opacity(copyFeedback ? 0.5 : 0.8))
                         .lineLimit(1)

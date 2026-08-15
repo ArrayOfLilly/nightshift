@@ -92,7 +92,7 @@ struct CountdownDetailView: View {
                                 .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha35))
                         }
                     } else {
-                        Text(item.label.isEmpty ? "Countdown" : item.label.uppercased())
+                        Text(item.label.isEmpty ? String(localized: "countdown.label.placeholder") : item.label.uppercased())
                             .font(AppTheme.alienLeagueBold(24))
                             .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha75))
                             .kerning(4)
@@ -105,8 +105,8 @@ struct CountdownDetailView: View {
 
                     CopyButton(
                         value: item.label.trimmingCharacters(in: .whitespaces),
-                        defaultAccessibilityLabel: "Copy label",
-                        copiedAccessibilityLabel: "Label copied"
+                        defaultAccessibilityLabel: String(localized: "Copy label"),
+                        copiedAccessibilityLabel: String(localized: "Label copied")
                     ) { isCopied in
                         Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
                             .font(.system(size: 16, weight: .medium))
@@ -301,7 +301,7 @@ struct CountdownDetailView: View {
         let w = maxWidth > 0 ? maxWidth : 280
         if showRemaining {
             let expired = item.isExpired(at: now)
-            Text(expired ? "EXPIRED" : item.remainingFormatted(at: now))
+            Text(expired ? String(localized: "EXPIRED") : item.remainingFormatted(at: now))
                 .font(AppTheme.alienLeagueBold(56))
                 .foregroundStyle(expired ? Color.red : AppTheme.timerText)
                 .monospacedDigit()

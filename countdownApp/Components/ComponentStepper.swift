@@ -19,9 +19,20 @@ struct ComponentStepper: View {
     var foregroundColor: Color = AppTheme.dark
     var backgroundColor: Color = AppTheme.dark.opacity(AppTheme.alpha12)
 
+    /// `unit` is passed as a lowercase xcstrings key ("year", "month", "day", "hour",
+    /// "minute") from call sites — localize it before interpolating into the
+    /// accessibility label so both the label and the unit itself are translated.
+    private var localizedUnit: String { String(localized: String.LocalizationValue(unit)) }
+
+    /// `label` is passed as an uppercase xcstrings key ("YEAR", "MON", "DAY", "HOUR",
+    /// "MIN") from call sites. `Text(_ content: String)` renders a plain `String` verbatim
+    /// (no xcstrings lookup) — only the `LocalizedStringKey` initializer localizes, so the
+    /// key must be resolved explicitly here for the HU translation to actually appear.
+    private var localizedLabel: String { String(localized: String.LocalizationValue(label)) }
+
     var body: some View {
         VStack(spacing: 4) {
-            Text(label)
+            Text(localizedLabel)
                 .font(AppTheme.alienLeague(10))
                 .foregroundStyle(foregroundColor.opacity(AppTheme.alpha60))
             LongPressStepperButton(
@@ -29,7 +40,7 @@ struct ComponentStepper: View {
                 action: onInc,
                 foregroundColor: foregroundColor,
                 backgroundColor: backgroundColor,
-                accessibilityLabel: "Increase \(unit)"
+                accessibilityLabel: String(localized: "Increase \(localizedUnit)")
             )
             Text(value)
                 .font(AppTheme.alienLeagueBold(15))
@@ -41,7 +52,7 @@ struct ComponentStepper: View {
                 action: onDec,
                 foregroundColor: foregroundColor,
                 backgroundColor: backgroundColor,
-                accessibilityLabel: "Decrease \(unit)"
+                accessibilityLabel: String(localized: "Decrease \(localizedUnit)")
             )
         }
         .frame(maxWidth: .infinity)

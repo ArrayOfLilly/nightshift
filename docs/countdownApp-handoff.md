@@ -53,8 +53,13 @@ alapján az is kiderült, hogy Largest lépésnél a módváltó fülek címei n
 ablak `minWidth`/`maxWidth` értékeit a mért fülcím-szélességhez igazítva.
 **Git commit: `e6185ed`** — Session CA + BU + CB + CC együtt commitolva (2026-08-15, Session BU session).
 
-**Következő session:** ENH-L10N-1 folytatása (#2 hiányzó xcstrings kulcsok felvétele,
-beleértve a #7/#8/#9 új tételeket) — vagy egyeztetés alapján más prioritás.
+**Session BV (2026-08-15) elvégezve:** ENH-L10N-1 #8 (SunPanel) LEZÁRVA — `SunPanel.swift`
+4 helper `String` → `LocalizedStringKey`; xcstrings +21 SunPanel kulcs (5 section header +
+16 row label). `"FROM"` hu: `KEZDÉS`, `"TO"` hu: `BEFEJEZÉS`.
+
+**Következő session:** ENH-L10N-1 maradék — #2 (egyéb hiányzó xcstrings kulcsok), #3 (kód-szintű
+hibák), #5 (`SunTimesService.swift`), #6 (`CalculateView.swift` maradék audit), #9 (`ContentView`
+General tab). Vagy egyeztetés alapján más prioritás.
 
 **ENH-L10N-1 folytatása mikorra marad** — ha visszaérünk rá: `docs/buglist.md` ENH-L10N-1
 szekció, #2 pont (eredeti 4 + új kb. 13 hiányzó kulcs xcstrings-be felvétele), majd #3

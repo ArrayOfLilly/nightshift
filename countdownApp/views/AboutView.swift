@@ -66,7 +66,7 @@ struct AboutView: View {
                 VStack(spacing: 4) {
                     Text("NightShift")
                         .font(.system(.title3, design: .rounded, weight: .bold))
-                    Text("Version \(version) (\(build))")
+                    Text(String(format: String(localized: "Version %@ (%@)"), version, build))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -112,9 +112,10 @@ struct AboutView: View {
     }
 
     @ViewBuilder
-    private func infoRow(label: String, value: String, action: @escaping () -> Void) -> some View {
+    private func infoRow(label: LocalizedStringKey, value: String, action: @escaping () -> Void) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(label.uppercased())
+            Text(label)
+                .textCase(.uppercase)
                 .font(.system(.caption2, weight: .bold))
                 .foregroundStyle(.secondary)
             Button(action: action) {

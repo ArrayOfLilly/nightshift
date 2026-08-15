@@ -51,8 +51,8 @@ private struct LanguageTab: View {
                         Text(lang.displayName).tag(lang.tag)
                     }
                 }
-                .onChange(of: preferredLanguage) { tag, _ in
-                    applyLanguageOverride(tag)
+                .onChange(of: preferredLanguage) { _, _ in
+                    AppKeys.syncAppleLanguagesOverride()
                 }
 
                 Picker("Date & Number Format", selection: $preferredLocale) {
@@ -79,14 +79,6 @@ private struct LanguageTab: View {
         .formStyle(.grouped)
         .padding(.vertical, 8)
         .frame(width: 440, height: restartNeeded ? 240 : 190)
-    }
-
-    private func applyLanguageOverride(_ tag: String) {
-        if tag.isEmpty {
-            UserDefaults.standard.removeObject(forKey: "AppleLanguages")
-        } else {
-            UserDefaults.standard.set([tag], forKey: "AppleLanguages")
-        }
     }
 
     private struct SupportedLanguage { let tag: String; let displayName: String }

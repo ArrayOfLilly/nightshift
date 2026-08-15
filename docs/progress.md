@@ -1,3 +1,172 @@
+## Session CG — 2026-08-15 (BUG-KNOWNREGIONS-1 + tabnév-átírás — LEZÁRVA)
+
+### Session CG — LEZÁRVA
+- [x] Felhasználói pontosítás: a Session CF-es `AppleLanguages`-elmélet téves nyomon volt —
+  a probléma nem "elveszett szinkronizáció", hanem hogy **soha, sehol** nem jelent meg
+  magyar szöveg, még az első sikeres futtatásnál sem
+- [x] **Root cause megtalálva**: `countdownApp.xcodeproj/project.pbxproj` — a projekt
+  `knownRegions` listája csak `en` és `Base`-t tartalmazta, a `hu` nem volt regisztrálva
+  támogatott régióként. Emiatt függetlenül attól, hogy az `AppleLanguages` mit tartalmaz
+  vagy a Localizable.xcstrings-ben milyen HU fordítások vannak, a rendszer soha nem is
+  próbálta meg a magyar lokalizációt használni, mert az app szintjén nem volt bejelentve,
+  hogy támogatja — ez az igazi (és elsődleges) oka annak, hogy a fordítások soha nem
+  jelentek meg, nem a Session CF-ben azonosított `AppleLanguages`-újraírási hiányosság
+  (az utóbbi valódi bug marad, csak nem ez volt a fő gyökérok)
+- [x] **`countdownApp.xcodeproj/project.pbxproj`** — `knownRegions` listához `hu` hozzáadva
+  (`en`, `hu`, `Base`)
+- [x] **Tabnév-átírás** (felhasználói visszajelzés: a jelenlegi fordítások mesterségesek,
+  senki nem mondaná így magyarul) — `Localizable.xcstrings`, HU értékek frissítve:
+  - `Calculate` → `Kalkuláció`, `CALCULATE` → `KALKULÁCIÓ`
+  - `Countdown` → `Időzítő`
+  - `Snippets` → `Gyorsszövegek`, `SNIPPETS` → `GYORSSZÖVEGEK`
+  (a `help.section.*` és `ACCOUNT COOLDOWN` kulcsok érintetlenek maradtak, más szöveg-
+  környezethez tartoznak)
+- [ ] **Xcode: Product > Clean Build Folder (Cmd+Shift+K)** ajánlott a `knownRegions`
+  változás után, majd teljes újraépítés + teljes quit/relaunch: **FELHASZNÁLÓ FELADATA**
+- [ ] Git commit: **FELHASZNÁLÓ FELADATA**
+
+**Következő session:** ha a `knownRegions` fix után is hiányzik a HU szöveg, további
+ vizsgálandó: Xcode Scheme > Run > Options > App Language beállítás (nem "System
+ Language"-re állítva?), illetve DerivedData teljes törlése. Ezután ENH-L10N-1
+ folytatása (#6, #5).
+
+---
+
+## Session CF — 2026-08-15 (BUG-APPLELANG-1: AppleLanguages elveszett szinkronizáció javítva — LEZÁRVA)
+
+### Session CF — LEZÁRVA
+- [x] Felhasználói jelzés: xcstrings JSON-javítás + Xcode build után a teljes UI angolra
+  esett vissza, holott a Nyelv beállításban továbbra is "Magyar" volt kiválasztva
+- [x] **Root cause**: `SettingsView.swift` `applyLanguageOverride(_:)` csak a Picker
+  `.onChange`-én belül írta ki a rendszerszintű `AppleLanguages` UserDefaults kulcsot —
+  induláskor soha nem szinkronizálódott újra a már elmentett `AppKeys.preferredLanguage`
+  érték alapján. Ha az `AppleLanguages` bármi miatt elveszett (pl. friss app-container
+  egy új Xcode build után), a Picker továbbra is helyesen "Magyar"-t mutatott (mert a
+  saját `preferredLanguage` kulcs megőrződött), de a tényleges UI néma csöndben angolra
+  esett vissza — és így is maradt, amíg valaki ténylegesen át nem váltotta a Pickert
+  (mert csak egy valódi value-change váltja ki az újraírást)
+- [x] **`App/AppKeys.swift`** — új megosztott `static func syncAppleLanguagesOverride()`
+  hozzáadva: a perziszált `preferredLanguage` alapján írja (vagy törli) az
+  `AppleLanguages` kulcsot
+- [x] **`App/countdownAppApp.swift`** — `init()`-ben `AppKeys.syncAppleLanguagesOverride()`
+  hívás bekerült a font-regisztráció elé, hogy minden induláskor öngyógyító módon
+  újra szinkronizálódjon (a jelenlegi futtatás még nem látja azonnal a hatást — az
+  `AppleLanguages` változás csak következő induláskor érvényesül, ahogy azt a
+  Settings-beli figyelmeztetés is jelzi —, de attól kezdve tartósan helyes marad,
+  még ha az `AppleLanguages` külső ok miatt újra elvész is)
+- [x] **`Views/Settings/SettingsView.swift`** — duplikált `applyLanguageOverride(_:)`
+  függvény eltávolítva, a Picker `.onChange` mostantól a megosztott
+  `AppKeys.syncAppleLanguagesOverride()`-ot hívja
+- [ ] Build + teszt (teljes quit + újraindítás, mert az `AppleLanguages` változás csak
+  akkor lép életbe): **FELHASZNÁLÓ FELADATA**
+- [ ] Git commit: **FELHASZNÁLÓ FELADATA**
+
+**Következő session:** ENH-L10N-1 folytatása (#6, #5) vagy egyeztetés alapján más
+ prioritás.
+
+---
+
+## Session CE — 2026-08-15 (ENH-L10N-1 #3: kód-szintű lokalizáció — LEZÁRVA)
+
+### Session CE — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md` elolvasva
+- [x] **`Views/ContentView.swift`** — `modeButton`-ban `Text(mode.rawValue)` →
+  `Text(LocalizedStringKey(mode.rawValue))`
+- [x] **`Views/Countdown/CountdownDetailView.swift`**:
+  - label-fallback → új `countdown.label.placeholder` xcstrings kulcs használva
+    (EN: `Countdown`, HU: `Megnevezés`) — a meglévő `"Countdown"` kulcs (`Visszaszámlálás`)
+    változatlanul a tab/screen cím számára marad foglalva
+  - `"EXPIRED"` → `String(localized: "EXPIRED")`
+  - `CopyButton` `"Copy label"`/`"Label copied"` → `String(localized:)`
+- [x] **`Views/Countdown/CountdownRowView.swift`** — `"COPIED"` → `String(localized: "COPIED")`
+- [x] **`Views/Calculate/CalculateView.swift`**:
+  - `"RESET FROM NOW"` / `"RESET TO NOW"` (nowButton label param) → `String(localized:)`
+  - `resultLabel` (`"Remaining time:"` / `"Elapsed time:"`) → `String(localized:)`
+  - `"< 1M"` → `String(localized: "< 1M")`
+  - `"Name..."` TextField placeholder → `String(localized: "Name...")`
+  - `"SAVE DEADLINE"` / `"SAVED DEADLINES"` — **változtatás nélkül marad**: már `Text()`
+    string-literalként szerepeltek, ami automatikusan az xcstrings-ből lokalizál
+    (`LocalizedStringKey` init) — nem követett explicit `String(localized:)` hívást igényelt
+- [x] **`Components/ComponentStepper.swift`** — `accessibilityLabel: "Increase \(unit)"` /
+  `"Decrease \(unit)"` → `String(localized: "Increase \(localizedUnit)")` mintára;
+  új privát `localizedUnit` computed var lokalizálja a `unit` paramétert
+  (`String.LocalizationValue(unit)` — xcstrings-ben már léteznek a `year`/`month`/`day`/
+  `hour`/`minute` kulcsok) mielőtt interpolálja
+- [x] **`Views/Countdown/NotesSheet.swift`** — 5 accessibility string (`"Copy notes"`,
+  `"Notes copied"`, `"Done editing"`, `"Edit notes"`, `"Delete notes"`) → `String(localized:)`
+  (a `"Close"` label érintetlen marad, nem volt a kérés része)
+- [x] **`Views/AboutView.swift`** — `infoRow` függvény `label` paramétere `String` →
+  `LocalizedStringKey`; `Text(label.uppercased())` → `Text(label).textCase(.uppercase)`
+  (a `.uppercased()` string-metódus nem alkalmazható `LocalizedStringKey`-re, ezért
+  SwiftUI naiv `.textCase(.uppercase)` modifier váltotta ki) — a hívási oldalon
+  (`"Developer"`, `"Images"`) nem kellett változtatni, a string literal automatikusan a
+  megfelelő (LocalizedStringKey) overloadra illik
+- [x] **`Views/Snippets/SnippetsView.swift`** — `Text(snippet.title.isEmpty ? "Untitled" : ...)` →
+  `Text(snippet.title.isEmpty ? String(localized: "Untitled") : snippet.title)`
+- [x] **`Localizable.xcstrings`** — új `countdown.label.placeholder` kulcs beillesztve
+  (EN: `Countdown`, HU: `Megnevezés`), a meglévő `"Countdown"` kulcs után
+- [ ] Build + JSON validáció: **FELHASZNÁLÓ FELADATA**
+- [ ] Git commit: **FELHASZNÁLÓ FELADATA**
+
+**Következő session:** ENH-L10N-1 folytatása — #6 (`CalculateView.swift` +
+`SnippetEditSheet.swift` maradék audit) és #5 (`SunTimesService.swift` nyitott kérdés),
+vagy egyeztetés alapján más prioritás (ENH-DEVDOCS-2, BUG-MANUAL-1).
+
+---
+
+## Session CD — 2026-08-15 (ENH-L10N-1 #2: xcstrings kulcsok + HU fordítások — LEZÁRVA)
+
+### Session CD — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` elolvasva
+- [x] **`Views/Snippets/SnippetsView.swift`** — `deleteProjectMessage` szövegjavítás:
+  - régi: `"This will permanently delete all \(count) snippet\(count == 1 ? "" : "s") in \"\(projectToDelete)\"."`
+  - új: `String(format: String(localized: "All snippets in \"%@\" will be moved to General."), projectToDelete)`
+  - ok: a `deleteProject()` függvény `updated.project = "General"` mozgat, NEM töröl — a régi szöveg félrevezető volt
+- [x] **`Localizable.xcstrings`** — 12 meglévő Settings kulcshoz HU fordítás hozzáadva:
+  `Adjusts text size throughout the app. Takes effect immediately.` → `Beállítja az app szövegméretét. Azonnal érvényes.`
+  `Appearance` → `Megjelenés`
+  `Default` → `Alapértelmezett`
+  `Font Size` → `Betűméret`
+  `Interface Language` → `Felületi nyelv`
+  `Language` → `Nyelv`
+  `Large` → `Nagy`
+  `Larger` → `Nagyobb`
+  `Largest` → `Legnagyobb`
+  `Restart NightShift to apply language changes.` → `A nyelvi módosítások alkalmazásához indítsd újra a NightShiftet.`
+  `System Default` → `Rendszer alapértelmezett`
+  `Date & Number Format` → `Dátum- és számformátum`
+- [x] **`Localizable.xcstrings`** — `Name...` HU frissítve: `Név...` → `Megnevezés...`
+- [x] **`Localizable.xcstrings`** — 28 teljesen új kulcs beillesztve EN+HU-val:
+  `< 1M` (EN+HU: `< 1MIN`), `All snippets in "%@" will be moved to General.` (HU: `A(z) „%1$@" összes snippetje az Általánosba kerül.`),
+  `COPIED`→`MÁSOLVA`, `Copy label`→`Felirat másolása`, `Copy notes`→`Másolás`,
+  `DAY`→`NAP`, `day`→`nap`, `Delete notes`→`Törlés`, `Developer`→`Fejlesztő`,
+  `Done editing`→`Kész`, `Edit notes`→`Szerkesztés`, `Elapsed time:`→`Eltelt idő:`,
+  `EXPIRED`→`LEJÁRT`, `HOUR`→`ÓRA`, `hour`→`óra`, `Images`→`Képek`,
+  `Label copied`→`Felirat másolva`, `MIN`→`MIN`, `minute`→`perc`,
+  `MON`→`HÓ`, `month`→`hónap`, `Notes copied`→`Másolva`,
+  `Remaining time:`→`Hátralévő idő:`, `RESET FROM NOW`→`MOSTANTÓL`,
+  `RESET TO NOW`→`MOSTANÁIG`, `Untitled`→`Névtelen`,
+  `YEAR`→`ÉV`, `year`→`év`
+- [ ] `Countdown` label-fallback kulcs (CountdownDetailView): HU döntés `Megnevezés` — de a meglévő
+  `"Countdown"` kulcs (`Visszaszámlálás`) már foglalt a tab/screen cím számára. Megoldás: új kulcs
+  kell (pl. `"Countdown label placeholder"`), de ez csak a #3 kód-szintű változtatással együtt értelmes
+  — **KÖVETKEZŐ SESSION feladata** (CalculateView + CountdownDetailView kód-szintű lokalizáció)
+- [ ] Build + JSON validáció: **FELHASZNÁLÓ FELADATA** (Xcode megnyitásakor automatikusan rendezi a kulcsokat)
+- [ ] Git commit: **FELHASZNÁLÓ FELADATA**
+
+**Következő session:** ENH-L10N-1 #3 — kód-szintű javítások:
+- `ContentView.swift`: `Text(mode.rawValue)` → `Text(LocalizedStringKey(mode.rawValue))`
+- `CountdownDetailView.swift`: `"Countdown"` label fallback → új kulcs + HU `Megnevezés`
+- `CountdownRowView.swift`: `"COPIED"` hardcoded → `String(localized: "COPIED")`
+- `CountdownDetailView.swift`: `"EXPIRED"` hardcoded → `String(localized: "EXPIRED")`
+- `CalculateView.swift`: 7 hardcoded string (`RESET FROM NOW`/`TO`, `Remaining time:`, `Elapsed time:`, `SAVE DEADLINE`, `SAVED DEADLINES`, `< 1M`, `Name...`) → `String(localized:)` / `LocalizedStringKey`
+- `ComponentStepper.swift`: `accessibilityLabel: "Increase \(unit)"` → `String(localized:)` format
+- `NotesSheet.swift`: 5 accessibility string → `String(localized:)`
+- `AboutView.swift`: `"Developer"` / `"Images"` infoRow label-ek → `LocalizedStringKey`
+- `SnippetsView.swift`: `"Untitled"` → `String(localized: "Untitled")`
+
+---
+
 ## Session CC — 2026-08-15 (ENH-SETTINGS-2 dinamikus átméretezés folytatása — LEZÁRVA)
 
 ### Session CC — LEZÁRVA
@@ -195,6 +364,23 @@ removed., Title, Unsaved changes, Version %@ (%@), You have unsaved changes. Wha
 ### Session BT — LEZÁRVA
 - [x] `Components/HelpScreenshot.swift` teljesen átírva — focusRect/Canvas/NSImage crop logika eltávolítva; `Image.resizable().scaledToFit().frame(width: maxWidth)`
 - [x] `Views/Help/HelpView.swift` módosítva — focusRect binding törölve, `.padding(.vertical, 10)` a screenshot-hoz
+- [ ] Build + git commit: **FELHASZNÁLÓ FELADATA**
+
+---
+
+## Session BV — 2026-08-15 (ENH-L10N-1: SunPanel lokalizáció + FROM/TO fordítás — LEZÁRVA)
+
+### Session BV — LEZÁRVA
+- [x] `Views/Calculate/SunPanel.swift`: 4 helper szignatúra `String` → `LocalizedStringKey`
+  (`sectionHeader`, `timeRow`, `labelRow`, `windowRow`) — `Text(stringVar)` eddig verbatim
+  futott, most lokalizál
+- [x] `Localizable.xcstrings`: 21 új SunPanel kulcs hozzáadva (5 section header emoji-val:
+  `☀️  MORNING`/`🌆  EVENING`/`⚖️  DAY`/`🌙  MOON`/`📷  GOLDEN / BLUE HOUR`;
+  16 row label: `Dawn`/`Dusk`/`First light`/`Last light`/`Sunrise`/`Sunset`/`Solar noon`/
+  `Day length`/`Moonrise`/`Moonset`/`Phase`/`Illumination`/`Morning golden`/`Morning blue`/
+  `Evening golden`/`Evening blue`) — mind hu-ra lefordítva
+- [x] `Localizable.xcstrings`: `"FROM"` hu fordítás `-TÓL` → `KEZDÉS`; `"TO"` hu fordítás
+  `-IG` → `BEFEJEZÉS`; mindkét entry kapott comment-et
 - [ ] Build + git commit: **FELHASZNÁLÓ FELADATA**
 
 ---

@@ -94,7 +94,7 @@ struct ContentView: View {
         Button {
             selectedMode = mode
         } label: {
-            Text(mode.rawValue)
+            Text(LocalizedStringKey(mode.rawValue))
                 .font(AppTheme.alienLeagueBold(20))
                 .foregroundStyle(Color.white)
                 .opacity(selected ? 1.0 : AppTheme.alpha50)

@@ -42,8 +42,7 @@ struct SnippetsView: View {
     @State private var corruptedFragments: [String] = []
 
     private var deleteProjectMessage: String {
-        let count = snippets.filter { $0.project == projectToDelete }.count
-        return "This will permanently delete all \(count) snippet\(count == 1 ? "" : "s") in \"\(projectToDelete)\"."
+        String(format: String(localized: "All snippets in \"%@\" will be moved to General."), projectToDelete)
     }
 
     private var projectKeys: [String] {
@@ -141,7 +140,7 @@ struct SnippetsView: View {
                 .foregroundStyle(AppTheme.background)
                 .font(.system(size: 14, weight: .semibold))
 
-            Text("\(corruptedFragments.count) item\(corruptedFragments.count == 1 ? "" : "s") could not be loaded")
+            Text(String(format: String(localized: "%lld item%@ could not be loaded"), corruptedFragments.count, corruptedFragments.count == 1 ? "" : "s"))
                 .font(AppTheme.alienLeague(13))
                 .foregroundStyle(AppTheme.background)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -308,7 +307,7 @@ struct SnippetsView: View {
             // Tap area → edit sheet (store ID only; sheet resolves fresh Snippet from state)
             Button { editTarget = EditTarget(id: snippet.id) } label: {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(snippet.title.isEmpty ? "Untitled" : snippet.title)
+                    Text(snippet.title.isEmpty ? String(localized: "Untitled") : snippet.title)
                         .font(AppTheme.alienLeague(14))
                         .foregroundStyle(Color.white.opacity(AppTheme.alpha90))
                         .lineLimit(1)
