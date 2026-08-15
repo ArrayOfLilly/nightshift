@@ -28,9 +28,9 @@
 - **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik
 - **ENH-DEVDOCS-2** 🟡 — README + install.md, projektnév egyeztetés
 - **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása (lokalizáció, Settings; About már kész)
-- **ENH-L10N-1** 🟢 — FOLYAMATBAN, szüneteltetve. Audit LEZÁRVA (BY+BZ+BU bővítés: #7 CalculateView, #8 SunPanel, #9 General). #1 (14 HU fordítás) beírva xcstrings-be Session CA-ban, de **még build+teszt+commit nélkül**
-- **ENH-SETTINGS-1** ✅ — KÉSZ (Session CB) — build+teszt+commit felhasználó feladata
-- **ENH-SETTINGS-2** ✅ — KÉSZ (Session BU) — build+teszt+commit felhasználó feladata
+- **ENH-L10N-1** 🟢 — FOLYAMATBAN, szüneteltetve. Audit LEZÁRVA (BY+BZ+BU bővítés: #7 CalculateView, #8 SunPanel, #9 General). #1 (14 HU fordítás) commitolva `e6185ed`. Következő: #2 hiányzó xcstrings kulcsok
+- **ENH-SETTINGS-1** ✅ — KÉSZ, commitolva `e6185ed` (Session CB)
+- **ENH-SETTINGS-2** ✅ — KÉSZ, commitolva `e6185ed` (Session BU + CC)
 - **ENH-TOOLTIP-1** 🟢 — Tooltipek minden interaktív elemhez, dokumentálva Session BU-ban
 - **BUG-MANUAL-1** 🟡 — újranyitva (3 frissítési ok felhalmozódott: snippet save/dismiss logika,
   project delete, app név változás) — MINDIG UTOLSÓ, mert a screenshotok csak a végleges UI
@@ -51,7 +51,7 @@ nézetbe bekerült egy saját `@AppStorage(AppKeys.fontSizeStep)` subscription (
 alapján az is kiderült, hogy Largest lépésnél a módváltó fülek címei nem fértek ki az ablakban —
 `ContentView.swift` mostantól `PreferenceKey`-alapú élő méréssel dinamikusan szélesíti az
 ablak `minWidth`/`maxWidth` értékeit a mért fülcím-szélességhez igazítva.
-**Git commit még nincs** — felhasználó feladata build+teszt után (Session BU + CC együtt commitolható).
+**Git commit: `e6185ed`** — Session CA + BU + CB + CC együtt commitolva (2026-08-15, Session BU session).
 
 **Következő session:** ENH-L10N-1 folytatása (#2 hiányzó xcstrings kulcsok felvétele,
 beleértve a #7/#8/#9 új tételeket) — vagy egyeztetés alapján más prioritás.
@@ -60,11 +60,6 @@ beleértve a #7/#8/#9 új tételeket) — vagy egyeztetés alapján más priorit
 szekció, #2 pont (eredeti 4 + új kb. 13 hiányzó kulcs xcstrings-be felvétele), majd #3
 (4 kód-szintű hiba), majd #6 (`CalculateView.swift` + `SnippetEditSheet.swift` maradék
 audit), plusz #5 (`SunTimesService.swift` nyitott kérdés).
-
-**FONTOS — függőben lévő változás**: a `countdownApp/Localizable.xcstrings`-ben Session
-CA-ban beírt 14 HU fordítás **még nincs commitolva** — a felhasználó workflow-ja szerint
-ő tesztel Xcode-ban, és utána szól a commithoz. Ha a következő session eléri, hogy még
-nincs commitolva, ne felülírja/ne nyúljon hozzá, hanem előbb kérdezzen rá.
 
 - **ENH-DEVDOCS-2** 🟡 — README + install.md (Distribution csomag); projektnév egyeztetés
 - **BUG-MANUAL-1** 🟡 — manual frissítés (snippet save/dismiss logika, project delete, app név)

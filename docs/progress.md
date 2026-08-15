@@ -33,13 +33,8 @@ nem követte a betűméretet.
   `[0, 20, 45, 80]` jellegű lépésenkénti konstans) választottam, hanem élő mérést — ez akár a
   jelenlegi angol címkékre, akár a későbbi HU lokalizációra (ENH-L10N-1 #9, ahol a magyar
   címkék hossza más lesz) automatikusan helyes marad, nem kell kézzel újrahangolni
-- [ ] Build + vizuális ellenőrzés (Settings-ben betűméret váltás → Calculate/Countdown/Snippets fülön
-  élőben nő-e a szöveg, fülváltás nélkül, ILLETVE Largest-nél az ablak szélesedik-e, hogy a
-  fülcímek ne vágódjanak le): **FELHASZNÁLÓ FELADATA**
-- [ ] Git commit: **FELHASZNÁLÓ FELADATA**
-  (javasolt üzenet: `ENH-SETTINGS-2: propagate fontSizeStep subscription to CalculateView/
-  CountdownView/SnippetsView for live font-size updates; grow main window width dynamically
-  so the mode switcher labels never clip at larger font-size steps`)
+- [x] Build + vizuális ellenőrzés: OK
+- [x] Git commit: `e6185ed` (Session BU + CB + CC + CA együtt)
 
 **Technikai megjegyzés (font subscription):** a `ContentView`-ban lévő `switch selectedMode {
 case .calculate: CalculateView() ... }` konstrukcióban a paraméter nélküli gyerek view-ok
@@ -88,9 +83,8 @@ commitolva — ellenőrizni a felhasználónál session elején.
   hozzáadva `.defaultSize(width: 480, height: 360)` után a többi scene előtt
 - [ ] Xcode: `Views/Settings/SettingsView.swift` hozzáadása a targethez (synchronized group
   esetén automatikus, de ellenőrizni kell)
-- [ ] Build + vizuális ellenőrzés: **FELHASZNÁLÓ FELADATA**
-- [ ] Git commit: **FELHASZNÁLÓ FELADATA**
-  (javasolt üzenet: `ENH-SETTINGS-1: Settings window — Interface Language + Date & Number Format pickers`)
+- [x] Build + vizuális ellenőrzés: OK
+- [x] Git commit: `e6185ed` (Session BU + CB + CC + CA együtt)
 
 **Technikai megjegyzések:**
 - A natív `Settings { }` scene automatikusan adja az App menu → Preferences (Cmd+,) menüpontot —
@@ -121,8 +115,8 @@ Switch to remaining time, Tap + to add a snippet., Tap to start writing., This c
 This clears the notes for this slot. This cannot be undone., This deadline will be permanently
 removed., Title, Unsaved changes, Version %@ (%@), You have unsaved changes. What would you like to do?
 - [x] Python szkripttel ellenőrizve: JSON valid, mind a 14 kulcsnak van HU bejegyzése
-- [ ] Build + Xcode-os ellenőrzés: **FELHASZNÁLÓ FELADATA**
-- [ ] Git commit: **FELHASZNÁLÓ FELADATA**
+- [x] Build + Xcode-os ellenőrzés: OK
+- [x] Git commit: `e6185ed` (Session BU + CB + CC + CA együtt)
 - [x] `docs/buglist.md` ENH-L10N-1 #1 pontja lezárva
 - [x] `docs/progress.md` frissítve
 
