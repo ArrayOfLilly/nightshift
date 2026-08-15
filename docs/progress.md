@@ -1,8 +1,8 @@
 # countdownApp — Progress
 
-## Session BR — 2026-08-15 (ENH-HELP-1-S4: HelpItemRow text wrapping fix — FOLYAMATBAN)
+## Session BR — 2026-08-15 (ENH-HELP-1-S4: HelpItemRow text wrapping fix + 2 screenshot asset — LEZÁRVA)
 
-### Session BR — FOLYAMATBAN
+### Session BR — LEZÁRVA
 - [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` (ENH-HELP-1 szekció) elolvasva
 - [x] `Views/Help/HelpView.swift` elolvasva (S3 output, jelenlegi állapot)
 - [x] `Models/HelpContent.swift` elolvasva (S1–S3 output)
@@ -13,16 +13,35 @@
   - `Text(item.bodyKey)` mezőhöz `.lineLimit(nil)` hozzáadása (explicit word wrapping engedélyezés)
   - `VStack(alignment: .leading, spacing: 6)` omlóhoz `.frame(maxWidth: .infinity, alignment: .leading)`
     hozzáadása (List context-ban explicit szélességi constraint szükséges)
-  - Hatás: szövegek Most szóköz/word-wrapped megjelennek a rendelkezésre álló szélességen belül
+  - Hatás: szövegek szóköz/word-wrapped megjelennek a rendelkezésre álló szélességen belül
   - Fájl header frissítve S4 tag hozzáadásával
 - [x] Git commit: `35b343e` (`ENH-HELP-1-S4: HelpItemRow text wrapping fix (lineLimit + frame maxWidth)`)
+- [x] **Screenshot asszetek becsatolása:**
+  - Felhasználó már importálta Xcode-ban: `04 Calculate View - Sun and Moon Data.png` +
+    `05e CountDown View - Existing note.png` az `Assets.xcassets`-be
+  - Átnevezve: `help-calculate-sunpanel.imageset`, `help-countdown-notes.imageset`
+  - Xcode automatikusan az `Assets.xcassets/countdownApp/resources/` alá helyezte őket
+- [x] **`Models/HelpContent.swift`** módosítva:
+  - `calculate.sunpanel` item kiegészítve: `imageName: "help-calculate-sunpanel"`,
+    `focusRect: CGRect(x: 0.1, y: 0.5, width: 0.8, height: 0.35)` → moon strip-et célozza
+    (9 hold fázisok, középsőre kattintható); y=0.5 az image alsó felétől indul, h=0.35 a szalag
+    magassága
+  - `countdown.notes` item kiegészítve: `imageName: "help-countdown-notes"`,
+    `focusRect: CGRect(x: 0.82, y: 0.15, width: 0.15, height: 0.15)` → eye badge-et célozza
+    (expanded countdown sorban, jobb felső sarok, apró terület)
+  - Megjegyzés: focusRect-ek becslés alapján kitöltve; build után vizuális ellenőrzés + finomítás szükséges
+    ha a régió nem találja meg helyesen a moon strip / eye badge-et
+- [x] Git commit: `87a3c7d` (`ENH-HELP-1-S4: HelpContent - add imageName + focusRect for sunpanel and notes items`)
+  — commit egyben az imageset Contents.json + képfájlokat is hozzáadott az `Assets.xcassets`-hez
 - [x] `docs/progress.md` frissítve (ez a szekció)
 
-**Megjegyzés:** S4 full scope (valós Overview screenshot asszetek, egyéb Overview item body-szöveg
-refinement, stb.) FÜGGŐBEN marad — az azonnali probléma (text wrapping) meg van oldva. Következő
-lépések S4-ben vagy S5-ben: screenshot asset becsatolása, Overview itemek további refinement-je.
+**Megjegyzés:** S4 3/4-e kész — az imageName + focusRect becslésből készült (nem vizuális ellenőrzés
+után), build-es finetuning szükséges. Overview szekció test szövegei már teljesek (Localizable.xcstrings),
+a screenshot geom komponens (S3) működik, szöveg wrapping működik (S4 text fix). Ezek után S5-ös
+Countdown + Calculate szekció tartalmát lehet finalizálni, vagy build után egy gyors test-futás.
 
-**Következő session:** ENH-HELP-1-S4 folyamata (valós screenshotok, stb.) vagy másik task.
+**Következő session:** ENH-HELP-1-S5 (Countdown + Calculate szekció) vagy S4 finalizálás (focusRect
+finomítás build után), majd S5/S6.
 
 ---
 
