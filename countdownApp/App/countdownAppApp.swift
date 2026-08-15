@@ -35,6 +35,7 @@ struct countdownAppApp: App {
 
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var sunService = SunTimesService()
+    @AppStorage(AppKeys.fontSizeStep) private var fontSizeStep: Int = 0
 
     init() {
         Self.registerBundledFonts()
@@ -44,6 +45,7 @@ struct countdownAppApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(sunService)
+                .dynamicTypeSize(fontSizeStep.asDynamicTypeSize)
         }
         .windowResizability(.contentSize)
         .commands {
@@ -64,6 +66,12 @@ struct countdownAppApp: App {
             }
             #endif
         }
+
+        // ENH-SETTINGS-1: Preferences window (App menu → Preferences, Cmd+,)
+        Settings {
+            SettingsView()
+        }
+        .defaultSize(width: 440, height: 260)
 
         // ENH-ABOUT-1: custom About panel (App menu → About NightShift)
         WindowGroup(id: AboutWindowID.id) {
@@ -99,6 +107,22 @@ struct countdownAppApp: App {
                     print("⚠️ countdownApp: failed to register \(name).ttf — \(underlying)")
                 }
             }
+        }
+    }
+}
+
+// MARK: - DynamicTypeSize helper
+
+private extension Int {
+    /// Maps the stored font-size step (0–3) to a SwiftUI DynamicTypeSize.
+    /// Only semantic fonts (.body, .headline, etc.) respond to this;
+    /// Font.custom() calls with explicit sizes remain unchanged — intentional.
+    var asDynamicTypeSize: DynamicTypeSize {
+        switch self {
+        case 1:  return .xLarge
+        case 2:  return .xxLarge
+        case 3:  return .xxxLarge
+        default: return .large
         }
     }
 }

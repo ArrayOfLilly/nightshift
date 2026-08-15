@@ -132,11 +132,24 @@ enum AppTheme {
     // NOTE: If text appears in system font, verify the PostScript name in Font Book.
     // Open a .ttf with Font Book → Info tab → PostScript name.
 
+    /// Scale factors for each font-size step (0–3).
+    /// Step 0 = 1.0 (no scaling), steps 1–3 increase by ~15% each.
+    private static let fontScaleFactors: [CGFloat] = [1.0, 1.15, 1.30, 1.45]
+
+    /// Current scale factor read from UserDefaults on every call.
+    /// Safe because SwiftUI re-evaluates body (and thus all Font calls) whenever
+    /// the @AppStorage(fontSizeStep) in countdownAppApp changes.
+    static var fontScale: CGFloat {
+        let step = UserDefaults.standard.integer(forKey: "nightshift.fontSizeStep")
+        let clamped = max(0, min(step, fontScaleFactors.count - 1))
+        return fontScaleFactors[clamped]
+    }
+
     static func alienLeague(_ size: CGFloat) -> Font {
-        Font.custom("Alien League", size: size)
+        Font.custom("Alien League", size: size * fontScale)
     }
 
     static func alienLeagueBold(_ size: CGFloat) -> Font {
-        Font.custom("Alien League Bold", size: size)
+        Font.custom("Alien League Bold", size: size * fontScale)
     }
 }

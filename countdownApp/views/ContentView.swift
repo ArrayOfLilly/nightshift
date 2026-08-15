@@ -32,6 +32,15 @@ struct ContentView: View {
     }
 
     @State private var selectedMode: Mode = .countdown
+    @AppStorage(AppKeys.fontSizeStep) private var fontSizeStep: Int = 0
+
+    // ENH-SETTINGS-2 window-width fix: natural (unclamped) width of the mode switcher row,
+    // measured live via ModeSwitcherWidthKey below. At larger font-size steps the switcher
+    // labels grow wider than the base windowMinWidth, so this feeds back into the window's
+    // frame instead of a hardcoded per-step pixel table — it also stays correct automatically
+    // if the labels are ever localized (ENH-L10N-1 #9), since Hungarian labels are a different
+    // length than the English ones.
+    @State private var modeSwitcherWidth: CGFloat = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -44,6 +53,16 @@ struct ContentView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
+            // .fixedSize forces this row to always report its true intrinsic width to the
+            // GeometryReader below, even on a render pass where the window is still narrower
+            // than the content wants (e.g. right after switching to a larger font-size step,
+            // before the .frame(minWidth:) below has caught up).
+            .fixedSize(horizontal: true, vertical: false)
+            .background(
+                GeometryReader { geo in
+                    Color.clear.preference(key: ModeSwitcherWidthKey.self, value: geo.size.width)
+                }
+            )
 
             Divider()
 
@@ -57,7 +76,13 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(minWidth: AppTheme.windowMinWidth, maxWidth: AppTheme.windowMaxWidth)
+        .onPreferenceChange(ModeSwitcherWidthKey.self) { modeSwitcherWidth = $0 }
+        .frame(
+            // +40pt slack above the measured switcher width so the window stays freely
+            // resizable even when modeSwitcherWidth alone would otherwise pin min == max.
+            minWidth: max(AppTheme.windowMinWidth, modeSwitcherWidth),
+            maxWidth: max(AppTheme.windowMaxWidth, modeSwitcherWidth + 40)
+        )
     }
 
     // MARK: - Mode button
@@ -84,6 +109,19 @@ struct ContentView: View {
         .buttonStyle(.plain)
         .focusable(false)
         .accessibilityLabel(mode.rawValue)
+    }
+}
+
+// MARK: - Mode switcher width measurement
+
+/// Reports the natural (unclamped) width of the mode switcher row via a PreferenceKey, so
+/// ContentView's window frame can grow at larger font-size steps (ENH-SETTINGS-2) instead of
+/// clipping the Calculate/Countdown/Snippets labels. `reduce` keeps the largest reported value
+/// in case of multiple contributors (not expected here, but keeps the key well-formed).
+private struct ModeSwitcherWidthKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
     }
 }
 

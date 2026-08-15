@@ -5,54 +5,61 @@
 //
 //  Centralised static DateFormatter instances.
 //
-//  LOCALIZATION NOTE (deferred):
-//  The app currently targets a single display language (English) with the user's
-//  system locale for date input. Future localization will require at minimum two
-//  formatter variants: one for display strings (English labels) and one for
-//  date/time formatting (user's preferred locale/calendar). Additional settings
-//  will be needed to let the user choose independently — e.g. English UI text
-//  with Hungarian date format (dd.MM.yyyy) is a known use case. When that work
-//  begins, this file is the single place to introduce locale-aware variants;
-//  all call sites already reference these constants, so no grep-and-replace will
-//  be needed across the codebase.
+//  LOCALIZATION NOTE (ENH-SETTINGS-1 — implemented):
+//  The user can override the display locale independently of the UI language via
+//  Settings → Date & Number Format (AppKeys.preferredLocale). The override is
+//  read once at static-let initialisation time; a restart is required for changes
+//  to take effect (consistent with the language override behaviour).
 //
-//  Current convention:
-//  - Formatters that produce UI-visible date/time strings use Locale("en_US") or
-//    Locale("en_US_POSIX") to keep output consistent regardless of device locale.
-//  - `deadlineFormatter` intentionally uses the system locale so the deadline
-//    display in CountdownItem matches the user's regional date preference.
+//  Convention:
+//  - `monthAbbrev`, `deadline`, `deadlineCompact` use effectiveLocale so they
+//    respect the user's locale preference.
+//  - `time` keeps Locale("en_US_POSIX") — 24-hour output is locale-independent
+//    and must not vary by locale setting.
 //
 
 import Foundation
 
 enum Formatters {
 
+    // MARK: - Effective locale
+
+    /// Resolves the user's preferred locale from UserDefaults (AppKeys.preferredLocale).
+    /// Falls back to Locale.current when no override is set (empty string).
+    /// Called once per formatter at static-let initialisation; restart required for changes.
+    private static var effectiveLocale: Locale {
+        let tag = UserDefaults.standard.string(forKey: AppKeys.preferredLocale) ?? ""
+        return tag.isEmpty ? Locale.current : Locale(identifier: tag)
+    }
+
     // MARK: - Month abbreviation
 
-    /// Three-letter month abbreviation in English, uppercased at call site.
+    /// Month abbreviation ("MMM") in the user's effective locale, uppercased at call site.
     /// Used by CountdownDetailView and CalculateView component steppers.
     static let monthAbbrev: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "MMM"
-        f.locale = Locale(identifier: "en_US")
+        f.locale = effectiveLocale
         return f
     }()
 
     // MARK: - Deadline display
 
     /// "yyyy.MM.dd HH:mm" — deadline label in CountdownItem and CountdownDetailView.
-    /// Uses system locale (intentional): the user's regional date preference applies here.
+    /// Uses effectiveLocale (user's preferred locale or system default).
     static let deadline: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "yyyy.MM.dd HH:mm"
+        f.locale = effectiveLocale
         return f
     }()
 
     /// "yyyy MMM dd  HH:mm" uppercased — compact deadline string in CalculateView saved-deadlines list.
+    /// Uses effectiveLocale so month abbreviation follows the user's locale preference.
     static let deadlineCompact: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "yyyy MMM dd  HH:mm"
-        f.locale = Locale(identifier: "en_US")
+        f.locale = effectiveLocale
         return f
     }()
 

@@ -206,12 +206,14 @@ ahol a language/locale választható).
 **Audit LEZÁRVA** (BY + BZ session, teljes kódbejárás) — implementációra vár. Teljes, összesitett
 hiánylista:
 
-### 1) HU fordítás hiányzik xcstrings-ből (14 kulcs, EN megvan)
-"Snippets", "SNIPPETS", "Sun times unavailable", "Switch to date display",
+### 1) HU fordítás hiányzik xcstrings-ből (14 kulcs, EN megvan) — ✅ KÉSZ (Session CA)
+~~"Snippets", "SNIPPETS", "Sun times unavailable", "Switch to date display",
 "Switch to remaining time", "Tap + to add a snippet.", "Tap to start writing.",
 "This cannot be undone.", "This clears the notes for this slot. This cannot be undone.",
 "This deadline will be permanently removed.", "Title", "Unsaved changes",
-"Version %@ (%@)", "You have unsaved changes. What would you like to do?"
+"Version %@ (%@)", "You have unsaved changes. What would you like to do?"~~
+Mind a 14 kulcs HU fordítása beírva az xcstrings-be (Session CA) — build+vizuális ellenőrzés
+még **FELHASZNÁLÓ FELADATA**.
 
 ### 2) Xcstrings-ből teljesen hiányzó stringek (nincs kulcs se EN-re se HU-ra)
 - `AboutView.swift`: "Developer", "Images" (infoRow label-ek)
@@ -251,6 +253,39 @@ a UI-n; ha igen, lokalizálandó.
 `CalculateView.swift` saját stringjei (a ComponentStepper-től független rész), `SnippetEditSheet.swift`
 teljes fájl (csak a "Title" mező lett eddig ellenőrizve).
 
+### 7) CalculateView — lefordítatlan saját stringek (audit eredménye, Session BT+)
+- `"RESET FROM NOW"` / `"RESET TO NOW"` — nowButton label, hardcoded
+- `"Remaining time:"` / `"Elapsed time:"` — resultLabel computed var, hardcoded (megjelenik a
+  modeToggle felett mint section header)
+- `"SAVE DEADLINE"` — saveSheetContent header, hardcoded
+- `"SAVED DEADLINES"` — deadlineListPopoverContent fejléc, hardcoded
+- `"EXPIRED"` — deadlineRemainingString visszatérési értéke, hardcoded (ld. ENH-L10N-1 #2-ben
+  is szerepel `CountdownDetailView` alatt — egységesítendő)
+- `"< 1M"` — deadlineRemainingString fallback, hardcoded
+- `"Name..."` — TextField placeholder a save sheet-ben, hardcoded
+
+### 8) SunPanel.swift — lefordítatlan label-ek (audit eredménye, Session BT+)
+Az összes sor-label `timeRow`/`labelRow`/`windowRow` hívásokban hardcoded angol string:
+- Section fejlécek: `"☀️  MORNING"`, `"🌆  EVENING"`, `"⚖️  DAY"`, `"🌙  MOON"`,
+  `"📷  GOLDEN / BLUE HOUR"`
+- Morning: `"First light"`, `"Dawn"`, `"Sunrise"`
+- Evening: `"Sunset"`, `"Dusk"`, `"Last light"`
+- Day: `"Solar noon"`, `"Day length"`
+- Moon: `"Moonrise"`, `"Moonset"`, `"Phase"`, `"Illumination"`
+- Golden/Blue: `"Morning golden"`, `"Morning blue"`, `"Evening golden"`, `"Evening blue"`
+- Loading/no-data: `"LOADING"`, `"NO DATA"` — ezek Alien League dekoratív szövegek,
+  az xcstrings `SunPanel.swift` `LOADING`/`NO DATA` kulcsai már megvannak (audit #4 szerint rendben),
+  de a Swift kód nem `LocalizedStringKey`-t, hanem sima `String`-et ad át `Text()`-nek. Ellenőrizendő.
+
+**Megjegyzés:** a `sectionHeader`/`timeRow`/`labelRow`/`windowRow` helper-ek jelenleg
+`label: String` típusú paramétert vesznek át, nem `LocalizedStringKey`-t — az összes hívóban
+egyszerre kell átállítani.
+
+### 9) ContentView / General — lefordítatlan string
+- `ContentView.swift` tab label: a `"General"` szó (ha szerepel valahol mint hardcoded szöveg)
+  — ellenőrzendő, hogy `modeButton` `Text(mode.rawValue)` hívásán keresztül jön-e (ld. #3 pont:
+  `LocalizedStringKey(mode.rawValue)` javítás szükséges), vagy külön hardcoded előfordulás is van.
+
 **Státusz:** NYITOTT — audit kész, implementáció még nem kezdődött el. Részletek:
 `docs/progress.md` Session BY + BZ szekció.
 
@@ -258,9 +293,118 @@ teljes fájl (csak a "Title" mező lett eddig ellenőrizve).
 
 ## ENH-SETTINGS-1: Settings menü — UI Language, Locales 🟢
 
-UI Language és locale-választék a Settings menüben. iconKeeper mintájára. Előfeltétel: ENH-L10N-1.
+UI Language és locale-választék a Settings menüben. iconKeeper mintájára.
 
-**Státusz:** NYITOTT — deferred, egyeztetés előtt nem indul el
+### Implementáció (Session CB) ✅
+
+- **`App/AppKeys.swift`**: `preferredLanguage` + `preferredLocale` kulcsok hozzáadva
+- **`Services/Formatters.swift`**: `effectiveLocale` private static var; `monthAbbrev`,
+  `deadline`, `deadlineCompact` most `effectiveLocale`-t használ (restart után hat)
+- **`Views/Settings/SettingsView.swift`** (új fájl, új `Views/Settings/` mappa):
+  - Interface Language picker: System Default / English / Magyar
+    → `@AppStorage(preferredLanguage)`, `onChange` → `UserDefaults["AppleLanguages"]`
+  - Date & Number Format picker: System Default / English (US) / Magyar (HU)
+    → `@AppStorage(preferredLocale)`, Formatters olvassa restart után
+  - Restart advisory ha bármelyik beállítás nem default
+- **`App/countdownAppApp.swift`**: `Settings { SettingsView() }` native scene hozzáadva
+
+**Státusz:** ✅ KÉSZ (implementálva Session CB) — build+teszt+commit felhasználó feladata
+
+---
+
+## ENH-SETTINGS-2: Font méret állítható a Settings-ben 🟢
+
+A UI szövegmérete jelenleg fix, túl kicsi. A felhasználó igénye: a Settings-ből állítható
+legyen a betűméret, legalább 3-4 lépésben.
+
+### Tervezett implementáció (3 fájl, ~30 sor, restart NEM szükséges)
+
+**Megközelítés:** SwiftUI `.dynamicTypeSize()` environment modifier a `ContentView` gyökerén,
+`@AppStorage`-ból vezérelve. Semantic fontok (`.body`, `.headline`, `.caption` stb.)
+automatikusan skálázódnak. `Font.custom("Alien League", size: Y)` fixed méretű hívások
+**nem** reagálnak a Dynamic Type-ra — ez szándékos: a dekoratív számok/címek mérete fix marad,
+csak a szöveges tartalom nő. **`AppTheme.swift` módosítás nem szükséges.**
+
+**Lépések:**
+
+1. **`App/AppKeys.swift`** — 1 sor:
+   ```swift
+   static let fontSizeStep = "nightshift.fontSizeStep"  // Int, default 0
+   ```
+
+2. **`Views/Settings/SettingsView.swift`** — új `fontSizeSection` (~30 sor):
+   - `@AppStorage(AppKeys.fontSizeStep) private var fontSizeStep: Int = 0`
+   - Segmented picker: Default (0) / Large (1) / Larger (2) / Largest (3)
+   - Ikon: `textformat.size`
+   - **Nincs restart advisory** — azonnal hat
+
+3. **`App/countdownAppApp.swift`** — 3 sor módosítás:
+   ```swift
+   @AppStorage(AppKeys.fontSizeStep) private var fontSizeStep: Int = 0
+   // ContentView-ra:
+   ContentView().environmentObject(sunService).dynamicTypeSize(fontSizeStep.asDynamicTypeSize)
+   ```
+   + extension (fájl aljára):
+   ```swift
+   private extension Int {
+       var asDynamicTypeSize: DynamicTypeSize {
+           switch self {
+           case 1: return .xLarge
+           case 2: return .xxLarge
+           case 3: return .xxxLarge
+           default: return .large
+           }
+       }
+   }
+   ```
+
+**Érintett fájlok:** `AppKeys.swift`, `SettingsView.swift`, `countdownAppApp.swift` —
+`AppTheme.swift` és egyetlen view sem igényel módosítást.
+
+**Státusz:** ✅ KÉSZ (implementálva Session BT) — build+teszt+commit felhasználó feladata
+
+---
+
+## ENH-TOOLTIP-1: Tooltip minden interaktív elemhez 🟢
+
+Minden interaktív vagy módosítható elemnek legyen `.help()` tooltip-je — ez a macOS standard
+accessibility/discoverability pattern. Az aktuális kód sehol nem használ `.help()` modifiert.
+
+**Érintett elem-típusok (teljesség igénye nélkül):**
+- `ComponentStepper` increment/decrement gombok — pl. "Increase year by 1" / "Decrease year by 1"
+- `CopyButton` — pl. "Copy to clipboard"
+- `modeToggle` (CAL/DAYS) — pl. "Switch to calendar display" / "Switch to days display"
+- `saveButton` bal fele (SAVE) — pl. "Save current TO date as a named deadline"
+- `saveButton` jobb fele (▾) — pl. "Show saved deadlines"
+- SunPanel trigger (középső hold) — pl. "Show sun and moon times"
+- Countdown soron a delete/edit/notes gombok
+- ColorPickerSheet swatchok — accessibility (már van `accessibilityLabel`, `.help()` külön kell)
+- Notes edit/done/delete/copy gombok
+- Snippet sheet checkmark / X / delete gombok
+
+**Implementációs irány:**
+- `.help("...")` modifer az érintett `Button`/stepper-gomb nézeteken belül
+- A szöveg lokalizálandó (`String(localized:)` vagy `LocalizedStringKey`) — de a tooltip
+  tartalom kizárólag EN/HU kell (többi nyelv nincs tervezve)
+- `ComponentStepper.swift`-ben a increment/decrement `LongPressStepperButton` hívásain belül
+  kell elhelyezni — ott van a `unit` paraméter, ami az accessibility label alapja is
+
+**Státusz:** NYITOTT — dokumentálva, implementáció egy dedikált session-ben (ENH-L10N-1 után,
+mivel a tooltip szövegek is xcstrings kulcsok lesznek)
+
+---
+
+## ENH-SETTINGS-3: Betűtípus választható a Settings Appearance tabján 🟢 DEFERRED
+
+Az Alien League font (jelenleg dekoratív számokhoz/címekhez fix) opcionálisan ki-/bekapcsolható
+legyen, vagy alternatív fontok közül lehessen választani az Appearance tabban.
+
+**Gondolat:** az Alien League erős vizuális karakter — egyes felhasználóknak túl "nehéz" lehet,
+mások szeretnék mindenütt. Lehetséges irányok:
+- Toggle: Alien League on/off (off esetén system font a dekoratív helyeken is)
+- Picker: pl. "Alien League" / "System" / esetleg egy harmadik opció
+
+**Státusz:** DEFERRED — nem most, az ENH-SETTINGS-2 (méret) elegendő egyelőre
 
 ---
 

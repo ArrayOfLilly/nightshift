@@ -45,6 +45,11 @@ private struct RowEntry: Identifiable {
 
 struct CountdownView: View {
 
+    // ENH-SETTINGS-2 dynamic resize: unused directly, but the @AppStorage subscription
+    // forces SwiftUI to recompute this view's body when fontSizeStep changes, so the
+    // AppTheme.alienLeague()/alienLeagueBold() calls below re-evaluate with the new fontScale.
+    @AppStorage(AppKeys.fontSizeStep) private var fontSizeStep: Int = 0
+
     @State private var items:        [CountdownItem] = []
     @State private var showAddSheet: Bool = false
     @State private var freeOrder:    [UUID] = []

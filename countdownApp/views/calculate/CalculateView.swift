@@ -29,6 +29,10 @@ struct CalculateView: View {
     @AppStorage(AppKeys.calculateFromDate)    private var fromInterval: Double = Date().timeIntervalSince1970
     @AppStorage(AppKeys.calculateToDate)      private var toInterval:   Double = Date().timeIntervalSince1970
     @AppStorage(AppKeys.calculateDisplayMode) private var displayMode: String = "days"
+    // ENH-SETTINGS-2 dynamic resize: unused directly, but the @AppStorage subscription
+    // forces SwiftUI to recompute this view's body when fontSizeStep changes, so the
+    // AppTheme.alienLeague()/alienLeagueBold() calls below re-evaluate with the new fontScale.
+    @AppStorage(AppKeys.fontSizeStep) private var fontSizeStep: Int = 0
 
     // Recovery banner
     @State private var corruptedFragments: [String] = []

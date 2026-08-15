@@ -28,23 +28,44 @@
 - **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik
 - **ENH-DEVDOCS-2** 🟡 — README + install.md, projektnév egyeztetés
 - **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása (lokalizáció, Settings; About már kész)
-- **ENH-L10N-1** 🟢, **ENH-SETTINGS-1** 🟢 — deferred, ENH-HELP-1 S1 részben előreviszi (xcstrings)
+- **ENH-L10N-1** 🟢 — FOLYAMATBAN, szüneteltetve. Audit LEZÁRVA (BY+BZ+BU bővítés: #7 CalculateView, #8 SunPanel, #9 General). #1 (14 HU fordítás) beírva xcstrings-be Session CA-ban, de **még build+teszt+commit nélkül**
+- **ENH-SETTINGS-1** ✅ — KÉSZ (Session CB) — build+teszt+commit felhasználó feladata
+- **ENH-SETTINGS-2** ✅ — KÉSZ (Session BU) — build+teszt+commit felhasználó feladata
+- **ENH-TOOLTIP-1** 🟢 — Tooltipek minden interaktív elemhez, dokumentálva Session BU-ban
 - **BUG-MANUAL-1** 🟡 — újranyitva (3 frissítési ok felhalmozódott: snippet save/dismiss logika,
   project delete, app név változás) — MINDIG UTOLSÓ, mert a screenshotok csak a végleges UI
   állapotot tükrözhetik
 
-**Következő session jelöltek:**
-- **ENH-L10N-1 implementálás** 🟢 — lokalizáció, **audit LEZÁRVA** (BY+BZ session), teljes
-  hiánylista `docs/buglist.md` ENH-L10N-1 szekciójában. Javasolt darabolás (session-méretben):
-  1. 14 xcstrings HU fordítás pótlása (listát lásd buglist.md #1)
-  2. eredeti 4 + új kb. 13 hiányzó kulcs xcstrings-be felvétele (buglist.md #2 — AboutView,
-     SnippetsView, CountdownDetailView, CountdownRowView, stepper label-ek 3 helyen, NotesSheet,
-     ColorPickerSheet swatch, SunPanel napszak-címkék)
-  3. 4 kód-szintű hiba javítása (buglist.md #3 — ContentView rawValue, AboutView Version,
-     2× corruption banner, új: ComponentStepper Increase/Decrease unit)
-  4. maradék audit lezárása: `CalculateView.swift` saját stringjei, `SnippetEditSheet.swift`
-     teljes fájl (buglist.md #6), plusz `SunTimesService.swift` "Invalid request URL" nyitott
-     kérdés tisztázása (buglist.md #5)
+**ENH-SETTINGS-2 ✅ KÉSZ (Session BU + CC)**
+
+Font méret picker a Settings-ben: segmented control Default/Large/Larger/Largest.
+`.dynamicTypeSize()` a `ContentView` gyökerén, azonnali hatás, restart nem szükséges.
+Érintett fájlok (Session BU): `AppKeys.swift`, `SettingsView.swift`, `countdownAppApp.swift`.
+
+Session BU végén kiderült (élő teszteléskor), hogy a `Font.custom()` (alienLeague/alienLeagueBold)
+hívások nem reagálnak `.dynamicTypeSize()`-ra — ez az `AppTheme.fontScale` pattern-nel lett megoldva
+(Session BU), de a `ContentView` gyerek nézetei (`CalculateView`, `CountdownView`, `SnippetsView`)
+még nem figyelték a `fontSizeStep`-et, így nem frissültek élőben. **Session CC** ezt zárta le: mindhárom
+nézetbe bekerült egy saját `@AppStorage(AppKeys.fontSizeStep)` subscription (részletek:
+`docs/progress.md` Session CC szekció). Ugyanebben a session-ben, felhasználói visszajelzés
+alapján az is kiderült, hogy Largest lépésnél a módváltó fülek címei nem fértek ki az ablakban —
+`ContentView.swift` mostantól `PreferenceKey`-alapú élő méréssel dinamikusan szélesíti az
+ablak `minWidth`/`maxWidth` értékeit a mért fülcím-szélességhez igazítva.
+**Git commit még nincs** — felhasználó feladata build+teszt után (Session BU + CC együtt commitolható).
+
+**Következő session:** ENH-L10N-1 folytatása (#2 hiányzó xcstrings kulcsok felvétele,
+beleértve a #7/#8/#9 új tételeket) — vagy egyeztetés alapján más prioritás.
+
+**ENH-L10N-1 folytatása mikorra marad** — ha visszaérünk rá: `docs/buglist.md` ENH-L10N-1
+szekció, #2 pont (eredeti 4 + új kb. 13 hiányzó kulcs xcstrings-be felvétele), majd #3
+(4 kód-szintű hiba), majd #6 (`CalculateView.swift` + `SnippetEditSheet.swift` maradék
+audit), plusz #5 (`SunTimesService.swift` nyitott kérdés).
+
+**FONTOS — függőben lévő változás**: a `countdownApp/Localizable.xcstrings`-ben Session
+CA-ban beírt 14 HU fordítás **még nincs commitolva** — a felhasználó workflow-ja szerint
+ő tesztel Xcode-ban, és utána szól a commithoz. Ha a következő session eléri, hogy még
+nincs commitolva, ne felülírja/ne nyúljon hozzá, hanem előbb kérdezzen rá.
+
 - **ENH-DEVDOCS-2** 🟡 — README + install.md (Distribution csomag); projektnév egyeztetés
 - **BUG-MANUAL-1** 🟡 — manual frissítés (snippet save/dismiss logika, project delete, app név)
 

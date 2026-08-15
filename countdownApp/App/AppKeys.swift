@@ -25,6 +25,17 @@ enum AppKeys {
     static let calculateToDate      = "calculateToDate"
     static let calculateDisplayMode = "calculateDisplayMode"
 
+    // MARK: - Settings
+    /// BCP-47 language tag ("en", "hu") or "" for system default.
+    /// Written to AppleLanguages on change; restart required.
+    static let preferredLanguage = "nightshift.preferredLanguage"
+    /// Locale identifier ("en_US", "hu_HU") or "" for system default.
+    /// Read by Formatters.effectiveLocale at static-let init time; restart required.
+    static let preferredLocale   = "nightshift.preferredLocale"
+    /// Font size step: 0 = Default, 1 = Large, 2 = Larger, 3 = Largest.
+    /// Applied via .dynamicTypeSize() on ContentView; no restart required.
+    static let fontSizeStep      = "nightshift.fontSizeStep"
+
     // MARK: - Recovery
     /// Accumulates raw JSON fragments of items that failed to decode.
     /// Each entry is a single JSON-object string representing one corrupt item.
