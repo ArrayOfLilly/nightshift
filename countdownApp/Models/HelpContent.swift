@@ -3,7 +3,9 @@
 //
 // Help system data models — IconKeeper pattern.
 // UI (HelpView, HelpCommands, HelpWindowID) is added in ENH-HELP-1-S2.
-// Real string content is filled in ENH-HELP-1-S4 through S6.
+// Overview section content finalized in ENH-HELP-1-S4. Remaining sections
+// (Countdown, Calculate, Snippets, Recovery) still carry placeholder text
+// and are filled in ENH-HELP-1-S5/S6.
 
 import SwiftUI
 
@@ -74,6 +76,18 @@ enum HelpContent {
                 focusRect: CGRect(x: 0.15, y: 0.2, width: 0.5, height: 0.4)
             ),
             HelpItem(
+                id: "overview.cooldowns",
+                titleKey: "help.overview.cooldowns.title",
+                bodyKey: "help.overview.cooldowns.body",
+                icon: "clock.arrow.circlepath"
+            ),
+            HelpItem(
+                id: "overview.schedule",
+                titleKey: "help.overview.schedule.title",
+                bodyKey: "help.overview.schedule.body",
+                icon: "sunrise"
+            ),
+            HelpItem(
                 id: "overview.views",
                 titleKey: "help.overview.views.title",
                 bodyKey: "help.overview.views.body",
@@ -104,7 +118,9 @@ enum HelpContent {
                 id: "countdown.notes",
                 titleKey: "help.countdown.notes.title",
                 bodyKey: "help.countdown.notes.body",
-                icon: "note.text"
+                icon: "note.text",
+                imageName: "help-countdown-notes",
+                focusRect: CGRect(x: 0.82, y: 0.15, width: 0.15, height: 0.15)
             ),
             HelpItem(
                 id: "countdown.reorder",
@@ -131,7 +147,9 @@ enum HelpContent {
                 id: "calculate.sunpanel",
                 titleKey: "help.calculate.sunpanel.title",
                 bodyKey: "help.calculate.sunpanel.body",
-                icon: "sun.horizon"
+                icon: "sun.horizon",
+                imageName: "help-calculate-sunpanel",
+                focusRect: CGRect(x: 0.1, y: 0.5, width: 0.8, height: 0.35)
             )
         ]
     )
