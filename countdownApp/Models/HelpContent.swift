@@ -69,11 +69,13 @@ enum HelpContent {
                 id: "overview.what",
                 titleKey: "help.overview.what.title",
                 bodyKey: "help.overview.what.body",
-                icon: "star",
-                // Geometry test asset for HelpScreenshot (ENH-HELP-1-S3).
-                // Real countdownApp screenshots are added in ENH-HELP-1-S4 through S6.
-                imageName: "screenshot",
-                focusRect: CGRect(x: 0.15, y: 0.2, width: 0.5, height: 0.4)
+                icon: "star"
+                // No screenshot: this item is a general description of the
+                // app, not a specific UI element, so no single crop applies.
+                // It briefly used the S3 geometry-test asset (timer.png) as
+                // a placeholder — removed in ENH-HELP-1-S4 since it wasn't
+                // an actual screenshot of anything and was confusing next
+                // to real ones below.
             ),
             HelpItem(
                 id: "overview.cooldowns",
@@ -115,12 +117,35 @@ enum HelpContent {
                 icon: "pencil"
             ),
             HelpItem(
+                id: "countdown.expand",
+                titleKey: "help.countdown.expand.title",
+                bodyKey: "help.countdown.expand.body",
+                icon: "rectangle.expand.vertical"
+            ),
+            HelpItem(
+                id: "countdown.copy",
+                titleKey: "help.countdown.copy.title",
+                bodyKey: "help.countdown.copy.body",
+                icon: "doc.on.doc"
+            ),
+            HelpItem(
+                id: "countdown.toggle",
+                titleKey: "help.countdown.toggle.title",
+                bodyKey: "help.countdown.toggle.body",
+                icon: "arrow.left.arrow.right"
+            ),
+            HelpItem(
+                id: "countdown.free",
+                titleKey: "help.countdown.free.title",
+                bodyKey: "help.countdown.free.body",
+                icon: "checkmark.circle"
+            ),
+            HelpItem(
                 id: "countdown.notes",
                 titleKey: "help.countdown.notes.title",
                 bodyKey: "help.countdown.notes.body",
                 icon: "note.text",
-                imageName: "help-countdown-notes",
-                focusRect: CGRect(x: 0.82, y: 0.15, width: 0.15, height: 0.15)
+                imageName: "help-countdown-notes"
             ),
             HelpItem(
                 id: "countdown.reorder",
@@ -138,18 +163,41 @@ enum HelpContent {
         titleKey: "help.section.calculate.title",
         items: [
             HelpItem(
+                id: "calculate.stepper",
+                titleKey: "help.calculate.stepper.title",
+                bodyKey: "help.calculate.stepper.body",
+                icon: "chevron.up.chevron.down"
+            ),
+            HelpItem(
+                id: "calculate.reset",
+                titleKey: "help.calculate.reset.title",
+                bodyKey: "help.calculate.reset.body",
+                icon: "arrow.counterclockwise"
+            ),
+            HelpItem(
+                id: "calculate.toggle",
+                titleKey: "help.calculate.toggle.title",
+                bodyKey: "help.calculate.toggle.body",
+                icon: "calendar"
+            ),
+            HelpItem(
                 id: "calculate.deadlines",
                 titleKey: "help.calculate.deadlines.title",
                 bodyKey: "help.calculate.deadlines.body",
                 icon: "calendar"
             ),
             HelpItem(
+                id: "calculate.load",
+                titleKey: "help.calculate.load.title",
+                bodyKey: "help.calculate.load.body",
+                icon: "square.and.arrow.down"
+            ),
+            HelpItem(
                 id: "calculate.sunpanel",
                 titleKey: "help.calculate.sunpanel.title",
                 bodyKey: "help.calculate.sunpanel.body",
                 icon: "sun.horizon",
-                imageName: "help-calculate-sunpanel",
-                focusRect: CGRect(x: 0.1, y: 0.5, width: 0.8, height: 0.35)
+                imageName: "help-calculate-sunpanel"
             )
         ]
     )
@@ -167,6 +215,12 @@ enum HelpContent {
                 icon: "doc.text"
             ),
             HelpItem(
+                id: "snippets.copy",
+                titleKey: "help.snippets.copy.title",
+                bodyKey: "help.snippets.copy.body",
+                icon: "doc.on.doc"
+            ),
+            HelpItem(
                 id: "snippets.edit",
                 titleKey: "help.snippets.edit.title",
                 bodyKey: "help.snippets.edit.body",
@@ -182,10 +236,16 @@ enum HelpContent {
         titleKey: "help.section.recovery.title",
         items: [
             HelpItem(
-                id: "recovery.backup",
-                titleKey: "help.recovery.backup.title",
-                bodyKey: "help.recovery.backup.body",
-                icon: "externaldrive"
+                id: "recovery.storage",
+                titleKey: "help.recovery.storage.title",
+                bodyKey: "help.recovery.storage.body",
+                icon: "internaldrive"
+            ),
+            HelpItem(
+                id: "recovery.banner",
+                titleKey: "help.recovery.banner.title",
+                bodyKey: "help.recovery.banner.body",
+                icon: "exclamationmark.triangle"
             )
         ]
     )

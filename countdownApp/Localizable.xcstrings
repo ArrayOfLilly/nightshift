@@ -167,6 +167,66 @@
         }
       }
     },
+    "help.calculate.load.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap a saved deadline in the list to open its detail sheet, then tap LOAD AS TO to copy its date into the TO stepper. From the detail sheet you can also rename or delete the deadline."
+          }
+        }
+      }
+    },
+    "help.calculate.load.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading a deadline"
+          }
+        }
+      }
+    },
+    "help.calculate.reset.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RESET FROM NOW sets the FROM date to the current moment. RESET TO NOW sets the TO date to the current moment. Use these to quickly anchor one end of the interval to now."
+          }
+        }
+      }
+    },
+    "help.calculate.reset.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset buttons"
+          }
+        }
+      }
+    },
+    "help.calculate.stepper.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each date row has five steppers: YEAR, MON, DAY, HOUR, MIN. A single click moves the value by one step. Click and hold a chevron to repeat automatically for fast navigation."
+          }
+        }
+      }
+    },
+    "help.calculate.stepper.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Using the steppers"
+          }
+        }
+      }
+    },
     "help.calculate.sunpanel.body" : {
       "localizations" : {
         "en" : {
@@ -183,6 +243,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sun panel"
+          }
+        }
+      }
+    },
+    "help.calculate.toggle.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The result below the steppers shows the time difference. A toggle button switches between DAYS (total elapsed days as a single number) and CAL (calendar breakdown: years, months, and days separately). The toggle state is remembered across launches."
+          }
+        }
+      }
+    },
+    "help.calculate.toggle.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Result display"
           }
         }
       }
@@ -207,6 +287,26 @@
         }
       }
     },
+    "help.countdown.copy.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the dark label pill on any row to copy the item's name to the clipboard. The pill briefly shows COPIED to confirm. A separate copy button is also available in the detail view next to the editable label."
+          }
+        }
+      }
+    },
+    "help.countdown.copy.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copying the label"
+          }
+        }
+      }
+    },
     "help.countdown.edit.body" : {
       "localizations" : {
         "en" : {
@@ -223,6 +323,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Editing an item"
+          }
+        }
+      }
+    },
+    "help.countdown.expand.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap any row to open the full-screen detail view. From there you can adjust the deadline with steppers, toggle between remaining time and deadline date, manage notes, toggle the expiry sound, and delete the slot."
+          }
+        }
+      }
+    },
+    "help.countdown.expand.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening an item"
+          }
+        }
+      }
+    },
+    "help.countdown.free.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When a countdown reaches its deadline, the row turns amber and shows FREE ✓. Free slots collect at the bottom of the list and can be dragged to reorder. If the expiry sound is enabled for that slot, a chime plays the moment the deadline passes."
+          }
+        }
+      }
+    },
+    "help.countdown.free.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free slots"
           }
         }
       }
@@ -267,6 +407,26 @@
         }
       }
     },
+    "help.countdown.toggle.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The clock/calendar button on an active row switches between showing the remaining countdown time and the actual deadline date. The display choice is saved per item and remembered across launches."
+          }
+        }
+      }
+    },
+    "help.countdown.toggle.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time display toggle"
+          }
+        }
+      }
+    },
     "help.menu.item" : {
       "comment" : "Help menu item label",
       "localizations" : {
@@ -274,6 +434,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "NightShift Help"
+          }
+        }
+      }
+    },
+    "help.overview.cooldowns.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each countdown item tracks when a free-tier AI account — Claude, Codex, ChatGPT, DeepSeek, Qwen, Kimi, and others — becomes available again, so you always know which model to switch to next."
+          }
+        }
+      }
+    },
+    "help.overview.cooldowns.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Countdown tracks AI cooldowns"
+          }
+        }
+      }
+    },
+    "help.overview.schedule.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Development happens at night — once it starts getting light outside, it's time to sleep. The Calculate tab's sun panel shows tonight's sunrise, so you always know how much of the night is left to work with."
+          }
+        }
+      }
+    },
+    "help.overview.schedule.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The sunrise deadline"
           }
         }
       }
@@ -303,7 +503,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "countdownApp is a personal time-management tool. Track countdowns, calculate time distances, and keep reusable text snippets — all in one compact window."
+            "value" : "NightShift is a personal workspace for developing side projects at night with free-tier AI coding assistants. It tracks which AI accounts are on cooldown, keeps your side-project deadlines, and shows how much of the night is left before sunrise."
           }
         }
       }
@@ -313,27 +513,47 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "What is countdownApp?"
+            "value" : "What is NightShift?"
           }
         }
       }
     },
-    "help.recovery.backup.body" : {
+    "help.recovery.banner.body" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "All data is stored in UserDefaults. To back up, export the app container. Real recovery documentation will be added in ENH-HELP-1-S6."
+            "value" : "If stored data could not be read at startup — for example due to corruption — a banner appears listing how many items were lost. Those items are not visible in the app and are not active. Tap Copy Raw Data first to preserve the raw JSON on your clipboard; once you dismiss the banner, that clipboard copy is your only way to recover the data."
           }
         }
       }
     },
-    "help.recovery.backup.title" : {
+    "help.recovery.banner.title" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Backup and restore"
+            "value" : "Recovery banner"
+          }
+        }
+      }
+    },
+    "help.recovery.storage.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All data — countdown slots, deadlines, notes, and snippets — is stored locally on this Mac in UserDefaults. There is no iCloud or cloud sync."
+          }
+        }
+      }
+    },
+    "help.recovery.storage.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local storage"
           }
         }
       }
@@ -387,6 +607,14 @@
           }
         }
       }
+    },
+    "help.snippets.copy.body" : {
+      "comment" : "Body text for the \"Copy\" snippet help item.",
+      "isCommentAutoGenerated" : true
+    },
+    "help.snippets.copy.title" : {
+      "comment" : "Title of a help item in the Snippets section.",
+      "isCommentAutoGenerated" : true
     },
     "help.snippets.edit.body" : {
       "localizations" : {

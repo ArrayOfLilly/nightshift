@@ -79,7 +79,7 @@ struct countdownAppApp: App {
             }
         }
         .windowResizability(.contentMinSize)
-        .defaultSize(width: 560, height: 520)
+        .defaultSize(width: 640, height: 620)
     }
 
     private static func registerBundledFonts() {

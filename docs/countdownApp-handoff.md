@@ -24,8 +24,7 @@
 ## Következő session feladata
 
 **Buglist állapot összefoglaló** (`docs/buglist.md`) — nyitott tételek:
-- **ENH-HELP-1** 🟡 — S1 KÉSZ (BO), S2 KÉSZ (BP), S3 KÉSZ (BQ, commit `857ceae`), **S4 következik**
-  (valós tartalom + valós screenshotok)
+- **ENH-HELP-1** ✅ — KÉSZ (S1–S6 lezárva, BV session)
 - **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik
 - **ENH-DEVDOCS-2** 🟡 — README + install.md, projektnév egyeztetés
 - **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása (lokalizáció, Settings; About már kész)
@@ -35,11 +34,8 @@
   állapotot tükrözhetik
 
 **Következő session jelöltek:**
-- **ENH-HELP-1-S4** 🟡 — Help rendszer, 4/6 session: valós title/body szövegek az Overview
-  szekcióhoz (`Localizable.xcstrings` EN placeholder → végleges szöveg), valós countdownApp
-  screenshot asset(ek) becsatolása a `screenshot`/timer.png teszt asset helyett. S1–S3 KÉSZ
-  (commit `857ceae`).
-- **ENH-DEVDOCS-2** — README + install.md (Distribution csomag); projektnév egyeztetés
+- **ENH-DEVDOCS-2** 🟡 — README + install.md (Distribution csomag); projektnév egyeztetés
+- **BUG-MANUAL-1** 🟡 — manual frissítés (snippet save/dismiss logika, project delete, app név)
 
 ---
 

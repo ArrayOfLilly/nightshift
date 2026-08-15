@@ -1,51 +1,43 @@
 // HelpScreenshot.swift
 // countdownApp
 //
-// Cropped screenshot view for Help items. Displays the region of an
-// Assets.xcassets image defined by a normalized (0–1) focusRect, uniformly
-// scaled (no distortion) to cover a fixed targetSize.
+// Displays a pre-cropped screenshot asset at a fixed width inside a Help
+// List row. Height is derived from each asset's known pixel dimensions
+// (aspect ratio is scale-factor-independent).
 //
-// The image's real intrinsic size is read via NSImage(named:) so the crop
-// rect can be computed in actual point space; a single uniform scale factor
-// (not independent x/y scaling) is then applied, so the result is always a
-// plain crop + zoom — never a stretch. If focusRect's aspect ratio doesn't
-// match targetSize's aspect ratio, the overflow is trimmed from the
-// bottom/right edge (top-left anchored) — pick a focusRect with a matching
-// aspect ratio for an exact, centered frame.
-//
-// ENH-HELP-1-S3
+// History:
+//   ENH-HELP-1-S3 — Canvas crop with focusRect
+//   ENH-HELP-1-S4 — fit-width redesign
+//   ENH-HELP-1-S4 (this) — pre-cropped assets (incl. rounding), Canvas for display
 
 import SwiftUI
-import AppKit
 
 struct HelpScreenshot: View {
     let imageName: String
-    /// Normalized (0–1) crop region in image space. width/height must be > 0.
-    let focusRect: CGRect
-    let targetSize: CGSize
+    /// Fixed display width. Height is derived from the asset's pixel
+    /// aspect ratio — no distortion, no clipping of content.
+    let maxWidth: CGFloat
 
-    private var imageSize: CGSize {
-        NSImage(named: imageName)?.size ?? targetSize
+    /// Known pixel dimensions of each help screenshot asset.
+    /// Aspect ratio is scale-factor-independent, so raw pixel w/h is fine.
+    private static let pixelSizes: [String: CGSize] = [
+        "help-countdown-notes":    CGSize(width: 1104, height: 208),
+        "help-calculate-sunpanel": CGSize(width: 1020, height: 1202),
+    ]
+
+    private var displayHeight: CGFloat {
+        guard let px = Self.pixelSizes[imageName], px.width > 0 else {
+            return maxWidth * 0.5
+        }
+        return maxWidth * px.height / px.width
     }
 
     var body: some View {
-        let size = imageSize
-        let cropRect = CGRect(
-            x: focusRect.minX * size.width,
-            y: focusRect.minY * size.height,
-            width: focusRect.width * size.width,
-            height: focusRect.height * size.height
-        )
-        let scale = max(targetSize.width / cropRect.width, targetSize.height / cropRect.height)
-
-        ZStack(alignment: .topLeading) {
-            Image(imageName)
-                .resizable()
-                .frame(width: size.width * scale, height: size.height * scale)
-                .offset(x: -cropRect.minX * scale, y: -cropRect.minY * scale)
+        let h = displayHeight
+        Canvas { context, size in
+            let resolved = context.resolve(Image(imageName))
+            context.draw(resolved, in: CGRect(origin: .zero, size: size))
         }
-        .frame(width: targetSize.width, height: targetSize.height)
-        .clipped()
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium, style: .continuous))
+        .frame(width: maxWidth, height: h)
     }
 }

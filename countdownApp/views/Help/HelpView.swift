@@ -34,7 +34,9 @@ struct HelpView: View {
     var body: some View {
         List {
             ForEach(filteredSections) { section in
-                Section(header: Text(section.titleKey).font(.headline)) {
+                Section(header: Text(section.titleKey)
+                    .font(.title2)
+                    .fontWeight(.bold)) {
                     ForEach(section.items) { item in
                         HelpItemRow(item: item)
                     }
@@ -44,7 +46,10 @@ struct HelpView: View {
         .listStyle(.sidebar)
         .searchable(text: $searchQuery, prompt: Text("Search help…"))
         .navigationTitle("NightShift Help")
-        .frame(minWidth: 520, minHeight: 480)
+        // Width is locked (not just a minimum) so the fixed-width
+        // screenshots and the wrapped body text always line up the same
+        // way; only height is free to grow as content is added.
+        .frame(minWidth: 640, maxWidth: 640, minHeight: 560)
     }
 }
 
@@ -54,10 +59,11 @@ private struct HelpItemRow: View {
     let item: HelpItem
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 10) {
             Label {
                 Text(item.titleKey)
-                    .font(.system(.body, weight: .semibold))
+                    .font(.title3)
+                    .fontWeight(.semibold)
             } icon: {
                 Image(systemName: item.icon)
                     .foregroundStyle(Color.accentColor)
@@ -65,20 +71,18 @@ private struct HelpItemRow: View {
             }
 
             Text(item.bodyKey)
-                .font(.subheadline)
+                .font(.body)
                 .foregroundStyle(.secondary)
                 .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true)
+                .padding(.leading, 28)
 
-            if let imageName = item.imageName, let focusRect = item.focusRect {
-                HelpScreenshot(
-                    imageName: imageName,
-                    focusRect: focusRect,
-                    targetSize: CGSize(width: 460, height: 220)
-                )
+            if let imageName = item.imageName {
+                HelpScreenshot(imageName: imageName, maxWidth: 560)
+                    .padding(.vertical, 16)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 4)
+        .padding(.vertical, 12)
     }
 }

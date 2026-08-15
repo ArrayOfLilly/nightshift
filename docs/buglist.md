@@ -187,10 +187,14 @@ A felhasználó felé javasolt megoldás (CSS `object-position` + `object-fit: c
   hanem egy külön `help-screenshots` mappa/névkonvenció kellene az előre vágott képeknek — ez a két út
   egymást kizárja, döntés szükséges
 
-**Státusz:** 🟡 FOLYAMATBAN — S1 KÉSZ (BO session), S2 KÉSZ (BP session):
-- S1: `Models/HelpContent.swift` + `Localizable.xcstrings` (5 szekció, 11 item, EN placeholder szöveg)
-- S2: `App/HelpWindowID.swift` + `App/HelpCommands.swift` + `Views/Help/HelpView.swift` + `countdownAppApp.swift` módosítva
-- S3 következik: `Components/HelpScreenshot.swift` (focusRect-alapú kivágás komponens)
+**Státusz:** ✅ KÉSZ — S1–S6 mind lezárva:
+- S1 (BO): `Models/HelpContent.swift` + `Localizable.xcstrings` váz
+- S2 (BP): `HelpWindowID` + `HelpCommands` + `HelpView` + `countdownAppApp.swift`
+- S3 (BQ): `Components/HelpScreenshot.swift` Canvas-alapú komponens
+- S4 (BR/BS/BT/BU): valós tartalom (Overview + Countdown + Calculate szekciók), screenshotok
+  kézzel vágva és lekerekítve, HelpScreenshot egyszerűsítve (pre-cropped assets)
+- S5/S6 (BV): Recovery szekció valós tartalma (`recovery.storage` + `recovery.banner`),
+  régi `recovery.backup` placeholder eltávolítva
 
 ---
 
