@@ -19,7 +19,7 @@
   - `suggestionList` `ForEach(suggestions)` → `ForEach(filteredSuggestions)` — élő szűrés begépeléskor
 - [x] **Dokumentáció** `docs/buglist.md`-ben: 2 új UX bejegyzés (UX-SUNPANEL-ICONS, UX-SNIPPETS-PROJECT-AUTOCOMPLETE)
 - [ ] Build (Xcode Command Line Tools `xcodebuild` nem futtatható ebben az env-ben): **FELHASZNÁLÓ FELADATA**
-- [ ] Git commit (javasolt üzenet: `UX-SUNPANEL-ICONS SF Symbols + UX-SNIPPETS-PROJECT-AUTOCOMPLETE`): **FELHASZNÁLÓ FELADATA**
+- [x] Git commit `d7728aa`: `UX-SUNPANEL-ICONS SF Symbols + UX-SNIPPETS-PROJECT-AUTOCOMPLETE`
 - [x] `docs/progress.md` frissítve
 
 **Megjegyzés:** az eredeti emoji-k (`⚖️`, `🌆`) véglegesen helyettesítve SF Symbols egységes set-tel — az emoji-k valóban értelmetlen kombinációk voltak (balance ikon a nappal, city silhuette az estével). SF Symbols konzisztens, professzionális, és macOS-hoz illő. A hierarchia: sun.min (reggel/este félnap) < sun.max.fill (teljes nap) + moon (hold).
@@ -28,7 +28,60 @@
 
 ---
 
-## Session CH — 2026-08-15 (ENH-L10N-1 lezárva + SunPanel fix méret — LEZÁRVA)
+## Session CJ — 2026-08-15 (ENH-TOOLTIP-1 handoff + dokumentáció — FELHASZNÁLÓ FELADATA)
+
+### Session CJ — LEZÁRVA (csak dokumentáció + handoff)
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` elolvasva
+- [x] ENH-TOOLTIP-1 scope meghatározva (100+ interaktív elem, xcstrings kulcsok, `.help()` modifer)
+- [x] ComponentStepper, LongPressStepperButton kódstruktúra átvizsgálva
+- [x] **Handoff prompt készítve** (lent, másolható)
+- [x] `docs/progress.md` frissítve
+
+**HANDOFF PROMPT (másolj az adott fájlba/szövegre):**
+
+```
+## ENH-TOOLTIP-1: Tooltip minden interaktív elemhez
+
+### Scope
+- **ComponentStepper** (+/- gombok): "Increase/Decrease {unit}" (már van `accessibilityLabel`)
+- **CopyButton**: "Copy to clipboard" / "Copied"
+- Mode toggle (Calculate/Countdown/Snippets): "Switch to {mode}"
+- Save button bal oldala (SAVE): "Save current TO date as a named deadline"
+- Save button jobb oldala (▾): "Show saved deadlines"
+- SunPanel trigger (középső popover gomb): "Show sun and moon times"
+- Countdown soron delete/edit/notes gombok
+- ColorPickerSheet swatchok (már van label, `.help()` kell)
+- Notes edit/done/delete/copy gombok (már van label)
+- Snippet sheet checkmark/X/delete gombok (már van label)
+
+### Implementáció
+1. **Xcstrings kulcsok felvétele**: .help() szövegek EN+HU-val
+   - Jellegzetes kulcs-minta: `help.tooltip.{component}.{action}`
+   - Pl: `help.tooltip.stepper.increase`, `help.tooltip.savebutton.save`, stb.
+2. **Komponensek módosítása**: `.help(String(localized: "..."))` modifer hozzáadása
+   - LongPressStepperButton: már van `.help(accessibilityLabel)` — NEM módosítandó
+   - CopyButton, Button-ök: `.help()` hozzáadása
+3. **Fájlok érintett**: ComponentStepper, CopyButton, CalculateView, CountdownView, SnippetsView, 
+   ColorPickerSheet, NotesSheet, SnippetEditSheet stb.
+
+### Terv (6-8 fájl, 1-2 session)
+- S1: xcstrings kulcsok (20+ kulcs) + HU fordítások
+- S2: ComponentStepper, CopyButton, Button-ök `.help()` hozzáadása
+- S3: CalculateView, CountdownView részek
+- S4: Snippets, Notes, ColorPicker, AboutView
+- S5: Build teszt + commit
+
+### Jelenlegi állapot
+- LongPressStepperButton már van `.help(accessibilityLabel)` (Session CE-ből)
+- Accessibility labelek nagy része már megvan
+- Xcstrings kulcsok részben léteznek (szöveg-labelek), de nem `.help()`-nek dedikáltak
+```
+
+**Következő session:** ENH-TOOLTIP-1-S1 (xcstrings kulcsok + HU fordítások)
+
+---
+
+## Session CI — 2026-08-15 (UX-SUNPANEL-ICONS SF Symbols + UX-SNIPPETS-PROJECT-AUTOCOMPLETE — LEZÁRVA)
 
 ### Session CH — LEZÁRVA
 - [x] `docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` elolvasva

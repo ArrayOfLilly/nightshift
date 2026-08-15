@@ -325,6 +325,7 @@ struct SnippetsView: View {
             }
             .buttonStyle(.plain)
             .focusable(false)
+            .help(String(localized: "Edit snippet"))
 
             // Copy body
             Button {
