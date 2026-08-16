@@ -41,9 +41,9 @@ struct ColorPickerSheet: View {
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
                 }
                 .buttonStyle(.plain)
-                .focusable(false)
+                .focusEffectDisabled()
                 .accessibilityLabel("Close")
-                .help("Close")
+                .help(String(localized: "Close this color picker"))
                 .padding(.top, 12)
                 .padding(.trailing, 14)
             }
@@ -114,7 +114,7 @@ struct ColorPickerSheet: View {
             }
         }
         .buttonStyle(.plain)
-        .focusable(false)
+        .focusEffectDisabled()
         .accessibilityLabel(accessibilityText)
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
         .help(accessibilityText)

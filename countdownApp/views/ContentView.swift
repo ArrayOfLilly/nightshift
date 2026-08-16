@@ -107,7 +107,7 @@ struct ContentView: View {
                 )
         }
         .buttonStyle(.plain)
-        .focusable(false)
+        .focusEffectDisabled()
         .accessibilityLabel(mode.rawValue)
         .help(String(localized: String.LocalizationValue("Switch to \(mode.rawValue)")))
     }

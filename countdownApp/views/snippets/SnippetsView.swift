@@ -160,7 +160,7 @@ struct SnippetsView: View {
                 }
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .font(AppTheme.alienLeague(12))
             .foregroundStyle(AppTheme.calculateBackground)
             .padding(.horizontal, 10)
@@ -173,7 +173,7 @@ struct SnippetsView: View {
                 corruptedFragments = []
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .font(AppTheme.alienLeague(12))
             .foregroundStyle(AppTheme.background.opacity(AppTheme.alpha75))
             .padding(.horizontal, 10)
@@ -203,9 +203,9 @@ struct SnippetsView: View {
                     .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .accessibilityLabel("New snippet")
-            .help(String(localized: "New snippet"))
+            .help(String(localized: "Create a new snippet in the library"))
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
@@ -270,9 +270,9 @@ struct SnippetsView: View {
             .menuStyle(.borderlessButton)
             .menuIndicator(.hidden)
             .fixedSize()
-            .focusable(false)
+            .focusEffectDisabled()
             .accessibilityLabel("Project options")
-            .help(String(localized: "Project options"))
+            .help(String(localized: "Rename or delete this project group"))
             Spacer()
         }
         .padding(.horizontal, 20)
@@ -324,8 +324,8 @@ struct SnippetsView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .focusable(false)
-            .help(String(localized: "Edit snippet"))
+            .focusEffectDisabled()
+            .help(String(localized: "Open this snippet to view or edit its content"))
 
             // Copy body
             Button {
@@ -346,9 +346,9 @@ struct SnippetsView: View {
                     .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .accessibilityLabel("Copy snippet")
-            .help(String(localized: "Copy snippet"))
+            .help(String(localized: "Copy the full snippet text to the clipboard"))
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)

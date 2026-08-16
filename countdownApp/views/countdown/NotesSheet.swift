@@ -133,7 +133,7 @@ struct NotesSheet: View {
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
         }
         .buttonStyle(.plain)
-        .focusable(false)
+        .focusEffectDisabled()
         .accessibilityLabel(label)
         .help(label)
     }
@@ -167,7 +167,7 @@ struct NotesSheet: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
         } else {
             MarkdownWebView(markdown: notes)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -124,7 +124,7 @@ struct AboutView: View {
                     .foregroundStyle(.primary)
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
         }
     }
 }

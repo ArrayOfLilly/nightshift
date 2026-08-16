@@ -35,7 +35,7 @@ struct AddCountdownSheet: View {
                         .padding(.vertical, 8)
                         .background(AppTheme.dark.opacity(AppTheme.alpha12))
                         .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
-                        .focusable(false)
+                        .focusEffectDisabled()
 
                     Spacer()
 
@@ -57,7 +57,7 @@ struct AddCountdownSheet: View {
                                 : AppTheme.dark)
                     .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     .disabled(label.trimmingCharacters(in: .whitespaces).isEmpty)
-                    .focusable(false)
+                    .focusEffectDisabled()
                 }
 
                 // ── Label ──────────────────────────────────────────────
