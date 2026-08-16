@@ -16,25 +16,21 @@ struct HelpItem: Identifiable {
     let titleKey: LocalizedStringKey
     let bodyKey: LocalizedStringKey
     let icon: String
-    /// Asset name in Assets.xcassets. Nil if this item has no screenshot.
-    let imageName: String?
-    /// Normalized focus rect (0–1) for HelpScreenshot crop. Nil when imageName is nil.
-    let focusRect: CGRect?
+    /// Asset name(s) in Assets.xcassets, in display order. Empty if this item has no screenshot.
+    let imageNames: [String]
 
     init(
         id: String,
         titleKey: LocalizedStringKey,
         bodyKey: LocalizedStringKey,
         icon: String,
-        imageName: String? = nil,
-        focusRect: CGRect? = nil
+        imageNames: [String] = []
     ) {
         self.id = id
         self.titleKey = titleKey
         self.bodyKey = bodyKey
         self.icon = icon
-        self.imageName = imageName
-        self.focusRect = focusRect
+        self.imageNames = imageNames
     }
 }
 
@@ -151,7 +147,7 @@ enum HelpContent {
                 titleKey: "help.countdown.notes.title",
                 bodyKey: "help.countdown.notes.body",
                 icon: "note.text",
-                imageName: "help-countdown-notes"
+                imageNames: ["help-countdown-notes"]
             ),
             HelpItem(
                 id: "countdown.reorder",
@@ -184,7 +180,8 @@ enum HelpContent {
                 id: "calculate.toggle",
                 titleKey: "help.calculate.toggle.title",
                 bodyKey: "help.calculate.toggle.body",
-                icon: "calendar"
+                icon: "calendar",
+                imageNames: ["calculated-days", "calculated-epochs"]
             ),
             HelpItem(
                 id: "calculate.deadlines",
@@ -203,7 +200,7 @@ enum HelpContent {
                 titleKey: "help.calculate.sunpanel.title",
                 bodyKey: "help.calculate.sunpanel.body",
                 icon: "sun.horizon",
-                imageName: "help-calculate-sunpanel"
+                imageNames: ["help-calculate-sunpanel"]
             )
         ]
     )

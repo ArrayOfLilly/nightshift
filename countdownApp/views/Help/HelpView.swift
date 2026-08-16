@@ -80,9 +80,14 @@ private struct HelpItemRow: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.leading, 28)
 
-            if let imageName = item.imageName {
-                HelpScreenshot(imageName: imageName, maxWidth: 560)
-                    .padding(.vertical, 16)
+            if !item.imageNames.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(item.imageNames, id: \.self) { imageName in
+                        HelpScreenshot(imageName: imageName, maxWidth: 560)
+                    }
+                }
+                .padding(.leading, 28)
+                .padding(.vertical, 16)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

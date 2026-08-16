@@ -25,8 +25,11 @@
 
 **Session CO (2026-08-16) LEZÁRVA:** **ENH-HELP-2** teljes egészében kész — mind
 5 Help szekció (Overview, Countdown, Calculate, Snippets, Recovery), 25/25 item
-body szövege mélyítve EN+HU-ban. Csak `Localizable.xcstrings`, `HelpContent.swift`
-struktúra változatlan.
+body szövege mélyítve EN+HU-ban. Utólag (felhasználói visszajelzés alapján): a
+felhasználó által már korábban Assetsbe tett 2 kép (`calculated-days`,
+`calculated-epochs`) bekötve a `calculate.toggle` itemhez, `HelpItem` modell
+több-képes támogatással (`imageNames: [String]`), és a screenshot bal margin
+javítva (28pt, a body szöveghez igazítva, nem a címhez).
 - Build: FELHASZNÁLÓ FELADATA (CN + CO változások együtt ellenőrizhetők)
 
 **Következő session témája:** build ellenőrzés (CN + CO változások együtt), majd

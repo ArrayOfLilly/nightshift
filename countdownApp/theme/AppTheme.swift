@@ -100,7 +100,8 @@ enum AppTheme {
     /// Raised from 520 to 600pt (UX-2): gives more breathing room for snippet text and countdown
     /// name rows without letting the layout spread too wide on large displays.
     static let windowMaxWidth: CGFloat = 600
-    /// Minimum Help window width — matches the width the fixed-width screenshots (560pt) and
+    /// Minimum Help window width — matches the width the fixed-width screenshots (560pt),
+    /// their 28pt leading padding (aligning them with body text, not titles), and
     /// HelpItemRow horizontal padding (20pt each side) were tuned for.
     static let helpWindowMinWidth: CGFloat = 640
     /// Maximum Help window width — deliberately wider than the main window's `windowMaxWidth`

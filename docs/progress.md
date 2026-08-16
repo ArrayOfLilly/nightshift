@@ -1,3 +1,36 @@
+## Session CO — 2026-08-16 (ENH-HELP-2 utólagos javítás: hiányzó screenshotok + margin — LEZÁRVA)
+
+### Session CO utólagos rész — LEZÁRVA
+Felhasználói visszajelzés után (ENH-HELP-2 lezárása után, még ugyanebben a
+sessionben):
+- [x] **Hiányzó screenshotok popótolva**: a felhasználó korábban két képet tett be
+  az Assetsbe (`calculated-days.imageset`, `calculated-epochs.imageset`,
+  `countdownApp/resources/Assets.xcassets/` alatt, 460×197px), amelyek nem
+  kerültek be a Help tartalomba — most bekötve a `calculate.toggle` itemhez
+  (DAYS/CAL váltógomb, mindkét állapot képe)
+- [x] **`HelpItem` modell bővítve**: `imageName: String?` (egyetlen kép) →
+  `imageNames: [String]` (több kép egy item alatt). A hasznalaton kívüli
+  `focusRect: CGRect?` mező eltávolítva (dead code volt, sehol nem használták
+  a pre-cropped assets bevezetése óta)
+  - `countdown.notes`: `imageNames: ["help-countdown-notes"]`
+  - `calculate.sunpanel`: `imageNames: ["help-calculate-sunpanel"]`
+  - `calculate.toggle`: `imageNames: ["calculated-days", "calculated-epochs"]` (új)
+- [x] **`HelpScreenshot.swift`**: `pixelSizes` szótár kiegészítve a 2 új asset
+  méretével (460×197)
+- [x] **`HelpView.swift` `HelpItemRow`**: több screenshot egymás alatt (`VStack`,
+  12pt spacing), és a bal margin `.padding(.leading, 28)`-ra javítva — eddig a
+  screenshot a cím/ikon szintjéhez (0pt) igazodott, mostantól a body szöveg
+  bal széléhez (28pt), ahogy a felhasználó kérte
+- [x] **`AppTheme.swift`**: `helpWindowMinWidth` komment frissítve a +28pt
+  leading padding említésével (a tényleges 640pt érték nem változott, még
+  belefér 628pt tartalom szélesség mellett is)
+- [ ] Build: FELHASZNÁLÓ FELADATA
+
+**Következő session:** build ellenőrzés (CN + CO teljes változás-halmaz), majd
+BUG-MANUAL-1, ENH-DEVDOCS-1/2, ENH-L10N-1 maradék.
+
+---
+
 ## Session CO — 2026-08-16 (ENH-HELP-2: Help szekciók bővítése — LEZÁRVA)
 
 ### Session CO — LEZÁRVA

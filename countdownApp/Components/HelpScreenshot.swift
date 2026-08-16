@@ -23,6 +23,8 @@ struct HelpScreenshot: View {
     private static let pixelSizes: [String: CGSize] = [
         "help-countdown-notes":    CGSize(width: 1104, height: 208),
         "help-calculate-sunpanel": CGSize(width: 1020, height: 1202),
+        "calculated-days":         CGSize(width: 460, height: 197),
+        "calculated-epochs":       CGSize(width: 460, height: 197),
     ]
 
     private var displayHeight: CGFloat {
