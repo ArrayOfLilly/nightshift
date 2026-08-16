@@ -14,16 +14,17 @@ bővebb, részletesebb szöveget kell kapjon.
 **Scope:** csak Localizable.xcstrings EN+HU help.*.body értékek mélyítése, item-enként
 1-3 mondattal bővítve konkrét részletekkel (mi történik, mikor hasznos, mi a
 kapcsolódó viselkedés). HelpContent.swift struktúra (item lista, ikonok, screenshotok)
-változatlan marad, kivéve ha egy item vizuálisan is megsegítené — az külön döntés.
+változatlan maradt.
 
 **Haladás:**
 - Overview (5/5) kész — Session CO
 - Countdown (8/8) kész — Session CO
 - Calculate (6/6) kész — Session CO
-- Snippets (4 item) — hátra
-- Recovery (2 item) — hátra
+- Snippets (4/4) kész — Session CO
+- Recovery (2/2) kész — Session CO
 
-**Státusz:** FOLYAMATBAN (Session CO indította)
+**Státusz:** ✅ KÉSZ (Session CO, 2026-08-16) — mind az 5 szekció, 25/25 item bővítve.
+Build ellenőrzés felhasználó feladata.
 
 ---
 

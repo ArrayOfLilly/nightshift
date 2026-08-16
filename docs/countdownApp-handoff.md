@@ -23,20 +23,18 @@
 
 ## Következő session feladata
 
-**Session CO (2026-08-16) folyamatban:** **ENH-HELP-2** — minden Help szekció body
-szövegeinek mélyítése. Csak `Localizable.xcstrings` EN+HU, `HelpContent.swift`
+**Session CO (2026-08-16) LEZÁRVA:** **ENH-HELP-2** teljes egészében kész — mind
+5 Help szekció (Overview, Countdown, Calculate, Snippets, Recovery), 25/25 item
+body szövege mélyítve EN+HU-ban. Csak `Localizable.xcstrings`, `HelpContent.swift`
 struktúra változatlan.
-- **Overview (5/5), Countdown (8/8), Calculate (6/6) kész** ebben a sessionben.
-- **Következő session:** Snippets szekció (4 item: what, copy, edit, projects),
-  majd Recovery (2 item: storage, banner). Ezzel ENH-HELP-2 lezárul.
-- Build: FELHASZNÁLÓ FELADATA (a CO session végén is, ha a full kör lezárult)
+- Build: FELHASZNÁLÓ FELADATA (CN + CO változások együtt ellenőrizhetők)
 
-**Későbbi, még nyitott témák** (ENH-HELP-2 után folytatandók): build ellenőrzés
-(CN változások is), BUG-MANUAL-1 (manual: projekt törlés + tooltipek + app név —
-felhasználó csinálja), ENH-DEVDOCS-1/2, ENH-L10N-1 maradék.
+**Következő session témája:** build ellenőrzés (CN + CO változások együtt), majd
+BUG-MANUAL-1, ENH-DEVDOCS-1/2, ENH-L10N-1 maradék.
 
 **Buglist állapot összefoglaló** (`docs/buglist.md`) — nyitott tételek:
 - **ENH-HELP-1** ✅ — KÉSZ (S1–S6 + BW session + CN session: projekt törlés + tooltipek hozzáadva)
+- **ENH-HELP-2** ✅ — KÉSZ (Session CO): mind az 5 Help szekció (25/25 item) body szövege mélyítve EN+HU-ban
 - **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik
 - **ENH-DEVDOCS-2** 🟡 — README + install.md, projektnév egyeztetés
 - **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása (lokalizáció, Settings; About már kész)

@@ -1527,13 +1527,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "If stored data could not be read at startup — for example due to corruption — a banner appears listing how many items were lost. Those items are not visible in the app and are not active. Tap Copy Raw Data first to preserve the raw JSON on your clipboard; once you dismiss the banner, that clipboard copy is your only way to recover the data."
+            "value" : "If stored data could not be read at startup — for example due to corruption — a banner appears listing how many items were lost. Those items are not visible in the app and are not active. Tap Copy Raw Data first to preserve the raw JSON on your clipboard; once you dismiss the banner, that clipboard copy is your only way to recover the data. This is a rare edge case — it only happens if the underlying storage becomes corrupted, not from normal use."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ha indításkor a tárolt adatok nem voltak beolvashatók — például sérülés miatt —, egy sáv jelenik meg, amely megmutatja, hány elem veszett el. Ezek az elemek nem láthatók az appban és nem aktívak. Koppints előbb a Copy Raw Data gombra, hogy a nyers JSON-t megőrizd a vágólapon — miután bezárod a sávot, ez a vágólap-másolat az egyetlen módja az adatok visszaszerzésének."
+            "value" : "Ha indításkor a tárolt adatok nem voltak beolvashatók — például sérülés miatt —, egy sáv jelenik meg, amely megmutatja, hány elem veszett el. Ezek az elemek nem láthatók az appban és nem aktívak. Koppints előbb a Copy Raw Data gombra, hogy a nyers JSON-t megőrizd a vágólapon — miután bezárod a sávot, ez a vágólap-másolat az egyetlen módja az adatok visszaszerzésének. Ez egy ritka, szélsőséges eset — csak akkor fordul elő, ha a mögöttes tárolás megsérül, normál használat közben nem."
           }
         }
       }
@@ -1559,13 +1559,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "All data — countdown slots, deadlines, notes, and snippets — is stored locally on this Mac in UserDefaults. There is no iCloud or cloud sync."
+            "value" : "All data — countdown slots, deadlines, notes, and snippets — is stored locally on this Mac in UserDefaults. There is no iCloud or cloud sync, so the data does not carry over to another Mac, and there is no automatic backup — if you need one, back up this Mac as you normally would."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minden adat — visszaszámlálás slotok, határidők, jegyzetek és snippetek — helyben, ezen a Macen tárolódik a UserDefaults-ban. Nincs iCloud vagy felhő szinkronizáció."
+            "value" : "Minden adat — visszaszámlálás slotok, határidők, jegyzetek és snippetek — helyben, ezen a Macen tárolódik a UserDefaults-ban. Nincs iCloud vagy felhő szinkronizáció, így az adat nem kerül át egy másik Macre, és nincs automatikus biztonsági mentés sem — ha erre szükséged van, mentsd ezt a Macet a szokásos módon."
           }
         }
       }
@@ -1673,13 +1673,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tap the copy icon next to a snippet to copy its body to the clipboard. The icon briefly shows a checkmark to confirm."
+            "value" : "Tap the copy icon next to a snippet to copy its body to the clipboard. The icon briefly shows a checkmark to confirm. This is the fastest way to reuse a saved handoff note or template without opening the edit sheet first."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Koppints a másoló ikonra egy snippet mellett, hogy a tartalmát a vágólapra másold. Az ikon röviden egy pipát mutat megerősítésként."
+            "value" : "Koppints a másoló ikonra egy snippet mellett, hogy a tartalmát a vágólapra másold. Az ikon röviden egy pipát mutat megerősítésként. Ez a leggyorsabb módja egy mentett átadási jegyzet vagy sablon újrafelhasználásának anélkül, hogy előbb megnyitnád a szerkesztő ablakot."
           }
         }
       }
@@ -1707,13 +1707,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tap the chevron menu on a snippet row to Edit or Delete it. Use the checkmark to save, or X to discard changes."
+            "value" : "Tap the chevron menu on a snippet row to Edit or Delete it. Editing opens a markdown text editor for the title and body. Use the checkmark to save, or X to discard changes."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Koppints a snippet sor nyílmenüjére a szerkesztéshez (Edit) vagy törléshez (Delete). A pipával mentheted, az X-szel elvetheted a módosításokat."
+            "value" : "Koppints a snippet sor nyílmenüjére a szerkesztéshez (Edit) vagy törléshez (Delete). A szerkesztés egy markdown szövegszerkesztőt nyit meg a cím és a tartalom módosításához. A pipával mentheted, az X-szel elvetheted a módosításokat."
           }
         }
       }
@@ -1740,13 +1740,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Snippets are grouped by project. Tap the chevron next to a project name to rename or delete the group. Deleting a project does not remove any snippets — they are moved to General automatically."
+            "value" : "Snippets are grouped by project. Tap the chevron next to a project name to rename or delete the group. Deleting a project does not remove any snippets — they are moved to General automatically. Use separate projects to keep notes for different side projects from mixing together."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A snippetek projektek szerint vannak csoportosítva. Koppints a projektcím melletti nyílra a csoport átnevezéséhez vagy törléséhez. A projekt törlése nem törli a snippeteket — azok automatikusan az Általánosba (General) kerülnek."
+            "value" : "A snippetek projektek szerint vannak csoportosítva. Koppints a projektcím melletti nyílra a csoport átnevezéséhez vagy törléséhez. A projekt törlése nem törli a snippeteket — azok automatikusan az Általánosba (General) kerülnek. Külön projektekkel elkerülheted, hogy a különböző side projektek jegyzetei összekeveredjenek."
           }
         }
       }
@@ -1773,13 +1773,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Snippets are reusable markdown notes, organized by project. Use them to store recurring text blocks, templates, or session context."
+            "value" : "Snippets are reusable markdown notes, organized by project. Use them to store recurring text blocks, templates, or session context — for example a handoff note summarizing where you left off, ready to paste into your next AI coding session."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A snippetek újrafelhasználható, projekt szerint rendezett markdown jegyzetek. Ismétlődő szövegblokkok, sablonok vagy session kontextus tárolására használhatod őket."
+            "value" : "A snippetek újrafelhasználható, projekt szerint rendezett markdown jegyzetek. Ismétlődő szövegblokkok, sablonok vagy session kontextus tárolására használhatod őket — például egy átadási jegyzet formájában, amely összefoglalja, hol hagytad abba a munkát, és bemásolható a következő AI kódolási sessionbe."
           }
         }
       }

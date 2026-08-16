@@ -1,30 +1,32 @@
-## Session CO — 2026-08-16 (ENH-HELP-2: Overview + Countdown + Calculate szekció bővítése — FOLYAMATBAN)
+## Session CO — 2026-08-16 (ENH-HELP-2: Help szekciók bővítése — LEZÁRVA)
 
-### Session CO — FOLYAMATBAN
+### Session CO — LEZÁRVA
 - [x] `docs/progress.md`, `docs/countdownApp-handoff.md` elolvasva
 - [x] `Models/HelpContent.swift` elolvasva (25 item, 5 szekció áttekintve)
 - [x] **Új feladat felvéve: ENH-HELP-2** — a felhasználó szerint a Help menü nem elég
   részletes; kérése: minden szekció bővebb szöveget kapjon (nem új item, hanem a
   meglévő body szövegek mélyítése)
-- [x] **Overview szekció (5/5 item) kész** — csak `Localizable.xcstrings` EN+HU
-  `body` értékek bővítve: `what`, `cooldowns`, `schedule`, `views`, `tooltips`
+- [x] **Overview szekció (5/5 item) kész** — `what`, `cooldowns`, `schedule`, `views`, `tooltips`
 - [x] **Countdown szekció (8/8 item) kész** — `add`, `copy`, `edit`, `expand`, `free`,
   `notes`, `reorder`, `toggle`
-- [x] **Calculate szekció (6/6 item) kész** — csak `Localizable.xcstrings` EN+HU
+- [x] **Calculate szekció (6/6 item) kész** — `deadlines`, `load`, `reset`, `stepper`,
+  `sunpanel`, `toggle`
+- [x] **Snippets szekció (4/4 item) kész** — csak `Localizable.xcstrings` EN+HU
   `body` értékek bővítve, `HelpContent.swift` nem változott:
-  - `deadlines` — használati példa (side project célkitűzés) + hol jelenik meg a lista
-  - `load` — kiegészítve: LOAD AS TO felülírja a korábbi TO értéket
-  - `reset` — használati példa (FROM reset + mentett határidő ellenőrzése)
-  - `stepper` — kiegészítve: FROM/TO sorok szerepe + élő frissülés
-  - `sunpanel` — kiegészítve: holdkelte/holdnyugta/megvilágítás is megjelenik, célja (munkaablak ellenőrzése)
-  - `toggle` — kiegészítve: mikor melyik nézet (DAYS/CAL) hasznos
-- [ ] Snippets szekció (4 item) — KÖVETKEZŐ
-- [ ] Recovery szekció (2 item)
+  - `copy` — használati példa (átadási jegyzet gyors újrafelhasználása)
+  - `edit` — kiegészítve: markdown szövegszerkesztő említése
+  - `projects` — kiegészítve: célja (side projektek jegyzeteinek elkülönítése)
+  - `what` — használati példa (session handoff jegyzet AI kódoláshoz)
+- [x] **Recovery szekció (2/2 item) kész** — csak `Localizable.xcstrings` EN+HU
+  `body` értékek bővítve:
+  - `banner` — kiegészítve: ritka szegleteset, csak sérült tároláskor
+  - `storage` — kiegészítve: nincs eszközök közötti átvitel, nincs automatikus mentés
+- [x] **ENH-HELP-2 TELJES EGÉSZÉBEN KÉSZ** — mind az 5 szekció, 25/25 item bővítve
 - [ ] Build: FELHASZNÁLÓ FELADATA
 
-**Következő session:** ENH-HELP-2 folytatása — Snippets szekció (4 item: what,
-copy, edit, projects), majd Recovery (2 item: storage, banner) body szövegeinek
-bővítése ugyanezzel a mintával. Ezzel ENH-HELP-2 lezárul.
+**Következő session:** ENH-HELP-2 lezárva, nincs folytatás ezen a témán. Build
+ellenőrzés (CN + CO változások együtt), majd BUG-MANUAL-1, ENH-DEVDOCS-1/2,
+ENH-L10N-1 maradék.
 
 ---
 
