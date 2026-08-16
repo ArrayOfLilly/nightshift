@@ -288,6 +288,7 @@ struct CountdownView: View {
                             }
                             .buttonStyle(.plain)
                             .focusEffectDisabled()
+                            .help(String(localized: "Open slot details"))
                             .onDrag {
                                 draggingID = item.id
                                 return NSItemProvider(object: item.id.uuidString as NSString)
@@ -308,6 +309,7 @@ struct CountdownView: View {
                             }
                             .buttonStyle(.plain)
                             .focusEffectDisabled()
+                            .help(String(localized: "Open slot details"))
                         }
                     }
                 }

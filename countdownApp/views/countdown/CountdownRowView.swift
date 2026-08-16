@@ -64,6 +64,7 @@ struct CountdownRowView: View {
                         copyFeedback = false
                     }
                 })
+                .help(String(localized: "Copy text"))
 
                 if expired {
                     Text("FREE ✓")
