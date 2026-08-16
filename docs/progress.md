@@ -1,3 +1,22 @@
+## Session CO — 2026-08-16 (Tabfül gomb háttérszín javítás — LEZÁRVA)
+
+### Session CO még későbbi rész — LEZÁRVA
+Felhasználói visszajelzés: a kijelölt tabfül gomb (`Calculate`/`Countdown`/`Snippets`
+váltó) háttere `AppTheme.dark` (szürkésbarna `#2A2015`) volt, ami nem illett az
+amber témához és "ronda" volt.
+- [x] Egyeztetve: közel-fekete irányba menjen, mint a Calculate mód háttere
+- [x] `ContentView.swift` `modeButton` — háttér `AppTheme.dark` →
+  `AppTheme.calculateBackground` (`#060503`, ugyanaz a szín amit a Calculate
+  fület már használja) — **csak ezen az egy gombon**, `AppTheme.dark` globálisan
+  változatlan marad (43 másik hely használja más gombokon/sheeteken, azokat nem
+  érintette a felhasználó visszajelzése)
+- [ ] Build: FELHASZNÁLÓ FELADATA
+
+**Következő session:** build ellenőrzés (CN + CO teljes változás-halmaz), majd
+BUG-MANUAL-1, ENH-DEVDOCS-1/2, ENH-L10N-1 maradék.
+
+---
+
 ## Session CO — 2026-08-16 (ENH-HELP-2 utólagos javítás: hiányzó screenshotok + margin — LEZÁRVA)
 
 ### Session CO utólagos rész — LEZÁRVA

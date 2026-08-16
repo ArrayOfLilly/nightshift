@@ -102,7 +102,11 @@ struct ContentView: View {
                 .padding(.vertical, 8)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.radiusMedium)
-                        .fill(AppTheme.dark)
+                        // Near-black (same value as calculateBackground, #060503) — not the
+                        // usual AppTheme.dark brown, which read as muddy/off against the
+                        // amber background here. Deliberately scoped to just this button;
+                        // AppTheme.dark stays unchanged everywhere else in the app.
+                        .fill(AppTheme.calculateBackground)
                         .opacity(selected ? 1.0 : 0.0)
                 )
         }
