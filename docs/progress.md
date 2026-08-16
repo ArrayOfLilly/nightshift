@@ -32,6 +32,11 @@ tartalmi területükre), így ez a sor közvetlenül a natív macOS ablakhátté
   fület már használja) — **csak ezen az egy gombon**, `AppTheme.dark` globálisan
   változatlan marad (43 másik hely használja más gombokon/sheeteken, azokat nem
   érintette a felhasználó visszajelzése)
+- [x] Opacity: kezérileg 0.9-et kért a felhasználó, majd pontosította — NE
+  hardcoded legyen, hanem a téma legnagyobb opacity tokenje. Használt token:
+  `AppTheme.alpha90` (0.90, "Near-opaque elements — selected states and
+  high-contrast labels"), a téma legmagasabb alpha értéke.
+  `.fill(AppTheme.calculateBackground.opacity(AppTheme.alpha90))`
 - [ ] Build: FELHASZNÁLÓ FELADATA
 
 **Következő session:** build ellenőrzés (CN + CO teljes változás-halmaz), majd

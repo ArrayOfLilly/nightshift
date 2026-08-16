@@ -102,15 +102,16 @@ struct ContentView: View {
                 .padding(.vertical, 8)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.radiusMedium)
-                        // Near-black (same value as calculateBackground, #060503) — not the
-                        // usual AppTheme.dark brown. Elsewhere in the app AppTheme.dark sits on
+                        // Same near-black as calculateBackground (#060503) — not the usual
+                        // AppTheme.dark brown. Elsewhere in the app AppTheme.dark sits on
                         // an explicit AppTheme.background (amber) fill set by each mode's own
                         // view, where brown reads fine. This mode-switcher row, above the
                         // Divider, has no such fill — it sits directly on the window's native
                         // macOS background (dark in Dark Mode), where the brown read as muddy.
                         // Deliberately scoped to just this button; AppTheme.dark stays
-                        // unchanged everywhere else in the app.
-                        .fill(AppTheme.calculateBackground)
+                        // unchanged everywhere else in the app. alpha90 (0.90) is the theme's
+                        // strongest/near-opaque tint token.
+                        .fill(AppTheme.calculateBackground.opacity(AppTheme.alpha90))
                         .opacity(selected ? 1.0 : 0.0)
                 )
         }
