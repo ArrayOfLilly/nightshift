@@ -11,6 +11,9 @@
 - [x] Git commit `e73d7ec`: `CM: tooltip .help() for countdown row NavigationLink and label pill`
 - [x] Git commit `81cd2a3`: `CM2: fix moon button tooltip — .help() after .popover() so hover is not swallowed`
 - [x] Git commit `811fe05`: `CM3: moon tooltip — .help() on wrapper VStack outside popover; remove pill and clock/cal .help()`
+- [x] Git commit `7d067b9`: `CM4: remove trivial .help() from reset and save buttons in CalculateView`
+  - `nowButton` helper: `helpText` paraméter eltávolítva, `.help()` törölve
+  - SAVE gomb: `.help()` törölve
   - `CalculateView.swift`: moon gomb Button-t `VStack(spacing:0)`-ba csomagolva; `.help()` és `.offset()` a VStack-ra kerültek, `.popover()` a Button-on maradt — a popover tracking area így nem nyeli el a hover eventeket
   - `CountdownRowView.swift`: pill `.help("Copy text")` és clock/cal gomb `.help()` eltávolítva — a NavigationLink `.help("Open slot details")`-je mindkettőn felülírt volna
 - [ ] Build: **FELHASZNÁLÓ FELADATA**

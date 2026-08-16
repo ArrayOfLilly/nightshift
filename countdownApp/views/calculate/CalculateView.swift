@@ -168,7 +168,7 @@ struct CalculateView: View {
                                         }
                                     }
                                     .offset(y: -arcOffset)
-                                    .help(String(localized: "Show today's sun, moon phase and photo hour data"))
+                                    .nativeTooltip(String(localized: "Show today's sun, moon phase and photo hour data"))
                                 } else {
                                     Image("pink_moon_\(i + 1)")
                                         .resizable()
