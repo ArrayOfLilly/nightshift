@@ -1365,13 +1365,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Each countdown item tracks when a free-tier AI account — Claude, Codex, ChatGPT, DeepSeek, Qwen, Kimi, and others — becomes available again, so you always know which model to switch to next."
+            "value" : "Each countdown item tracks when a free-tier AI account — Claude, Codex, ChatGPT, DeepSeek, Qwen, Kimi, and others — becomes available again. Active items count down and move to the free list automatically once their time is up, so at a glance you can see which accounts are still cooling down and which are ready to use right now."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minden visszaszámlálás elem azt követi, hogy egy ingyenes AI fiók — Claude, Codex, ChatGPT, DeepSeek, Qwen, Kimi és mások — mikor válik újra elérhetővé, így mindig tudod, melyik modellre válts legközelebb."
+            "value" : "Minden visszaszámlálás elem azt követi, hogy egy ingyenes AI fiók — Claude, Codex, ChatGPT, DeepSeek, Qwen, Kimi és mások — mikor válik újra elérhetővé. Az aktív elemek visszaszámlálnak, majd az idő lejártával automatikusan átkerülnek a szabad (free) listára, így egy pillantással látod, mely fiókok vannak még újratöltési időszakban és melyek használhatók most azonnal."
           }
         }
       }
@@ -1397,13 +1397,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Development happens at night — once it starts getting light outside, it's time to sleep. The Calculate tab's sun panel shows tonight's sunrise, so you always know how much of the night is left to work with."
+            "value" : "Development happens at night — once it starts getting light outside, it's time to sleep. The Calculate tab's sun panel shows tonight's sunrise and how much of the night is left to work with, based on your location. It also shows moonrise, moonset, and illumination, so you have the full picture of the night sky, not just the sunrise deadline."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A fejlesztés éjjel zajlik — amint kezd világosodni, ideje aludni. A Calculate fül nap-panelje mutatja az aznapi napkeltét, így mindig tudod, mennyi idő maradt még dolgozni az éjszakából."
+            "value" : "A fejlesztés éjjel zajlik — amint kezd világosodni, ideje aludni. A Calculate fül nap-panelje a helyzeted alapján mutatja az aznapi napkeltét és azt, mennyi idő maradt még dolgozni az éjszakából. Emellett a holdkeltét, holdnyugtát és a megvilágítást is mutatja, így nem csak a napkelte-határidőt látod, hanem az éjszakai égbolt teljes képét."
           }
         }
       }
@@ -1424,18 +1424,52 @@
         }
       }
     },
-    "help.overview.views.body" : {
+    "help.overview.tooltips.body" : {
+      "comment" : "Body text for the button tooltips help item in Overview.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Switch between Countdown, Calculate, and Snippets using the tab bar at the top of the window."
+            "value" : "Hover the mouse over any button to see a short description of what it does. Most interactive elements throughout the app have a tooltip — useful when an icon isn't immediately obvious, or when you just want a quick reminder without opening this Help window."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Válts a Countdown, Calculate és Snippets nézetek között az ablak tetején lévő fülsávval."
+            "value" : "Vigyed az egérmutatót bármelyik gomb fölé, és rövid leírás jelenik meg arról, mit csinál. Az app legtöbb interaktív elemén megjelenik tooltip — hasznos, ha egy ikon jelentése nem egyértelmű, vagy csak gyors emlékeztetőre van szükséged anélkül, hogy megnyitnád ezt a Súgó ablakot."
+          }
+        }
+      }
+    },
+    "help.overview.tooltips.title" : {
+      "comment" : "Title of the button tooltips help item in Overview.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Button tooltips"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gomb-tippek"
+          }
+        }
+      }
+    },
+    "help.overview.views.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch between Countdown, Calculate, and Snippets using the tab bar at the top of the window. Each tab has its own dedicated view, so you can move between tracking AI cooldowns, checking your deadlines, and managing snippets throughout the night."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Válts a Countdown, Calculate és Snippets nézetek között az ablak tetején lévő fülsávval. Mindegyik fülnek saját nézete van, így az éjszaka folyamán szabadon mozoghatsz az AI-fiókok követése, a határidők ellenőrzése és a snippetek kezelése között."
           }
         }
       }
@@ -1461,13 +1495,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NightShift is a personal workspace for developing side projects at night with free-tier AI coding assistants. It tracks which AI accounts are on cooldown, keeps your side-project deadlines, and shows how much of the night is left before sunrise."
+            "value" : "NightShift is a personal workspace for developing side projects at night with free-tier AI coding assistants — the kind that reset after a cooldown window instead of a subscription. Three tabs cover the whole workflow: Countdown tracks which AI accounts are cooling down and when they free up, Calculate keeps your side-project deadlines and shows how much of the night is left before sunrise, and Snippets stores reusable notes and session handoffs. Everything is stored locally on this Mac — see the Recovery section for details."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A NightShift egy személyes munkatér side projektek éjszakai fejlesztéséhez, ingyenes AI kódoló asszisztensek segítségével. Nyomon követi, mely AI fiókok vannak éppen újratöltési időszakban, tárolja a side project határidőket, és megmutatja, mennyi van hátra az éjszakából napkeltéig."
+            "value" : "A NightShift egy személyes munkatér side projektek éjszakai fejlesztéséhez, ingyenes AI kódoló asszisztensekkel — olyanokkal, amelyek nem előfizetés, hanem újratöltési idő (cooldown) után válnak újra elérhetővé. Három fül fedi le a teljes munkafolyamatot: a Countdown követi, mely AI fiókok vannak éppen újratöltési időszakban és mikor szabadulnak fel, a Calculate tárolja a side project határidőket és megmutatja, mennyi maradt az éjszakából napkeltéig, a Snippets pedig újrafelhasználható jegyzeteket és session-átadásokat tárol. Minden adat helyben, ezen a Macen tárolódik — részletek a Helyreállítás szekcióban."
           }
         }
       }
@@ -1696,6 +1730,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Snippet szerkesztése"
+          }
+        }
+      }
+    },
+    "help.snippets.projects.body" : {
+      "comment" : "Body text for the project management help item in Snippets.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snippets are grouped by project. Tap the chevron next to a project name to rename or delete the group. Deleting a project does not remove any snippets — they are moved to General automatically."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A snippetek projektek szerint vannak csoportosítva. Koppints a projektcím melletti nyílra a csoport átnevezéséhez vagy törléséhez. A projekt törlése nem törli a snippeteket — azok automatikusan az Általánosba (General) kerülnek."
+          }
+        }
+      }
+    },
+    "help.snippets.projects.title" : {
+      "comment" : "Title of the project management help item in Snippets.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projects"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projektek"
           }
         }
       }

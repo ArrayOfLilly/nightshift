@@ -1,3 +1,55 @@
+## Session CO — 2026-08-16 (ENH-HELP-2: Overview szekció bővítése — FOLYAMATBAN)
+
+### Session CO — FOLYAMATBAN
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md` elolvasva
+- [x] `Models/HelpContent.swift` elolvasva (25 item, 5 szekció áttekintve)
+- [x] **Új feladat felvéve: ENH-HELP-2** — a felhasználó szerint a Help menü nem elég
+  részletes; kérése: minden szekció bővebb szöveget kapjon (nem új item, hanem a
+  meglévő body szövegek mélyítése)
+- [x] **Overview szekció (5/5 item) kész** — csak `Localizable.xcstrings` EN+HU
+  `body` értékek bővítve, `HelpContent.swift` és title-ök nem változtak:
+  - `help.overview.what.body` — kiegészítve a 3 fül rövid szerepével + helyi tárolás említéssel
+  - `help.overview.cooldowns.body` — kiegészítve: aktív→free lista átkerülés az idő leteltével
+  - `help.overview.schedule.body` — kiegészítve: helyzet-alapú számítás + holdkelte/holdnyugta/megvilágítás említése
+  - `help.overview.views.body` — kiegészítve egy mondattal a fülek céljáról
+  - `help.overview.tooltips.body` — kiegészítve: mikor hasznos (nem egyértelmű ikon / gyors emlékeztető)
+- [ ] Countdown szekció (8 item) — KÖVETKEZŐ
+- [ ] Calculate szekció (6 item)
+- [ ] Snippets szekció (4 item)
+- [ ] Recovery szekció (2 item)
+- [ ] Build: FELHASZNÁLÓ FELADATA
+
+**Következő session:** ENH-HELP-2 folytatása — Countdown szekció (8 item: add, edit,
+expand, copy, toggle, free, notes, reorder) body szövegeinek bővítése ugyanezzel a
+mintával (`Localizable.xcstrings` EN+HU, `HelpContent.swift` nem változik, csak ha
+valamelyik item screenshotot is kap).
+
+---
+
+## Session CN — 2026-08-16 (Help: projekt törlés + tooltipek — LEZÁRVA)
+
+### Session CN — LEZÁRVA
+- [x] `docs/progress.md`, `docs/countdownApp-handoff.md` elolvasva
+- [x] `Models/HelpContent.swift`, `Localizable.xcstrings` elolvasva (teljes Help tartalom áttekintve)
+- [x] **Érintett fájlok**: `Models/HelpContent.swift`, `Localizable.xcstrings`
+- [x] **`HelpContent.swift`**: 2 új `HelpItem` hozzáadva:
+  - `snippets.projects` (`folder` ikon) — projekt törlés → General viselkedés
+  - `overview.tooltips` (`cursorarrow` ikon) — hover tooltip-ek ismertetése
+- [x] **`Localizable.xcstrings`**: 4 új kulcs beillesztve EN+HU-val:
+  - `"help.snippets.projects.body"` / `"help.snippets.projects.title"`
+  - `"help.overview.tooltips.body"` / `"help.overview.tooltips.title"`
+- [ ] Build: **FELHASZNÁLÓ FELADATA**
+
+**Snippets.projects tartalom (EN):** "Snippets are grouped by project. Tap the chevron next to a project name to rename or delete the group. Deleting a project does not remove any snippets — they are moved to General automatically."
+
+**Overview.tooltips tartalom (EN):** "Hover the mouse over any button to see a short description of what it does. Most interactive elements throughout the app have a tooltip."
+
+**Megjegyzés:** A manual frissítése (BUG-MANUAL-1) a felhasználó feladata (projekt törlés + tooltipek ott is dokumentálandók).
+
+**Következő session:** build ellenőrzés, BUG-MANUAL-1 (ha a felhasználó átadja), ENH-DEVDOCS-1/2, vagy ENH-L10N-1 maradék.
+
+---
+
 ## Session CM — 2026-08-16 (Countdown tooltip javítás — LEZÁRVA)
 
 ### Session CM — LEZÁRVA
@@ -15,8 +67,11 @@
   - `nowButton` helper: `helpText` paraméter eltávolítva, `.help()` törölve
   - SAVE gomb: `.help()` törölve
 - [x] Git commit `d094b79`: `CM5: NativeTooltip — AppKit NSView.toolTip for moon button, bypasses .help() tracking area issue`
-  - `Components/NativeTooltip.swift` új fájl: `NSViewRepresentable` alapú `.nativeTooltip()` View extension; transzparens `NSView` overlay-ként regisztrálja az `NSView.toolTip`-et AppKit-en direkt, megkerülve a SwiftUI `.help()` tracking area mechanizmusát
+  - `Components/NativeTooltip.swift` új fájl: `NSViewRepresentable` alapú `.nativeTooltip()` View extension; transzparens `NSView` overlay-ként regisztrálja az `NSView.toolTip`-et AppKit-en direkt
   - `CalculateView.swift`: moon VStack wrapper `.help()` → `.nativeTooltip()` cserélve
+- [x] Git commit `941731e`: `CM6: nativeTooltip padding param — expand tracking area around moon button`
+  - `NativeTooltip.swift`: `padding: CGFloat = 0` paraméter hozzáadva — negatív padding-gel az NSView overlay nagyobb mint a layout frame, így a tracking area kiterjed a hold körüli területre is
+  - `CalculateView.swift`: `.nativeTooltip(..., padding: 16)` — **MŰKÖDIK**
   - `CalculateView.swift`: moon gomb Button-t `VStack(spacing:0)`-ba csomagolva; `.help()` és `.offset()` a VStack-ra kerültek, `.popover()` a Button-on maradt — a popover tracking area így nem nyeli el a hover eventeket
   - `CountdownRowView.swift`: pill `.help("Copy text")` és clock/cal gomb `.help()` eltávolítva — a NavigationLink `.help("Open slot details")`-je mindkettőn felülírt volna
 - [ ] Build: **FELHASZNÁLÓ FELADATA**

@@ -5,6 +5,28 @@ Prioritás-jelzés: 🔴 kritikus, 🟡 fontos, 🟢 nice-to-have
 
 ---
 
+## ENH-HELP-2: Help menü szövegei nem elég részletesek
+
+A felhasználó visszajelzése szerint az ENH-HELP-1-ben (KÉSZ) felépített Help tartalom
+lényegében megvan, de a body szövegek túl rövidek/felszínesek — minden szekció
+bővebb, részletesebb szöveget kell kapjon.
+
+**Scope:** csak Localizable.xcstrings EN+HU help.*.body értékek mélyítése, item-enként
+1-3 mondattal bővítve konkrét részletekkel (mi történik, mikor hasznos, mi a
+kapcsolódó viselkedés). HelpContent.swift struktúra (item lista, ikonok, screenshotok)
+változatlan marad, kivéve ha egy item vizuálisan is megsegítené — az külön döntés.
+
+**Haladás:**
+- Overview (5/5) kész — Session CO
+- Countdown (8 item) — hátra
+- Calculate (6 item) — hátra
+- Snippets (4 item) — hátra
+- Recovery (2 item) — hátra
+
+**Státusz:** FOLYAMATBAN (Session CO indította)
+
+---
+
 ## UX-SUNPANEL-ICONS: SunPanel szekciócímek ikonijai félrevezetőek 🟢
 
 A SunPanel négy szekciójának fejléce emoji-val jelölt napszakokat (Session CI-ben megoldva SF Symbols-szel):

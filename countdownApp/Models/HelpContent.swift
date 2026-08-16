@@ -94,6 +94,12 @@ enum HelpContent {
                 titleKey: "help.overview.views.title",
                 bodyKey: "help.overview.views.body",
                 icon: "rectangle.3.group"
+            ),
+            HelpItem(
+                id: "overview.tooltips",
+                titleKey: "help.overview.tooltips.title",
+                bodyKey: "help.overview.tooltips.body",
+                icon: "cursorarrow"
             )
         ]
     )
@@ -225,6 +231,12 @@ enum HelpContent {
                 titleKey: "help.snippets.edit.title",
                 bodyKey: "help.snippets.edit.body",
                 icon: "pencil.and.list.clipboard"
+            ),
+            HelpItem(
+                id: "snippets.projects",
+                titleKey: "help.snippets.projects.title",
+                bodyKey: "help.snippets.projects.body",
+                icon: "folder"
             )
         ]
     )

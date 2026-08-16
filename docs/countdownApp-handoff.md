@@ -23,8 +23,23 @@
 
 ## Következő session feladata
 
+**Session CO (2026-08-16) folyamatban:** Új feladat, **ENH-HELP-2** — a felhasználó
+szerint a Help menü nem elég részletes, minden szekció bővebb szöveget kapjon.
+Csak a `Localizable.xcstrings` EN+HU `body` értékeit mélyítjük, `HelpContent.swift`
+struktúra (item-ek, ikonok, screenshotok) nem változik, hacsak nem derül ki közben
+hogy egy item screenshotot is érdemelne.
+- **Overview (5/5) kész** ebben a sessionben.
+- **Következő session:** Countdown szekció (8 item: add, edit, expand, copy,
+  toggle, free, notes, reorder), majd Calculate (6), Snippets (4), Recovery (2)
+  ugyanezzel a mintával, sessionenként egy-két szekció.
+- Build: FELHASZNÁLÓ FELADATA (a CO session végén is, ha a full kör lezárult)
+
+**Későbbi, még nyitott témák** (ENH-HELP-2 után folytatandók): build ellenőrzés
+(CN változások is), BUG-MANUAL-1 (manual: projekt törlés + tooltipek + app név —
+felhasználó csinálja), ENH-DEVDOCS-1/2, ENH-L10N-1 maradék.
+
 **Buglist állapot összefoglaló** (`docs/buglist.md`) — nyitott tételek:
-- **ENH-HELP-1** ✅ — KÉSZ (S1–S6 + BW session: 4 hiányzó xcstrings, UI méret/font/hierárchia, 2x/3x asetek; commit `3f9ed21`)
+- **ENH-HELP-1** ✅ — KÉSZ (S1–S6 + BW session + CN session: projekt törlés + tooltipek hozzáadva)
 - **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik
 - **ENH-DEVDOCS-2** 🟡 — README + install.md, projektnév egyeztetés
 - **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása (lokalizáció, Settings; About már kész)
