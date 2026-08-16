@@ -1,3 +1,21 @@
+## Session CO — 2026-08-16 (calculate.toggle screenshotok kicsinyítése — LEZÁRVA)
+
+### Session CO legutóbbi rész — LEZÁRVA
+Felhasználói visszajelzés: a két új `calculate.toggle` screenshot (`calculated-days`,
+`calculated-epochs`) túl nagynak tűnt a többi Help screenshothoz képest.
+- [x] `HelpItem` új mező: `imageScale: CGFloat = 1.0` — szorzó a megosztott 560pt
+  screenshot szélességre, item-szinten felülbirálható
+- [x] `calculate.toggle` — `imageScale: 0.75` beállítva (a másik 2 meglévő
+  screenshotos item, `countdown.notes` és `calculate.sunpanel`, változatlanul
+  1.0-n marad)
+- [x] `HelpView.swift` `HelpItemRow` — `HelpScreenshot(maxWidth: 560 * item.imageScale)`
+- [ ] Build: FELHASZNÁLÓ FELADATA
+
+**Következő session:** build ellenőrzés (CN + CO teljes változás-halmaz), majd
+BUG-MANUAL-1, ENH-DEVDOCS-1/2, ENH-L10N-1 maradék.
+
+---
+
 ## Session CO — 2026-08-16 (Tabfül gomb háttérszín javítás — LEZÁRVA)
 
 ### Session CO még későbbi rész — LEZÁRVA

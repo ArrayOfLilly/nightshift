@@ -83,7 +83,7 @@ private struct HelpItemRow: View {
             if !item.imageNames.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(item.imageNames, id: \.self) { imageName in
-                        HelpScreenshot(imageName: imageName, maxWidth: 560)
+                        HelpScreenshot(imageName: imageName, maxWidth: 560 * item.imageScale)
                     }
                 }
                 .padding(.leading, 28)

@@ -31,7 +31,9 @@ felhasználó által már korábban Assetsbe tett 2 kép (`calculated-days`,
 több-képes támogatással (`imageNames: [String]`), és a screenshot bal margin
 javítva (28pt, a body szöveghez igazítva, nem a címhez). Még ugyanebben a
 sessionben: a tabfül váltógomb hátterszíne is javítva (`AppTheme.dark` barna
-→ `AppTheme.calculateBackground` közel-fekete, csak ezen az egy gombon).
+→ `AppTheme.calculateBackground` közel-fekete, csak ezen az egy gombon), majd
+a `calculate.toggle` két screenshotja `imageScale: 0.75`-re kicsinyítve (a
+másik 2 meglévő screenshotos item 1.0-n marad).
 - Build: FELHASZNÁLÓ FELADATA (CN + CO változások együtt ellenőrizhetők)
 
 **Következő session témája:** build ellenőrzés (CN + CO változások együtt), majd

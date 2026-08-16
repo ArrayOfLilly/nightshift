@@ -18,19 +18,25 @@ struct HelpItem: Identifiable {
     let icon: String
     /// Asset name(s) in Assets.xcassets, in display order. Empty if this item has no screenshot.
     let imageNames: [String]
+    /// Multiplier applied to the shared 560pt screenshot display width for this item's images.
+    /// 1.0 = full width (default). Use e.g. 0.75 when an asset's native size makes it look
+    /// oversized next to the app's other screenshots at the shared width.
+    let imageScale: CGFloat
 
     init(
         id: String,
         titleKey: LocalizedStringKey,
         bodyKey: LocalizedStringKey,
         icon: String,
-        imageNames: [String] = []
+        imageNames: [String] = [],
+        imageScale: CGFloat = 1.0
     ) {
         self.id = id
         self.titleKey = titleKey
         self.bodyKey = bodyKey
         self.icon = icon
         self.imageNames = imageNames
+        self.imageScale = imageScale
     }
 }
 
@@ -181,7 +187,8 @@ enum HelpContent {
                 titleKey: "help.calculate.toggle.title",
                 bodyKey: "help.calculate.toggle.body",
                 icon: "calendar",
-                imageNames: ["calculated-days", "calculated-epochs"]
+                imageNames: ["calculated-days", "calculated-epochs"],
+                imageScale: 0.75
             ),
             HelpItem(
                 id: "calculate.deadlines",
