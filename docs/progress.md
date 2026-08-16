@@ -1,3 +1,22 @@
+## Session CM — 2026-08-16 (Countdown tooltip javítás — LEZÁRVA)
+
+### Session CM — LEZÁRVA
+- [x] `Claude.md`, `docs/progress.md`, `docs/countdownApp-handoff.md` elolvasva
+- [x] **Érintett fájlok**: `CountdownRowView.swift`, `CountdownView.swift`, `Localizable.xcstrings`
+- [x] **`CountdownRowView.swift`**: label pill HStack-re `.help(String(localized: "Copy text"))` hozzáadva (`.simultaneousGesture` után)
+- [x] **`CountdownView.swift`**: mindkét NavigationLink-re (free + active ág) `.help(String(localized: "Open slot details"))` hozzáadva (`.focusEffectDisabled()` után)
+- [x] **`Localizable.xcstrings`**: 2 új kulcs EN+HU-val:
+  - `"Copy text"` → `"Szöveg másolása"`
+  - `"Open slot details"` → `"Slot részletek megnyitása"`
+- [x] Git commit `e73d7ec`: `CM: tooltip .help() for countdown row NavigationLink and label pill`
+- [ ] Build: **FELHASZNÁLÓ FELADATA**
+
+**Megjegyzés:** Eye badge (`eye.fill` Image) szándékosan kimaradt — nem interaktív elem, `.help()` nem regisztrál AppKit NSToolTip-et sima Image-en.
+
+**Következő session:** egyeztetés alapján — BUG-MANUAL-1, ENH-DEVDOCS-1/2, ENH-L10N-1, vagy Calculate tooltip javítások (LongPressStepperButton hold, SavedDeadlines row).
+
+---
+
 ## Session CL — 2026-08-16 (focusable(false) → focusEffectDisabled() audit — LEZÁRVA)
 
 ### Session CL — LEZÁRVA

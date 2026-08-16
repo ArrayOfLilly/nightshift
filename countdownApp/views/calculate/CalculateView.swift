@@ -160,10 +160,10 @@ struct CalculateView: View {
                                     .focusEffectDisabled()
                                     .offset(y: -arcOffset)
                                     .accessibilityLabel("Sun times")
-                                    .help(String(localized: "Show today's sun, moon phase and photo hour data"))
                                     .popover(isPresented: $showSunPopover) {
                                         sunPopoverContent
                                     }
+                                    .help(String(localized: "Show today's sun, moon phase and photo hour data"))
                                 } else {
                                     Image("pink_moon_\(i + 1)")
                                         .resizable()
