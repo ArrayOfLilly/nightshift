@@ -20,8 +20,12 @@ BUG-MANUAL-1, ENH-DEVDOCS-1/2, ENH-L10N-1 maradék.
 
 ### Session CO még későbbi rész — LEZÁRVA
 Felhasználói visszajelzés: a kijelölt tabfül gomb (`Calculate`/`Countdown`/`Snippets`
-váltó) háttere `AppTheme.dark` (szürkésbarna `#2A2015`) volt, ami nem illett az
-amber témához és "ronda" volt.
+váltó) háttere `AppTheme.dark` (szürkésbarna `#2A2015`) volt, ami "ronda" volt.
+Utólag pontosítva: NEM az amber téma ellen ütközött — a mode switcher sor a
+`Divider()` felett van, nincs ott `AppTheme.background` (amber) fill állítva
+(azt csak az egyes mód-nézetek [`CountdownDetailView` stb.] állítják be a saját
+tartalmi területükre), így ez a sor közvetlenül a natív macOS ablakháttéren ül
+(sötét Dark Mode-ban) — ez ellen ütközött csúnyán a barna.
 - [x] Egyeztetve: közel-fekete irányba menjen, mint a Calculate mód háttere
 - [x] `ContentView.swift` `modeButton` — háttér `AppTheme.dark` →
   `AppTheme.calculateBackground` (`#060503`, ugyanaz a szín amit a Calculate
