@@ -33,6 +33,7 @@
 - **ENH-SETTINGS-2** ✅ — KÉSZ, commitolva `e6185ed` (Session BU + CC)
 - **ENH-TOOLTIP-1** ✅ — KÉSZ (Session CK): modeButton + snippetRow edit `.help()` hozzáadva; 3 xcstrings kulcs; audit megerősítette hogy minden más elem már megvolt
 - **FOCUSABLE-AUDIT** ✅ — KÉSZ (Session CL): minden Button-szintű `.focusable(false)` → `.focusEffectDisabled()` cserélve 6 fájlban; szándékos kivételek megőrizve (LongPressStepperButton Image, SnippetEditSheet/AboutView/AddCountdownSheet container-szintű workaround-ok)
+- **BUG-SNIPPEDITBEACHBALL-1** ✅ — LEZÁRVA (2026-08-16): `LazyVStack`→`VStack` csere (Session 23-B) megszüntette; felhasználói megerősítés alapján
 - **BUG-MANUAL-1** 🟡 — újranyitva (3 frissítési ok felhalmozódott: snippet save/dismiss logika,
   project delete, app név változás) — MINDIG UTOLSÓ, mert a screenshotok csak a végleges UI
   állapotot tükrözhetik

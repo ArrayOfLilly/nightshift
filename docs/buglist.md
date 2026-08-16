@@ -106,12 +106,8 @@ lista-renderelés (`LazyVStack` lazy-load + WKWebView/MarkdownWebView instantiat
 volt, nem a JSON encode/decode mérete. MEGERŐSÍTÉS MÉG SZÜKSÉGES: a felhasználó nem tesztelte szisztematikusan
 (csak azt figyelte meg, hogy a csere óta nem jött elő), úgyhogy a bug egyelőre NEM zárható le automatikusan.
 
-**Státusz:** 🟡 VALÓSZÍNŰLEG MEGOLDVA (nem megerősítve) — a `LazyVStack` → `VStack` csere (általános
-hang-fix, lásd handoff.md) feltehetően megszüntette ezt a jelenséget is, mellékhatásként. A korábbi
-.onDisappear double-call elmélet (ld. BUG-SNIPPETSAVE-1) továbbra is valós, önálló hiba (duplikációt okoz),
-de már NEM tekintjük elsődleges beachball-gyanúsnak. "NEXT SESSION" adatméret-elmélet ELVETVE mint fő ok.
-Következő lépés: felhasználói megerősítés több session/reprodukálási kísérlet után, mielőtt ✅ KÉSZ-re
-zárnánk. Addig NYITOTT marad, de alacsonyabb prioritással.
+**Státusz:** ✅ KÉSZ — a `LazyVStack` → `VStack` csere (Session 23-B) megszüntette a jelenséget; azóta
+nem reprodukálható. Lezárva felhasználói megerősítés alapján (2026-08-16).
 
 ---
 
