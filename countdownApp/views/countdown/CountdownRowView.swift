@@ -79,9 +79,9 @@ struct CountdownRowView: View {
                             .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
                     }
                     .buttonStyle(.plain)
-                    .focusable(false)
+                    .focusEffectDisabled()
                     .accessibilityLabel(item.showRemaining ? "Switch to date display" : "Switch to remaining time")
-                    .help(item.showRemaining ? String(localized: "Switch to date display") : String(localized: "Switch to remaining time"))
+                    .help(item.showRemaining ? String(localized: "Show the exact deadline date instead of countdown") : String(localized: "Show the remaining time instead of the deadline date"))
                 }
             }
 

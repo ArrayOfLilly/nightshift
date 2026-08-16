@@ -37,7 +37,7 @@ struct CopyButton<Label: View>: View {
     var body: some View {
         Button { performCopy() } label: { label(isCopied) }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .accessibilityLabel(isCopied ? copiedAccessibilityLabel : defaultAccessibilityLabel)
             .help(isCopied ? copiedAccessibilityLabel : defaultAccessibilityLabel)
     }

@@ -45,7 +45,9 @@ struct LongPressStepperButton: View {
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
             .accessibilityLabel(accessibilityLabel)
             .accessibilityAddTraits(.isButton)
-            .help(accessibilityLabel)
+            // ENH-TOOLTIP-1: .help() removed — tooltip is now on the parent ComponentStepper
+            // VStack, which is gesture-free and receives hover reliably. DragGesture here
+            // absorbs hover events and prevented the tooltip from appearing.
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in

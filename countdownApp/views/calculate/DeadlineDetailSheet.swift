@@ -80,8 +80,9 @@ struct DeadlineDetailSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .accessibilityLabel("Close")
+            .help(String(localized: "Close this panel"))
             .padding(.top, 12)
             .padding(.trailing, 14)
         }
@@ -97,13 +98,14 @@ struct DeadlineDetailSheet: View {
                 isRenaming = false
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .font(AppTheme.alienLeague(13))
             .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .background(Color.white.opacity(AppTheme.alpha08))
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
+            .help(String(localized: "Cancel and keep the original name"))
 
             Button("RENAME") {
                 let trimmed = renameDraft.trimmingCharacters(in: .whitespaces)
@@ -111,7 +113,7 @@ struct DeadlineDetailSheet: View {
                 isRenaming = false
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .font(AppTheme.alienLeagueBold(13))
             .foregroundStyle(AppTheme.calculateBackground)
             .padding(.horizontal, 16)
@@ -119,6 +121,7 @@ struct DeadlineDetailSheet: View {
             .background(AppTheme.background)
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
             .disabled(renameDraft.trimmingCharacters(in: .whitespaces).isEmpty)
+            .help(String(localized: "Confirm the new name for this deadline"))
         }
         .padding(.horizontal, 28)
         .padding(.vertical, 24)
@@ -145,7 +148,8 @@ struct DeadlineDetailSheet: View {
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
+            .help(String(localized: "Set the calculator's TO date to this deadline's date"))
 
             Button {
                 isRenaming = true
@@ -159,8 +163,9 @@ struct DeadlineDetailSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .accessibilityLabel("Rename deadline")
+            .help(String(localized: "Give this saved deadline a new name"))
 
             Button {
                 showDeleteConfirm = true
@@ -173,8 +178,9 @@ struct DeadlineDetailSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .accessibilityLabel("Delete deadline")
+            .help(String(localized: "Permanently remove this saved deadline"))
             .alert("Delete \"\(deadline.title)\"?", isPresented: $showDeleteConfirm) {
                 Button("Delete", role: .destructive) { onDelete(deadline) }
                 Button("Cancel", role: .cancel) { }

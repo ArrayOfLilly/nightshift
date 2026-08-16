@@ -95,7 +95,10 @@ struct CalculateView: View {
                         get: { fromDate },
                         set: { fromInterval = snapToMinute($0).timeIntervalSince1970 }
                     ))
-                    nowButton(label: String(localized: "RESET FROM NOW")) {
+                    nowButton(
+                        label: String(localized: "RESET FROM NOW"),
+                        helpText: String(localized: "Set the FROM date to the current date and time")
+                    ) {
                         fromInterval = snapToMinute(Date()).timeIntervalSince1970
                     }
 
@@ -106,7 +109,10 @@ struct CalculateView: View {
                         get: { toDate },
                         set: { toInterval = snapToMinute($0).timeIntervalSince1970 }
                     ))
-                    nowButton(label: String(localized: "RESET TO NOW")) {
+                    nowButton(
+                        label: String(localized: "RESET TO NOW"),
+                        helpText: String(localized: "Set the TO date to the current date and time")
+                    ) {
                         toInterval = snapToMinute(Date()).timeIntervalSince1970
                     }
 
@@ -151,10 +157,10 @@ struct CalculateView: View {
                                             .opacity(AppTheme.alpha90)
                                     }
                                     .buttonStyle(.plain)
-                                    .focusable(false)
+                                    .focusEffectDisabled()
                                     .offset(y: -arcOffset)
                                     .accessibilityLabel("Sun times")
-                                    .help("Sun times")
+                                    .help(String(localized: "Show today's sun, moon phase and photo hour data"))
                                     .popover(isPresented: $showSunPopover) {
                                         sunPopoverContent
                                     }
@@ -248,7 +254,7 @@ struct CalculateView: View {
                 }
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .font(AppTheme.alienLeague(12))
             .foregroundStyle(AppTheme.calculateBackground)
             .padding(.horizontal, 10)
@@ -261,7 +267,7 @@ struct CalculateView: View {
                 corruptedFragments = []
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .font(AppTheme.alienLeague(12))
             .foregroundStyle(AppTheme.background.opacity(AppTheme.alpha75))
             .padding(.horizontal, 10)
@@ -277,7 +283,7 @@ struct CalculateView: View {
     // MARK: - NOW button
 
     @ViewBuilder
-    private func nowButton(label: String, action: @escaping () -> Void) -> some View {
+    private func nowButton(label: String, helpText: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: "arrow.counterclockwise")
@@ -290,9 +296,11 @@ struct CalculateView: View {
             .padding(.vertical, 8)
             .background(Color.white.opacity(AppTheme.alpha12))
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .focusable(false)
+        .focusEffectDisabled()
+        .help(helpText)
     }
 
     // MARK: - Date stepper
@@ -387,10 +395,11 @@ struct CalculateView: View {
                 .padding(.vertical, 8)
                 .background(Color.white.opacity(AppTheme.alpha12))
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .focusable(false)
-        .help(displayMode == "days" ? String(localized: "Switch to calendar display") : String(localized: "Switch to days display"))
+        .focusEffectDisabled()
+        .help(displayMode == "days" ? String(localized: "Switch to calendar display — shows years, months, days") : String(localized: "Switch to total days display"))
     }
 
     // MARK: - CALC-SAVE: Save / Edit split button
@@ -414,10 +423,11 @@ struct CalculateView: View {
                 .padding(.leading, 14)
                 .padding(.trailing, 10)
                 .padding(.vertical, 8)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .focusable(false)
-            .help(String(localized: "Save current TO date as a named deadline"))
+            .focusEffectDisabled()
+            .help(String(localized: "Save the current TO date as a named deadline for later use"))
 
             Rectangle()
                 .fill(Color.white.opacity(0.2))
@@ -437,12 +447,12 @@ struct CalculateView: View {
                     )
                     .padding(.horizontal, 10)
                     .padding(.vertical, 8)
-                    .contentShape(Rectangle())   // FIX: full padded area tappable, not just the icon
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .accessibilityLabel("Show saved deadlines")
-            .help(String(localized: "Show saved deadlines"))
+            .help(String(localized: "Browse and load your saved deadlines"))
             .popover(isPresented: $showDeadlineListPopover) {
                 deadlineListPopoverContent
             }
@@ -502,7 +512,8 @@ struct CalculateView: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .focusable(false)
+                    .focusEffectDisabled()
+                    .help(String(localized: "Open deadline details — load or delete"))
 
                     Rectangle()
                         .fill(Color.white.opacity(AppTheme.alpha08))
@@ -566,7 +577,7 @@ struct CalculateView: View {
                         activeModal = nil
                     }
                     .buttonStyle(.plain)
-                    .focusable(false)
+                    .focusEffectDisabled()
                     .font(AppTheme.alienLeague(13))
                     .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
                     .padding(.horizontal, 16)
@@ -580,7 +591,7 @@ struct CalculateView: View {
                         activeModal = nil
                     }
                     .buttonStyle(.plain)
-                    .focusable(false)
+                    .focusEffectDisabled()
                     .font(AppTheme.alienLeagueBold(13))
                     .foregroundStyle(AppTheme.calculateBackground)
                     .padding(.horizontal, 16)

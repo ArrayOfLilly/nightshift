@@ -18,8 +18,8 @@
   - `Views/ContentView.swift` — `modeButton`: 1 csere
   - `Views/Countdown/AddCountdownSheet.swift` — Cancel + Add gombok: 2 csere
   - `Views/AboutView.swift` — `infoRow` Button: 1 csere
+- [x] Git commit `87afdbb`: `CL: focusable(false) → focusEffectDisabled() on all Button targets`
 - [ ] Build: **FELHASZNÁLÓ FELADATA**
-- [ ] Git commit: **FELHASZNÁLÓ FELADATA** (javasolt: `CL: focusable(false) → focusEffectDisabled() on all Button targets`)
 
 **Megjegyzés:** `CalculateView.swift` és `DeadlineDetailSheet.swift` már az előző session (CK előtt) teljesen rendbe volt hozva — az ottani Button-ök már `.focusEffectDisabled()` voltak. `CountdownDetailView.swift`, `CountdownView.swift`, `SnippetEditSheet.swift` (headerButton helper) is már kész volt.
 

@@ -56,5 +56,10 @@ struct ComponentStepper: View {
             )
         }
         .frame(maxWidth: .infinity)
+        // ENH-TOOLTIP-1: .help() on the VStack rather than on LongPressStepperButton,
+        // because DragGesture(minimumDistance:0) on the chevron Image absorbs hover
+        // events and prevents the tooltip from firing on the button itself.
+        // The VStack is gesture-free so hover is detected reliably.
+        .help(String(format: String(localized: "Increase or decrease %@"), localizedUnit))
     }
 }

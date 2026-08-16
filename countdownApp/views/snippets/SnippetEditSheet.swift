@@ -71,8 +71,9 @@ private struct ProjectField: View {
             }
             .frame(width: 36)
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .accessibilityLabel("Show project suggestions")
+            .help(String(localized: "Pick a project from the existing list"))
             .popover(isPresented: $showSuggestions, arrowEdge: .bottom) {
                 suggestionList
             }
@@ -98,7 +99,7 @@ private struct ProjectField: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .focusable(false)
+                .focusEffectDisabled()
                 if s != suggestions.last {
                     Rectangle().fill(Color.white.opacity(AppTheme.alpha08)).frame(height: 1)
                 }
@@ -289,7 +290,7 @@ struct SnippetEditSheet: View {
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
         }
         .buttonStyle(.plain)
-        .focusable(false)
+        .focusEffectDisabled()
         .accessibilityLabel(label)
         .help(label)
     }
@@ -322,7 +323,7 @@ struct SnippetEditSheet: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
         } else {
             VStack(spacing: 0) {
                 MarkdownWebView(markdown: snippetBody)

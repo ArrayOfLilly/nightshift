@@ -229,7 +229,7 @@ struct CountdownView: View {
                 }
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .font(AppTheme.alienLeague(12))
             .foregroundStyle(AppTheme.dark)
             .padding(.horizontal, 10)
@@ -242,7 +242,7 @@ struct CountdownView: View {
                 corruptedFragments = []
             }
             .buttonStyle(.plain)
-            .focusable(false)
+            .focusEffectDisabled()
             .font(AppTheme.alienLeague(12))
             .foregroundStyle(AppTheme.background.opacity(AppTheme.alpha75))
             .padding(.horizontal, 10)
@@ -287,7 +287,7 @@ struct CountdownView: View {
                                 CountdownRowView(item: binding(for: item), now: now)
                             }
                             .buttonStyle(.plain)
-                            .focusable(false)
+                            .focusEffectDisabled()
                             .onDrag {
                                 draggingID = item.id
                                 return NSItemProvider(object: item.id.uuidString as NSString)
@@ -307,7 +307,7 @@ struct CountdownView: View {
                                 CountdownRowView(item: binding(for: item), now: now)
                             }
                             .buttonStyle(.plain)
-                            .focusable(false)
+                            .focusEffectDisabled()
                         }
                     }
                 }
@@ -330,9 +330,9 @@ struct CountdownView: View {
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.radiusMedium))
         }
         .buttonStyle(.plain)
-        .focusable(false)
+        .focusEffectDisabled()
         .padding(.vertical, 18)
-        .help(String(localized: "Add a new countdown"))
+        .help(String(localized: "Add a new countdown slot to track"))
     }
 
     // MARK: - Persistence
