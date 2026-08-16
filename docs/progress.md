@@ -14,6 +14,9 @@
 - [x] Git commit `7d067b9`: `CM4: remove trivial .help() from reset and save buttons in CalculateView`
   - `nowButton` helper: `helpText` paraméter eltávolítva, `.help()` törölve
   - SAVE gomb: `.help()` törölve
+- [x] Git commit `d094b79`: `CM5: NativeTooltip — AppKit NSView.toolTip for moon button, bypasses .help() tracking area issue`
+  - `Components/NativeTooltip.swift` új fájl: `NSViewRepresentable` alapú `.nativeTooltip()` View extension; transzparens `NSView` overlay-ként regisztrálja az `NSView.toolTip`-et AppKit-en direkt, megkerülve a SwiftUI `.help()` tracking area mechanizmusát
+  - `CalculateView.swift`: moon VStack wrapper `.help()` → `.nativeTooltip()` cserélve
   - `CalculateView.swift`: moon gomb Button-t `VStack(spacing:0)`-ba csomagolva; `.help()` és `.offset()` a VStack-ra kerültek, `.popover()` a Button-on maradt — a popover tracking area így nem nyeli el a hover eventeket
   - `CountdownRowView.swift`: pill `.help("Copy text")` és clock/cal gomb `.help()` eltávolítva — a NavigationLink `.help("Open slot details")`-je mindkettőn felülírt volna
 - [ ] Build: **FELHASZNÁLÓ FELADATA**

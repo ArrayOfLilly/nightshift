@@ -43,10 +43,15 @@ private struct TooltipNSView: NSViewRepresentable {
 private struct NativeTooltipModifier: ViewModifier {
 
     let tooltip: String
+    /// Extra padding (points) added around the view's layout frame so the
+    /// tracking area is larger than the nominal SwiftUI frame. Useful when
+    /// the visible element is offset or clipped relative to its layout rect.
+    let padding: CGFloat
 
     func body(content: Content) -> some View {
         content.overlay(
             TooltipNSView(tooltip: tooltip)
+                .padding(-padding)
                 .allowsHitTesting(false)
         )
     }
@@ -58,7 +63,11 @@ extension View {
     /// Registers a tooltip via AppKit's NSView.toolTip directly, bypassing
     /// SwiftUI's .help() tracking-area mechanism. Use this where .help() is
     /// unreliable due to a .popover() presenter or gesture absorbing hover events.
-    func nativeTooltip(_ tooltip: String) -> some View {
-        modifier(NativeTooltipModifier(tooltip: tooltip))
+    ///
+    /// - Parameters:
+    ///   - tooltip: The tooltip string to display.
+    ///   - padding: Extra hit area in points around the layout frame (default 0).
+    func nativeTooltip(_ tooltip: String, padding: CGFloat = 0) -> some View {
+        modifier(NativeTooltipModifier(tooltip: tooltip, padding: padding))
     }
 }
