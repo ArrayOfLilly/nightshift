@@ -64,7 +64,6 @@ struct CountdownRowView: View {
                         copyFeedback = false
                     }
                 })
-                .help(String(localized: "Copy text"))
 
                 if expired {
                     Text("FREE ✓")
@@ -82,7 +81,6 @@ struct CountdownRowView: View {
                     .buttonStyle(.plain)
                     .focusEffectDisabled()
                     .accessibilityLabel(item.showRemaining ? "Switch to date display" : "Switch to remaining time")
-                    .help(item.showRemaining ? String(localized: "Show the exact deadline date instead of countdown") : String(localized: "Show the remaining time instead of the deadline date"))
                 }
             }
 

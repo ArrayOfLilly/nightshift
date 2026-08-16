@@ -147,22 +147,29 @@ struct CalculateView: View {
                                 let t = CGFloat(i) / CGFloat(count - 1)
                                 let arcOffset = arcDepth * (4 * t * t - 4 * t)
                                 if i == 4 {
-                                    Button {
-                                        showSunPopover.toggle()
-                                    } label: {
-                                        Image("pink_moon_\(i + 1)")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: moonSize)
-                                            .opacity(AppTheme.alpha90)
+                                    // The .help() is on the surrounding VStack-equivalent
+                                    // (the implicit single-child HStack cell) rather than
+                                    // on the Button itself — the popover presenter's tracking
+                                    // area swallows hover on the Button, so the tooltip never
+                                    // fires when placed there.
+                                    VStack(spacing: 0) {
+                                        Button {
+                                            showSunPopover.toggle()
+                                        } label: {
+                                            Image("pink_moon_\(i + 1)")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: moonSize)
+                                                .opacity(AppTheme.alpha90)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .focusEffectDisabled()
+                                        .accessibilityLabel("Sun times")
+                                        .popover(isPresented: $showSunPopover) {
+                                            sunPopoverContent
+                                        }
                                     }
-                                    .buttonStyle(.plain)
-                                    .focusEffectDisabled()
                                     .offset(y: -arcOffset)
-                                    .accessibilityLabel("Sun times")
-                                    .popover(isPresented: $showSunPopover) {
-                                        sunPopoverContent
-                                    }
                                     .help(String(localized: "Show today's sun, moon phase and photo hour data"))
                                 } else {
                                     Image("pink_moon_\(i + 1)")
