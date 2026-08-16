@@ -1,4 +1,4 @@
-## Session CO — 2026-08-16 (ENH-HELP-2: Overview + Countdown szekció bővítése — FOLYAMATBAN)
+## Session CO — 2026-08-16 (ENH-HELP-2: Overview + Countdown + Calculate szekció bővítése — FOLYAMATBAN)
 
 ### Session CO — FOLYAMATBAN
 - [x] `docs/progress.md`, `docs/countdownApp-handoff.md` elolvasva
@@ -8,24 +8,23 @@
   meglévő body szövegek mélyítése)
 - [x] **Overview szekció (5/5 item) kész** — csak `Localizable.xcstrings` EN+HU
   `body` értékek bővítve: `what`, `cooldowns`, `schedule`, `views`, `tooltips`
-- [x] **Countdown szekció (8/8 item) kész** — csak `Localizable.xcstrings` EN+HU
+- [x] **Countdown szekció (8/8 item) kész** — `add`, `copy`, `edit`, `expand`, `free`,
+  `notes`, `reorder`, `toggle`
+- [x] **Calculate szekció (6/6 item) kész** — csak `Localizable.xcstrings` EN+HU
   `body` értékek bővítve, `HelpContent.swift` nem változott:
-  - `add` — célidőpont részletezése + azonnali visszaszámlálás indítása
-  - `copy` — használati példa (fiók/modell név beillesztése)
-  - `edit` — mit lehet szerkeszteni + azonnali érvénybe lépés
-  - `expand` — keresztutalás Edit/Notes funkciókra
-  - `free` — mi történik a szabad slottal (változatlan marad szerkesztés/törlésig)
-  - `notes` — használati példa (megszakított munka folytatása) + szem-jelvény feltétel
-  - `reorder` — cél (gyakran ellenőrzött fiókok feljebb) + aktív/free külön csoport
-  - `toggle` — konkrét példa a formátumra (2ó 15p)
-- [ ] Calculate szekció (6 item) — KÖVETKEZŐ
-- [ ] Snippets szekció (4 item)
+  - `deadlines` — használati példa (side project célkitűzés) + hol jelenik meg a lista
+  - `load` — kiegészítve: LOAD AS TO felülírja a korábbi TO értéket
+  - `reset` — használati példa (FROM reset + mentett határidő ellenőrzése)
+  - `stepper` — kiegészítve: FROM/TO sorok szerepe + élő frissülés
+  - `sunpanel` — kiegészítve: holdkelte/holdnyugta/megvilágítás is megjelenik, célja (munkaablak ellenőrzése)
+  - `toggle` — kiegészítve: mikor melyik nézet (DAYS/CAL) hasznos
+- [ ] Snippets szekció (4 item) — KÖVETKEZŐ
 - [ ] Recovery szekció (2 item)
 - [ ] Build: FELHASZNÁLÓ FELADATA
 
-**Következő session:** ENH-HELP-2 folytatása — Calculate szekció (6 item: stepper,
-reset, toggle, deadlines, load, sunpanel) body szövegeinek bővítése ugyanezzel a
-mintával.
+**Következő session:** ENH-HELP-2 folytatása — Snippets szekció (4 item: what,
+copy, edit, projects), majd Recovery (2 item: storage, banner) body szövegeinek
+bővítése ugyanezzel a mintával. Ezzel ENH-HELP-2 lezárul.
 
 ---
 

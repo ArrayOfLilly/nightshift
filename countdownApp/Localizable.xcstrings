@@ -900,13 +900,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Save named deadlines to quickly recalculate the remaining time from any reference date."
+            "value" : "Save named deadlines to quickly recalculate the remaining time from any reference date — for example each side project's launch target. Saved deadlines appear in a list below the calculator and stay available across launches."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ments el névvel ellátott határidőket, hogy bármikor gyorsan újraszámolhasd a hátralévő időt egy tetszőleges referencia-dátumtól."
+            "value" : "Ments el névvel ellátott határidőket, hogy bármikor gyorsan újraszámolhasd a hátralévő időt egy tetszőleges referencia-dátumtól — például az egyes side projektek célkitűzési dátumát. A mentett határidők egy listában jelennek meg a kalkulátor alatt, és indítások között is elérhetők maradnak."
           }
         }
       }
@@ -932,13 +932,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tap a saved deadline in the list to open its detail sheet, then tap LOAD AS TO to copy its date into the TO stepper. From the detail sheet you can also rename or delete the deadline."
+            "value" : "Tap a saved deadline in the list to open its detail sheet, then tap LOAD AS TO to copy its date into the TO stepper, replacing whatever was there before. From the detail sheet you can also rename or delete the deadline."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Koppints egy mentett határidore a listában a részletek megnyitásához, majd a LOAD AS TO gombbal másold a dátumát a TO stepperbe. A részletnézetben a határidot át is nevezheted vagy törölheted."
+            "value" : "Koppints egy mentett határidore a listában a részletek megnyitásához, majd a LOAD AS TO gombbal másold a dátumát a TO stepperbe — ez felülírja, ami korábban ott volt. A részletnézetben a határidot át is nevezheted vagy törölheted."
           }
         }
       }
@@ -964,13 +964,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RESET FROM NOW sets the FROM date to the current moment. RESET TO NOW sets the TO date to the current moment. Use these to quickly anchor one end of the interval to now."
+            "value" : "RESET FROM NOW sets the FROM date to the current moment. RESET TO NOW sets the TO date to the current moment. Use these to quickly anchor one end of the interval to now — for example, resetting FROM before checking how much time is left until a saved deadline."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A RESET FROM NOW a FROM dátumot állítja a jelenlegi időpontra. A RESET TO NOW a TO dátumot állítja a jelenlegi időpontra. Ezekkel gyorsan rögzítheted az intervallum egyik végét a mostani pillanathoz."
+            "value" : "A RESET FROM NOW a FROM dátumot állítja a jelenlegi időpontra. A RESET TO NOW a TO dátumot állítja a jelenlegi időpontra. Ezekkel gyorsan rögzítheted az intervallum egyik végét a mostani pillanathoz — például a FROM visszaállítása után rögtön láthatod, mennyi idő van hátra egy mentett határidőig."
           }
         }
       }
@@ -996,13 +996,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Each date row has five steppers: YEAR, MON, DAY, HOUR, MIN. A single click moves the value by one step. Click and hold a chevron to repeat automatically for fast navigation."
+            "value" : "Each date row has five steppers: YEAR, MON, DAY, HOUR, MIN. A single click moves the value by one step. Click and hold a chevron to repeat automatically for fast navigation. The FROM row is the starting point and the TO row is the target date — the result updates live as you adjust either one."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minden dátumsornak öt steppere van: YEAR, MON, DAY, HOUR, MIN. Egyetlen kattintás egy lépéssel módosítja az értéket. Tartsd lenyomva a nyilat a gyors, automatikus léptetéshez."
+            "value" : "Minden dátumsornak öt steppere van: YEAR, MON, DAY, HOUR, MIN. Egyetlen kattintás egy lépéssel módosítja az értéket. Tartsd lenyomva a nyilat a gyors, automatikus léptetéshez. A FROM sor a kezdőpont, a TO sor a céldátum — az eredmény élőben frissül, ahogy bármelyiket módosítod."
           }
         }
       }
@@ -1028,13 +1028,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tap the crescent moon icon to reveal sunrise and sunset times for the selected date and location."
+            "value" : "Tap the crescent moon icon to reveal sunrise and sunset times for the selected date and location, along with moonrise, moonset, and moon illumination. This is where you can check exactly how much of tonight's work window is left before sunrise."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Koppints a holdsarló ikonra, hogy megjelenjen a napkelte és napnyugta időpontja a kiválasztott dátumhoz és helyhez."
+            "value" : "Koppints a holdsarló ikonra, hogy megjelenjen a napkelte és napnyugta időpontja a kiválasztott dátumhoz és helyhez, valamint a holdkelte, holdnyugta és a hold megvilágítása. Itt ellenőrizheted pontosan, mennyi maradt az aznapi munkaablakból napkeltéig."
           }
         }
       }
@@ -1060,13 +1060,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The result below the steppers shows the time difference. A toggle button switches between DAYS (total elapsed days as a single number) and CAL (calendar breakdown: years, months, and days separately). The toggle state is remembered across launches."
+            "value" : "The result below the steppers shows the time difference. A toggle button switches between DAYS (total elapsed days as a single number) and CAL (calendar breakdown: years, months, and days separately). Use DAYS for a quick sense of scale, and CAL when you want the exact years/months/days split. The toggle state is remembered across launches."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A stepperek alatti eredmény mutatja az időkülönbséget. Egy váltógomb kapcsol a DAYS (összes eltelt nap egyetlen számként) és a CAL (naptári bontás: év, hónap és nap külön) nézet között. A választott mód indítások között is megmarad."
+            "value" : "A stepperek alatti eredmény mutatja az időkülönbséget. Egy váltógomb kapcsol a DAYS (összes eltelt nap egyetlen számként) és a CAL (naptári bontás: év, hónap és nap külön) nézet között. A DAYS gyors áttekintéshez jó, a CAL pedig akkor hasznos, ha a pontos év/hónap/nap bontásra van szükséged. A választott mód indítások között is megmarad."
           }
         }
       }

@@ -26,9 +26,9 @@
 **Session CO (2026-08-16) folyamatban:** **ENH-HELP-2** — minden Help szekció body
 szövegeinek mélyítése. Csak `Localizable.xcstrings` EN+HU, `HelpContent.swift`
 struktúra változatlan.
-- **Overview (5/5) és Countdown (8/8) kész** ebben a sessionben.
-- **Következő session:** Calculate szekció (6 item: stepper, reset, toggle,
-  deadlines, load, sunpanel), majd Snippets (4), Recovery (2).
+- **Overview (5/5), Countdown (8/8), Calculate (6/6) kész** ebben a sessionben.
+- **Következő session:** Snippets szekció (4 item: what, copy, edit, projects),
+  majd Recovery (2 item: storage, banner). Ezzel ENH-HELP-2 lezárul.
 - Build: FELHASZNÁLÓ FELADATA (a CO session végén is, ha a full kör lezárult)
 
 **Későbbi, még nyitott témák** (ENH-HELP-2 után folytatandók): build ellenőrzés
