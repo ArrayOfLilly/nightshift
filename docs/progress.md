@@ -1,4 +1,4 @@
-## Session CO — 2026-08-16 (ENH-HELP-2: Overview szekció bővítése — FOLYAMATBAN)
+## Session CO — 2026-08-16 (ENH-HELP-2: Overview + Countdown szekció bővítése — FOLYAMATBAN)
 
 ### Session CO — FOLYAMATBAN
 - [x] `docs/progress.md`, `docs/countdownApp-handoff.md` elolvasva
@@ -7,22 +7,25 @@
   részletes; kérése: minden szekció bővebb szöveget kapjon (nem új item, hanem a
   meglévő body szövegek mélyítése)
 - [x] **Overview szekció (5/5 item) kész** — csak `Localizable.xcstrings` EN+HU
-  `body` értékek bővítve, `HelpContent.swift` és title-ök nem változtak:
-  - `help.overview.what.body` — kiegészítve a 3 fül rövid szerepével + helyi tárolás említéssel
-  - `help.overview.cooldowns.body` — kiegészítve: aktív→free lista átkerülés az idő leteltével
-  - `help.overview.schedule.body` — kiegészítve: helyzet-alapú számítás + holdkelte/holdnyugta/megvilágítás említése
-  - `help.overview.views.body` — kiegészítve egy mondattal a fülek céljáról
-  - `help.overview.tooltips.body` — kiegészítve: mikor hasznos (nem egyértelmű ikon / gyors emlékeztető)
-- [ ] Countdown szekció (8 item) — KÖVETKEZŐ
-- [ ] Calculate szekció (6 item)
+  `body` értékek bővítve: `what`, `cooldowns`, `schedule`, `views`, `tooltips`
+- [x] **Countdown szekció (8/8 item) kész** — csak `Localizable.xcstrings` EN+HU
+  `body` értékek bővítve, `HelpContent.swift` nem változott:
+  - `add` — célidőpont részletezése + azonnali visszaszámlálás indítása
+  - `copy` — használati példa (fiók/modell név beillesztése)
+  - `edit` — mit lehet szerkeszteni + azonnali érvénybe lépés
+  - `expand` — keresztutalás Edit/Notes funkciókra
+  - `free` — mi történik a szabad slottal (változatlan marad szerkesztés/törlésig)
+  - `notes` — használati példa (megszakított munka folytatása) + szem-jelvény feltétel
+  - `reorder` — cél (gyakran ellenőrzött fiókok feljebb) + aktív/free külön csoport
+  - `toggle` — konkrét példa a formátumra (2ó 15p)
+- [ ] Calculate szekció (6 item) — KÖVETKEZŐ
 - [ ] Snippets szekció (4 item)
 - [ ] Recovery szekció (2 item)
 - [ ] Build: FELHASZNÁLÓ FELADATA
 
-**Következő session:** ENH-HELP-2 folytatása — Countdown szekció (8 item: add, edit,
-expand, copy, toggle, free, notes, reorder) body szövegeinek bővítése ugyanezzel a
-mintával (`Localizable.xcstrings` EN+HU, `HelpContent.swift` nem változik, csak ha
-valamelyik item screenshotot is kap).
+**Következő session:** ENH-HELP-2 folytatása — Calculate szekció (6 item: stepper,
+reset, toggle, deadlines, load, sunpanel) body szövegeinek bővítése ugyanezzel a
+mintával.
 
 ---
 

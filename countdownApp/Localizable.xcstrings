@@ -1092,13 +1092,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tap the + button in the toolbar to open the Add sheet. Set a name, target date, and optional color."
+            "value" : "Tap the + button in the toolbar to open the Add sheet. Set a name, a target date and time, and an optional color to visually distinguish it from other slots in the list. Once saved, the item starts counting down immediately."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Koppints a + gombra az eszköztárban az Add ablak megnyitásához. Add meg a nevet, a célidőpontot, és opcionálisan egy színt."
+            "value" : "Koppints a + gombra az eszköztárban az Add ablak megnyitásához. Add meg a nevet, egy célidőpontot (dátum és idő), és opcionálisan egy színt, hogy vizuálisan megkülönböztesd a lista többi slotjától. Mentés után az elem azonnal elkezd visszaszámolni."
           }
         }
       }
@@ -1124,13 +1124,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tap the dark label pill on any row to copy the item's name to the clipboard. The pill briefly shows COPIED to confirm. A separate copy button is also available in the detail view next to the editable label."
+            "value" : "Tap the dark label pill on any row to copy the item's name to the clipboard. The pill briefly shows COPIED to confirm. A separate copy button is also available in the detail view next to the editable label — handy when pasting the account or model name into a chat or terminal."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Koppints bármelyik sor sötét címke-gombjára a tétel nevének vágólapra másolásához. A gomb röviden COPIED feliratot mutat megerősítésként. A részletnézetben, a szerkeszthető címke mellett is elérhető egy külön másoló gomb."
+            "value" : "Koppints bármelyik sor sötét címke-gombjára a tétel nevének vágólapra másolásához. A gomb röviden COPIED feliratot mutat megerősítésként. A részletnézetben, a szerkeszthető címke mellett is elérhető egy külön másoló gomb — hasznos, ha a fiók vagy modell nevét be akarod illeszteni egy chatbe vagy terminálba."
           }
         }
       }
@@ -1156,13 +1156,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Click an item to expand it, then use the pencil icon to open the Edit sheet."
+            "value" : "Click an item to expand it, then use the pencil icon to open the Edit sheet, where you can change the name, target date, and color. Changes take effect immediately — the countdown keeps running with the new deadline."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Koppints egy elemre a kibontásához, majd a ceruza ikonnal nyisd meg a szerkesztő ablakot."
+            "value" : "Koppints egy elemre a kibontásához, majd a ceruza ikonnal nyisd meg a szerkesztő ablakot, ahol módosíthatod a nevet, a célidőpontot és a színt. A módosítások azonnal érvénybe lépnek — a visszaszámlálás az új határidővel folytatódik."
           }
         }
       }
@@ -1188,13 +1188,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tap any row to open the full-screen detail view. From there you can adjust the deadline with steppers, toggle between remaining time and deadline date, manage notes, toggle the expiry sound, and delete the slot."
+            "value" : "Tap any row to open the full-screen detail view. From there you can adjust the deadline with steppers, toggle between remaining time and deadline date, manage notes, toggle the expiry sound, and delete the slot. This is also where the Edit and Notes actions described elsewhere in this section live."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Koppints bármelyik sorra a teljes képernyős részletnézet megnyitásához. Itt a stepperekkel módosíthatod a határidőt, válthatsz a hátralévő idő és a határidő dátuma között, kezelheted a jegyzeteket, be- vagy kikapcsolhatod a lejárati hangot, és törölheted a slotot."
+            "value" : "Koppints bármelyik sorra a teljes képernyős részletnézet megnyitásához. Itt a stepperekkel módosíthatod a határidőt, válthatsz a hátralévő idő és a határidő dátuma között, kezelheted a jegyzeteket, be- vagy kikapcsolhatod a lejárati hangot, és törölheted a slotot. Innen érhető el az Edit és a Notes funkció is, amelyeket e szekció más pontjai írnak le."
           }
         }
       }
@@ -1220,13 +1220,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When a countdown reaches its deadline, the row turns amber and shows FREE ✓. Free slots collect at the bottom of the list and can be dragged to reorder. If the expiry sound is enabled for that slot, a chime plays the moment the deadline passes."
+            "value" : "When a countdown reaches its deadline, the row turns amber and shows FREE ✓. Free slots collect at the bottom of the list and can be dragged to reorder. If the expiry sound is enabled for that slot, a chime plays the moment the deadline passes. A free slot stays as-is until you edit it with a new date or delete it."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Amikor egy visszaszámlálás eléri a határidejét, a sor borostyánszínure vált és FREE ✓ jelzést mutat. A szabad slotok a lista alján gyűlnek össze, és húzással átrendezhetők. Ha az adott slothoz be van kapcsolva a lejárati hang, egy csengőhang szólal meg a határidő elérésekor."
+            "value" : "Amikor egy visszaszámlálás eléri a határidejét, a sor borostyánszínure vált és FREE ✓ jelzést mutat. A szabad slotok a lista alján gyűlnek össze, és húzással átrendezhetők. Ha az adott slothoz be van kapcsolva a lejárati hang, egy csengőhang szólal meg a határidő elérésekor. A szabad slot változatlan marad, amíg új dátummal nem szerkeszted vagy nem törlöd."
           }
         }
       }
@@ -1252,13 +1252,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The eye badge on an expanded item opens the Notes sheet, where you can write freeform markdown notes attached to that countdown."
+            "value" : "The eye badge on an expanded item opens the Notes sheet, where you can write freeform markdown notes attached to that countdown — for example a reminder of exactly where you left off, so you can pick the work back up locally instead of relying on a Snippets handoff. The eye badge only appears once a note has been saved."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A kibontott elemen látható szem-jelvény megnyitja a jegyzet ablakot, ahol szabad formátumú markdown jegyzeteket írhatsz az adott visszaszámláláshoz."
+            "value" : "A kibontott elemen látható szem-jelvény megnyitja a jegyzet ablakot, ahol szabad formátumú markdown jegyzeteket írhatsz az adott visszaszámláláshoz — például pontosan feljegyezheted, hol hagytad abba a munkát, hogy helyben tudd folytatni, snippet-átadás nélkül. A szem-jelvény csak akkor jelenik meg, ha már el van mentve egy jegyzet."
           }
         }
       }
@@ -1284,13 +1284,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Long-press and drag an item to change its position in the list."
+            "value" : "Long-press and drag an item to change its position in the list. Use this to put the accounts you check most often near the top — active and free slots can each be reordered within their own group."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hosszan nyomva tartva húzd az elemet a listában elfoglalt helyének megváltoztatásához."
+            "value" : "Hosszan nyomva tartva húzd az elemet a listában elfoglalt helyének megváltoztatásához. Ezzel a leggyakrabban ellenőrzött fiókokat feljebb helyezheted — az aktív és a szabad slotok is külön-külön, a saját csoportjukon belül rendezhetők át."
           }
         }
       }
@@ -1316,13 +1316,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The clock/calendar button on an active row switches between showing the remaining countdown time and the actual deadline date. The display choice is saved per item and remembered across launches."
+            "value" : "The clock/calendar button on an active row switches between showing the remaining countdown time (e.g. 2h 15m) and the actual deadline date and time. The display choice is saved per item and remembered across launches."
           }
         },
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Egy aktív soron az óra/naptár gomb vált a hátralévő visszaszámlálási idő és a tényleges határidő dátuma megjelenítése között. A választás elemenként elmentve, indítások között is megmarad."
+            "value" : "Egy aktív soron az óra/naptár gomb vált a hátralévő visszaszámlálási idő (pl. 2ó 15p) és a tényleges határidő dátuma és időpontja megjelenítése között. A választás elemenként elmentve, indítások között is megmarad."
           }
         }
       }

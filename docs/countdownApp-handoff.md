@@ -23,15 +23,12 @@
 
 ## Következő session feladata
 
-**Session CO (2026-08-16) folyamatban:** Új feladat, **ENH-HELP-2** — a felhasználó
-szerint a Help menü nem elég részletes, minden szekció bővebb szöveget kapjon.
-Csak a `Localizable.xcstrings` EN+HU `body` értékeit mélyítjük, `HelpContent.swift`
-struktúra (item-ek, ikonok, screenshotok) nem változik, hacsak nem derül ki közben
-hogy egy item screenshotot is érdemelne.
-- **Overview (5/5) kész** ebben a sessionben.
-- **Következő session:** Countdown szekció (8 item: add, edit, expand, copy,
-  toggle, free, notes, reorder), majd Calculate (6), Snippets (4), Recovery (2)
-  ugyanezzel a mintával, sessionenként egy-két szekció.
+**Session CO (2026-08-16) folyamatban:** **ENH-HELP-2** — minden Help szekció body
+szövegeinek mélyítése. Csak `Localizable.xcstrings` EN+HU, `HelpContent.swift`
+struktúra változatlan.
+- **Overview (5/5) és Countdown (8/8) kész** ebben a sessionben.
+- **Következő session:** Calculate szekció (6 item: stepper, reset, toggle,
+  deadlines, load, sunpanel), majd Snippets (4), Recovery (2).
 - Build: FELHASZNÁLÓ FELADATA (a CO session végén is, ha a full kör lezárult)
 
 **Későbbi, még nyitott témák** (ENH-HELP-2 után folytatandók): build ellenőrzés

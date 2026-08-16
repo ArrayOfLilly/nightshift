@@ -18,7 +18,7 @@ változatlan marad, kivéve ha egy item vizuálisan is megsegítené — az kül
 
 **Haladás:**
 - Overview (5/5) kész — Session CO
-- Countdown (8 item) — hátra
+- Countdown (8/8) kész — Session CO
 - Calculate (6 item) — hátra
 - Snippets (4 item) — hátra
 - Recovery (2 item) — hátra
