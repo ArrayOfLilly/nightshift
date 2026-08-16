@@ -10,7 +10,9 @@
   - `"Open slot details"` → `"Slot részletek megnyitása"`
 - [x] Git commit `e73d7ec`: `CM: tooltip .help() for countdown row NavigationLink and label pill`
 - [x] Git commit `81cd2a3`: `CM2: fix moon button tooltip — .help() after .popover() so hover is not swallowed`
-  - `CalculateView.swift`: i==4 moon Button-ön `.help()` és `.popover()` sorrendje megfordítva — `.popover()` először, `.help()` utána; a `.popover()` elnyeltte a hover eventeket
+- [x] Git commit `811fe05`: `CM3: moon tooltip — .help() on wrapper VStack outside popover; remove pill and clock/cal .help()`
+  - `CalculateView.swift`: moon gomb Button-t `VStack(spacing:0)`-ba csomagolva; `.help()` és `.offset()` a VStack-ra kerültek, `.popover()` a Button-on maradt — a popover tracking area így nem nyeli el a hover eventeket
+  - `CountdownRowView.swift`: pill `.help("Copy text")` és clock/cal gomb `.help()` eltávolítva — a NavigationLink `.help("Open slot details")`-je mindkettőn felülírt volna
 - [ ] Build: **FELHASZNÁLÓ FELADATA**
 
 **Megjegyzés:** Eye badge (`eye.fill` Image) szándékosan kimaradt — nem interaktív elem, `.help()` nem regisztrál AppKit NSToolTip-et sima Image-en.

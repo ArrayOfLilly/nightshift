@@ -96,8 +96,7 @@ struct CalculateView: View {
                         set: { fromInterval = snapToMinute($0).timeIntervalSince1970 }
                     ))
                     nowButton(
-                        label: String(localized: "RESET FROM NOW"),
-                        helpText: String(localized: "Set the FROM date to the current date and time")
+                        label: String(localized: "RESET FROM NOW")
                     ) {
                         fromInterval = snapToMinute(Date()).timeIntervalSince1970
                     }
@@ -110,8 +109,7 @@ struct CalculateView: View {
                         set: { toInterval = snapToMinute($0).timeIntervalSince1970 }
                     ))
                     nowButton(
-                        label: String(localized: "RESET TO NOW"),
-                        helpText: String(localized: "Set the TO date to the current date and time")
+                        label: String(localized: "RESET TO NOW")
                     ) {
                         toInterval = snapToMinute(Date()).timeIntervalSince1970
                     }
@@ -290,7 +288,7 @@ struct CalculateView: View {
     // MARK: - NOW button
 
     @ViewBuilder
-    private func nowButton(label: String, helpText: String, action: @escaping () -> Void) -> some View {
+    private func nowButton(label: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: "arrow.counterclockwise")
@@ -307,7 +305,6 @@ struct CalculateView: View {
         }
         .buttonStyle(.plain)
         .focusEffectDisabled()
-        .help(helpText)
     }
 
     // MARK: - Date stepper
@@ -434,7 +431,6 @@ struct CalculateView: View {
             }
             .buttonStyle(.plain)
             .focusEffectDisabled()
-            .help(String(localized: "Save the current TO date as a named deadline for later use"))
 
             Rectangle()
                 .fill(Color.white.opacity(0.2))
