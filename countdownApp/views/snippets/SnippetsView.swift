@@ -30,30 +30,30 @@ struct SnippetsView: View {
     @State private var copiedID:    UUID?          // per-row copy feedback
 
     // Project rename
-    @State private var projectToRename:  String = ""
+    @State private var projectToRename:  ProjectCategory = .general
     @State private var renameText:       String = ""
     @State private var showRenameAlert  = false
 
     // Project delete
-    @State private var projectToDelete:  String = ""
+    @State private var projectToDelete:  ProjectCategory = .general
     @State private var showDeleteProjectConfirm = false
 
     // Recovery banner
     @State private var corruptedFragments: [String] = []
 
     private var deleteProjectMessage: String {
-        String(format: String(localized: "All snippets in \"%@\" will be moved to General."), projectToDelete)
+        String(format: String(localized: "All snippets in \"%@\" will be moved to General."), projectToDelete.localizedName)
     }
 
-    private var projectKeys: [String] {
-        // Case-insensitive alpha sort; "General" (any casing) always last.
+    private var projectKeys: [ProjectCategory] {
+        // Case-insensitive alpha sort by localizedName; .general always last.
+        // The enum's Equatable/Hashable conformance makes Set deduplication type-safe.
         let all = Array(Set(snippets.map { $0.project }))
-            .sorted { $0.lowercased() < $1.lowercased() }
-        let isGeneral: (String) -> Bool = { $0.lowercased() == "general" }
-        return all.filter { !isGeneral($0) } + all.filter { isGeneral($0) }
+            .sorted { $0.localizedName.lowercased() < $1.localizedName.lowercased() }
+        return all.filter { $0 != .general } + all.filter { $0 == .general }
     }
 
-    private func rows(for project: String) -> [Snippet] {
+    private func rows(for project: ProjectCategory) -> [Snippet] {
         snippets
             .filter { $0.project == project }
             .sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
@@ -85,7 +85,7 @@ struct SnippetsView: View {
             Button("Rename") { renameProject(from: projectToRename, to: renameText) }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("All snippets in \"\(projectToRename)\" will be moved to the new name.")
+            Text(String(format: String(localized: "All snippets in \"%@\" will be moved to the new name."), projectToRename.localizedName))
         }
         .alert("Delete project?", isPresented: $showDeleteProjectConfirm) {
             Button("Delete", role: .destructive) { deleteProject(projectToDelete) }
@@ -204,7 +204,7 @@ struct SnippetsView: View {
             }
             .buttonStyle(.plain)
             .focusEffectDisabled()
-            .accessibilityLabel("New snippet")
+            .accessibilityLabel(Text("New snippet"))
             .help(String(localized: "Create a new snippet in the library"))
         }
         .padding(.horizontal, 20)
@@ -244,35 +244,45 @@ struct SnippetsView: View {
         }
     }
 
-    private func sectionHeader(_ project: String) -> some View {
-        HStack(spacing: 6) {
-            Text(project.uppercased())
+    private func sectionHeader(_ project: ProjectCategory) -> some View {
+        // localizedName handles both .general (localized display) and .custom (verbatim).
+        // .general is a system category: no rename allowed, only delete.
+        let displayLabel = project.localizedName
+        return HStack(spacing: 6) {
+            Text(displayLabel.uppercased())
                 .font(AppTheme.alienLeagueBold(11))
                 .foregroundStyle(AppTheme.background)
                 .kerning(2)
-            Menu {
-                Button("Rename project\u{2026}") {
-                    projectToRename = project
-                    renameText      = project
-                    showRenameAlert = true
+            if project != .general {
+                // Custom projects: rename + delete available
+                Menu {
+                    Button("Rename project\u{2026}") {
+                        projectToRename = project
+                        renameText      = project.localizedName
+                        showRenameAlert = true
+                    }
+                    Divider()
+                    Button("Delete project", role: .destructive) {
+                        projectToDelete          = project
+                        showDeleteProjectConfirm = true
+                    }
+                } label: {
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
+                        .frame(width: 22, height: 22)
                 }
-                Divider()
-                Button("Delete project", role: .destructive) {
-                    projectToDelete       = project
-                    showDeleteProjectConfirm = true
-                }
-            } label: {
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(Color.white.opacity(AppTheme.alpha50))
-                    .frame(width: 22, height: 22)
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .fixedSize()
+                .focusEffectDisabled()
+                .accessibilityLabel(Text("Project options"))
+                .help(String(localized: "Rename or delete this project group"))
+            } else {
+                // General is a system category: only delete (move all to General is N/A),
+                // but since deleting General would leave no fallback bucket, we hide the
+                // chevron entirely — the system category cannot be renamed or deleted.
             }
-            .menuStyle(.borderlessButton)
-            .menuIndicator(.hidden)
-            .fixedSize()
-            .focusEffectDisabled()
-            .accessibilityLabel("Project options")
-            .help(String(localized: "Rename or delete this project group"))
             Spacer()
         }
         .padding(.horizontal, 20)
@@ -282,23 +292,25 @@ struct SnippetsView: View {
 
     // MARK: - Project actions
 
-    private func renameProject(from old: String, to new: String) {
-        let trimmed = new.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty, trimmed != old else { return }
+    private func renameProject(from old: ProjectCategory, to newName: String) {
+        let trimmed = newName.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return }
+        let newCategory = ProjectCategory(userEnteredName: trimmed)
+        guard newCategory != old else { return }
         snippets = snippets.map { s in
             guard s.project == old else { return s }
             var updated = s
-            updated.project = trimmed
+            updated.project = newCategory
             return updated
         }
         Snippet.save(snippets)
     }
 
-    private func deleteProject(_ project: String) {
+    private func deleteProject(_ project: ProjectCategory) {
         snippets = snippets.map { s in
             guard s.project == project else { return s }
             var updated = s
-            updated.project = "General"
+            updated.project = .general
             return updated
         }
         Snippet.save(snippets)
@@ -347,7 +359,7 @@ struct SnippetsView: View {
             }
             .buttonStyle(.plain)
             .focusEffectDisabled()
-            .accessibilityLabel("Copy snippet")
+            .accessibilityLabel(Text("Copy snippet"))
             .help(String(localized: "Copy the full snippet text to the clipboard"))
         }
         .padding(.horizontal, 20)

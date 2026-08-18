@@ -114,7 +114,7 @@ struct SunPanel: View {
 
     private func daySection(_ st: SunTimes) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            sectionHeader(icon: "sun.max.fill", title: "DAY")
+            sectionHeader(icon: "sun.max.fill", title: "DAYLIGHT")
             timeRow(label: "Solar noon", date: st.solarNoon)
             labelRow(label: "Day length", value: dayLengthString(st.dayLength))
         }
@@ -265,6 +265,6 @@ struct SunPanel: View {
     private func dayLengthString(_ seconds: Int) -> String {
         let h = seconds / 3600
         let m = (seconds % 3600) / 60
-        return "\(h)h \(m)m"
+        return String(format: String(localized: "day.length.format"), h, m)
     }
 }

@@ -14,7 +14,7 @@ struct Snippet: Identifiable, Codable {
     var id:        UUID   = UUID()
     var title:     String
     var body:      String
-    var project:   String          // free-form tag — "countdownApp", "sunikertek", etc.
+    var project:   ProjectCategory  // type-safe: .general or .custom("tag")
     var createdAt: Date   = Date()
     var updatedAt: Date   = Date()
 
@@ -29,7 +29,7 @@ struct Snippet: Identifiable, Codable {
         case id, title, body, project, createdAt, updatedAt
     }
 
-    init(id: UUID = UUID(), title: String, body: String, project: String,
+    init(id: UUID = UUID(), title: String, body: String, project: ProjectCategory = .general,
          createdAt: Date = Date(), updatedAt: Date = Date()) {
         self.id        = id
         self.title     = title
@@ -44,7 +44,7 @@ struct Snippet: Identifiable, Codable {
         id        = try c.decodeIfPresent(UUID.self,   forKey: .id)        ?? UUID()
         title     = try c.decode(String.self,           forKey: .title)
         body      = try c.decode(String.self,           forKey: .body)
-        project   = try c.decode(String.self,           forKey: .project)
+        project   = try c.decode(ProjectCategory.self,  forKey: .project)
         createdAt = try c.decodeIfPresent(Date.self,   forKey: .createdAt) ?? Date()
         updatedAt = try c.decodeIfPresent(Date.self,   forKey: .updatedAt) ?? Date()
     }
@@ -55,7 +55,8 @@ struct Snippet: Identifiable, Codable {
 extension Snippet {
 
     /// Assembles the final Snippet for persistence from the fields collected by the editor.
-    /// Trims title and project; defaults an empty project to "General".
+    /// Trims title; converts the raw project string via ProjectCategory(userEnteredName:),
+    /// which maps empty/"general"/"általános" to .general and everything else to .custom.
     /// Returns nil when both title and body are blank (nothing to save).
     static func committed(
         from existing: Snippet?,
@@ -63,14 +64,13 @@ extension Snippet {
         body: String,
         project: String
     ) -> Snippet? {
-        let trimmedTitle   = title.trimmingCharacters(in: .whitespaces)
-        let trimmedProject = project.trimmingCharacters(in: .whitespaces)
+        let trimmedTitle = title.trimmingCharacters(in: .whitespaces)
         guard !trimmedTitle.isEmpty || !body.isEmpty else { return nil }
-        var s          = existing ?? Snippet(title: "", body: "", project: "")
-        s.title        = trimmedTitle
-        s.body         = body
-        s.project      = trimmedProject.isEmpty ? "General" : trimmedProject
-        s.updatedAt    = Date()
+        var s       = existing ?? Snippet(title: "", body: "")
+        s.title     = trimmedTitle
+        s.body      = body
+        s.project   = ProjectCategory(userEnteredName: project)
+        s.updatedAt = Date()
         return s
     }
 }
@@ -104,16 +104,15 @@ extension Snippet {
 
         AppKeys.appendCorruptFragments(corruptFragments)
 
-        // Trim leading/trailing whitespace from project and title.
-        // Repairs any previously saved snippets with accidental whitespace.
+        // Trim leading/trailing whitespace from title.
+        // Project is now a ProjectCategory — whitespace is handled at input time
+        // by ProjectCategory(userEnteredName:) and is never persisted.
         let cleaned = snippets.map { s -> Snippet in
             var c = s
-            c.project = s.project.trimmingCharacters(in: .whitespaces)
-            c.title   = s.title.trimmingCharacters(in: .whitespaces)
+            c.title = s.title.trimmingCharacters(in: .whitespaces)
             return c
         }
-        if cleaned.map({ $0.project }) != snippets.map({ $0.project }) ||
-           cleaned.map({ $0.title })   != snippets.map({ $0.title }) {
+        if cleaned.map({ $0.title }) != snippets.map({ $0.title }) {
             save(cleaned)
         }
         return cleaned

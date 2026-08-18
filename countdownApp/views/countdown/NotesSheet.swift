@@ -112,7 +112,7 @@ struct NotesSheet: View {
                 headerButton(icon: "trash", label: String(localized: "Delete notes")) { showDeleteConfirm = true }
             }
             Rectangle().fill(Color.white.opacity(AppTheme.alpha12)).frame(width: 1, height: 22).padding(.horizontal, 6)
-            headerButton(icon: "xmark", label: "Close") { handleDismiss() }
+            headerButton(icon: "xmark", label: String(localized: "Close")) { handleDismiss() }
         }
         .padding(.horizontal, 24)
         .padding(.top, 22)

@@ -42,7 +42,7 @@ struct ColorPickerSheet: View {
                 }
                 .buttonStyle(.plain)
                 .focusEffectDisabled()
-                .accessibilityLabel("Close")
+                .accessibilityLabel(Text("Close"))
                 .help(String(localized: "Close this color picker"))
                 .padding(.top, 12)
                 .padding(.trailing, 14)
@@ -106,7 +106,7 @@ struct ColorPickerSheet: View {
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha75))
                 } else if let label {
-                    Text(label)
+                    Text(LocalizedStringKey(label))
                         .font(AppTheme.alienLeague(12))
                         .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha90))
                         .kerning(1)

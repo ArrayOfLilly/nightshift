@@ -80,7 +80,7 @@ struct CountdownRowView: View {
                     }
                     .buttonStyle(.plain)
                     .focusEffectDisabled()
-                    .accessibilityLabel(item.showRemaining ? "Switch to date display" : "Switch to remaining time")
+                    .accessibilityLabel(item.showRemaining ? Text("Switch to date display") : Text("Switch to remaining time"))
                 }
             }
 

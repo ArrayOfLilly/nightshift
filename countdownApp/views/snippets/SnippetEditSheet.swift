@@ -72,7 +72,7 @@ private struct ProjectField: View {
             .frame(width: 36)
             .buttonStyle(.plain)
             .focusEffectDisabled()
-            .accessibilityLabel("Show project suggestions")
+            .accessibilityLabel(Text("Show project suggestions"))
             .help(String(localized: "Pick a project from the existing list"))
             .popover(isPresented: $showSuggestions, arrowEdge: .bottom) {
                 suggestionList
@@ -119,7 +119,7 @@ struct SnippetEditSheet: View {
     // can assign the saved result back — subsequent saves update the same snippet instead of
     // creating a new one.
     @State private var snippet: Snippet?
-    let existingProjects: [String]
+    let existingProjects: [ProjectCategory]
     let onSave: (Snippet) -> Void
     let onDelete: ((UUID) -> Void)?
 
@@ -148,16 +148,16 @@ struct SnippetEditSheet: View {
     @State private var originalBody:    String
 
     init(snippet: Snippet?,
-         existingProjects: [String],
+         existingProjects: [ProjectCategory],
          onSave: @escaping (Snippet) -> Void,
          onDelete: ((UUID) -> Void)?) {
         _snippet               = State(initialValue: snippet)
         self.existingProjects = existingProjects
         self.onSave           = onSave
         self.onDelete         = onDelete
-        let t = snippet?.title   ?? ""
-        let p = snippet?.project ?? ""
-        let b = snippet?.body    ?? ""
+        let t = snippet?.title              ?? ""
+        let p = snippet?.project.localizedName ?? ""
+        let b = snippet?.body               ?? ""
         _title       = State(initialValue: t)
         _project     = State(initialValue: p)
         _snippetBody = State(initialValue: b)
@@ -259,7 +259,7 @@ struct SnippetEditSheet: View {
                     }
                 }
                 Rectangle().fill(Color.white.opacity(AppTheme.alpha12)).frame(width: 1, height: 22).padding(.horizontal, 6)
-                headerButton(icon: "xmark", label: "Close") { handleDismiss() }
+                headerButton(icon: "xmark", label: String(localized: "Close")) { handleDismiss() }
             }
             .padding(.bottom, 12)
 
@@ -267,7 +267,7 @@ struct SnippetEditSheet: View {
                 Image(systemName: "tag")
                     .font(.system(size: 10))
                     .foregroundStyle(AppTheme.dark.opacity(AppTheme.alpha60))
-                ProjectField(text: $project, suggestions: existingProjects)
+                ProjectField(text: $project, suggestions: existingProjects.map { $0.localizedName })
                     .frame(height: 28)
             }
         }

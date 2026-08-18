@@ -162,7 +162,7 @@ struct CalculateView: View {
                                         }
                                         .buttonStyle(.plain)
                                         .focusEffectDisabled()
-                                        .accessibilityLabel("Sun times")
+                                        .accessibilityLabel(Text("Sun times"))
                                         .popover(isPresented: $showSunPopover) {
                                             sunPopoverContent
                                         }
@@ -454,7 +454,7 @@ struct CalculateView: View {
             }
             .buttonStyle(.plain)
             .focusEffectDisabled()
-            .accessibilityLabel("Show saved deadlines")
+            .accessibilityLabel(Text("Show saved deadlines"))
             .help(String(localized: "Browse and load your saved deadlines"))
             .popover(isPresented: $showDeadlineListPopover) {
                 deadlineListPopoverContent

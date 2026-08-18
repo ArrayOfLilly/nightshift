@@ -81,7 +81,7 @@ struct DeadlineDetailSheet: View {
             }
             .buttonStyle(.plain)
             .focusEffectDisabled()
-            .accessibilityLabel("Close")
+            .accessibilityLabel(Text("Close"))
             .help(String(localized: "Close this panel"))
             .padding(.top, 12)
             .padding(.trailing, 14)
@@ -164,7 +164,7 @@ struct DeadlineDetailSheet: View {
             }
             .buttonStyle(.plain)
             .focusEffectDisabled()
-            .accessibilityLabel("Rename deadline")
+            .accessibilityLabel(Text("Rename deadline"))
             .help(String(localized: "Give this saved deadline a new name"))
 
             Button {
@@ -179,7 +179,7 @@ struct DeadlineDetailSheet: View {
             }
             .buttonStyle(.plain)
             .focusEffectDisabled()
-            .accessibilityLabel("Delete deadline")
+            .accessibilityLabel(Text("Delete deadline"))
             .help(String(localized: "Permanently remove this saved deadline"))
             .alert("Delete \"\(deadline.title)\"?", isPresented: $showDeleteConfirm) {
                 Button("Delete", role: .destructive) { onDelete(deadline) }

@@ -180,7 +180,7 @@ struct CountdownDetailView: View {
                             }
                                 .buttonStyle(.plain)
                                 .focusEffectDisabled()
-                                .accessibilityLabel("Pick color")
+                                .accessibilityLabel(Text("Pick color"))
                                 .help(String(localized: "Change the accent color of this free slot"))
                                 .sheet(isPresented: $showColorPicker) {
                                 ColorPickerSheet(selectedIndex: $item.accentColorIndex)
@@ -204,7 +204,7 @@ struct CountdownDetailView: View {
                         }
                             .buttonStyle(.plain)
                             .focusEffectDisabled()
-                            .accessibilityLabel(item.soundEnabled ? "Mute sound" : "Unmute sound")
+                            .accessibilityLabel(item.soundEnabled ? Text("Mute sound") : Text("Unmute sound"))
                             .help(item.soundEnabled ? String(localized: "Disable the expiry sound for this slot") : String(localized: "Play a sound when this slot's deadline is reached"))
 
                         // ── Notes — all slot types (SLOT-NOTES) ───────────────
@@ -223,7 +223,7 @@ struct CountdownDetailView: View {
                         }
                             .buttonStyle(.plain)
                             .focusEffectDisabled()
-                            .accessibilityLabel(item.notes.isEmpty ? "Add notes" : "View notes")
+                            .accessibilityLabel(item.notes.isEmpty ? Text("Add notes") : Text("View notes"))
                             .help(item.notes.isEmpty ? String(localized: "Open the note editor to add notes to this slot") : String(localized: "View and edit the markdown notes for this slot"))
                             .sheet(isPresented: $showNotes) {
                             NotesSheet(slotLabel: item.label, notes: $item.notes)
@@ -239,7 +239,7 @@ struct CountdownDetailView: View {
                     }
                         .buttonStyle(.plain)
                         .focusEffectDisabled()
-                        .accessibilityLabel("Delete countdown")
+                        .accessibilityLabel(Text("Delete countdown"))
                         .help(String(localized: "Permanently remove this countdown slot"))
                         .alert("Delete \"\(item.label)\"?", isPresented: $showDeleteConfirm) {
                             Button("Delete", role: .destructive) { onDelete(); dismiss() }

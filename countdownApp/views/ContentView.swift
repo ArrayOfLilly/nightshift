@@ -90,6 +90,11 @@ struct ContentView: View {
     @ViewBuilder
     private func modeButton(_ mode: Mode) -> some View {
         let selected = selectedMode == mode
+        // Pre-localize the mode name itself before interpolating it into "Switch to %@" —
+        // interpolating mode.rawValue directly would insert the raw English case name
+        // (e.g. "Countdown") verbatim even in the Hungarian locale, since String.LocalizationValue
+        // string interpolation does not recursively localize a plain String argument.
+        let localizedModeName = String(localized: String.LocalizationValue(mode.rawValue))
 
         Button {
             selectedMode = mode
@@ -117,8 +122,8 @@ struct ContentView: View {
         }
         .buttonStyle(.plain)
         .focusEffectDisabled()
-        .accessibilityLabel(mode.rawValue)
-        .help(String(localized: String.LocalizationValue("Switch to \(mode.rawValue)")))
+        .accessibilityLabel(LocalizedStringKey(mode.rawValue))
+        .help(String(localized: String.LocalizationValue("Switch to \(localizedModeName)")))
     }
 }
 
