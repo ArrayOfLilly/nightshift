@@ -23,6 +23,39 @@
 
 ## Következő session feladata
 
+**Session CW (2026-08-19) KÉSZ:** A manual véglegesítése. Angol manual
+(`nightshiftApp-manual.md`) spot-check átolvasva a kód alapján, eltérés nem találva.
+Magyar manual (`nightshiftApp-manual-hu.md`) terminológiája átírva, hogy ténylegesen a
+`Localizable.xcstrings` HU fordításait tükrözze (nem csak parafrazealás) — 3
+szekciónév (Kalkuláció/Időzítő/Gyorsszövegek) + kb. 18 gombfelirat/UI-szöveg
+(SAVE→MENTÉS, CANCEL→MÉGSE, FROM→KEZDÉS, TO→BEFEJEZÉS, stb. — teljes lista:
+`progress.md` Session CW). `manual_build.py`-ban a `nightshift_hu` variant javítva:
+ törött szintaxis (önálló `ż` karakter) eltávolítva, `page_break_h2` frissítve a valós
+magyar H2 címekre, új `lang` mező (`hu`) a HTML `<html lang>`-hez. Mindhárom variant
+lefuttatva hibamentesen.
+- Build: N/A (dokumentáció + Python scriptjavítás, nem Swift). Git commit: FELHASZNÁLÓ
+FELADATA.
+
+**Következő session témája (ha a felhasználó folytatni kívánja):** screenshot
+alt-szövegek/képaláírások HU fordítása (jelenleg pl. "Countdown lista", "Calculate
+nézet" formában maradtak, alacsony prioritású kozmetikai tétel); vagy a 3 `.pdf` fájl
+újragenerálása a frissített HTML-ekből (kézi Print to PDF lépés); vagy visszatérés a
+korábbi napirendre: BUG-MANUAL-TEXT maradék 3 tétele, ENH-DEVDOCS-2, build ellenőrzés.
+
+---
+
+**Session CV folytatás (2026-08-18) LEZÁRVA:** Manual "Fülsor"/"Tab Bar" szekció javítva
+mindhárom manual `.md`-ben (ikon+kör leírás → tényleges szöveglabel+lekerekített háttér).
+`BUG-MANUAL-1` kettéválasztva `BUG-MANUAL-TEXT` (szöveg, azonnal javítandó) és
+`BUG-MANUAL-SCREENSHOTS` (screenshot, batch-elt marad) — `Claude.md`-ben új szabály erre.
+- Build: N/A. Git commit: FELHASZNÁLÓ FELADATA.
+
+**Session CV (2026-08-18) LEZÁRVA:** **ENH-DEVDOCS-1** kész — `docs/architecture.md` új fájl,
+5 szekció (Overview, Module responsibilities, Persistence layer, Recovery infrastructure, Adding
+a new feature), angol nyelven, a tényleges Swift forrás alapján (nem a buglist elavult
+feltételezései alapján). Egyeztetve a felhasználóval: 1 fájl, angol nyelv.
+- Build: N/A (csak dokumentáció). Git commit: FELHASZNÁLÓ FELADATA.
+
 **Session CP (2026-08-17) LEZÁRVA:** `Localizable.xcstrings` housekeeping — 2 HU string
 javítva (`"Open slot details"`, `"Open deadline details — load or delete"`: hiányzó
 birtokos rag pótolva, "részletek" → "részleteinek"), és a fájl legelején lévő funkciótlan
@@ -50,7 +83,7 @@ BUG-MANUAL-1, ENH-DEVDOCS-1/2, ENH-L10N-1 maradék.
 **Buglist állapot összefoglaló** (`docs/buglist.md`) — nyitott tételek:
 - **ENH-HELP-1** ✅ — KÉSZ (S1–S6 + BW session + CN session: projekt törlés + tooltipek hozzáadva)
 - **ENH-HELP-2** ✅ — KÉSZ (Session CO): mind az 5 Help szekció (25/25 item) body szövege mélyítve EN+HU-ban
-- **ENH-DEVDOCS-1** 🟡 — fejlesztői dokumentáció hiányzik
+- **ENH-DEVDOCS-1** ✅ — KÉSZ (Session CV): `docs/architecture.md` — architektúra, modul-felelősségek, persistence, recovery, new-feature checklist
 - **ENH-DEVDOCS-2** 🟡 — README + install.md, projektnév egyeztetés
 - **ENH-DEFERRED-1** 🟢 — deferred taskok dokumentálása (lokalizáció, Settings; About már kész)
 - **ENH-L10N-1** 🟢 — FOLYAMATBAN, szüneteltetve. Audit LEZÁRVA (BY+BZ+BU bővítés: #7 CalculateView, #8 SunPanel, #9 General). #1 (14 HU fordítás) commitolva `e6185ed`. Következő: #2 hiányzó xcstrings kulcsok
@@ -59,9 +92,8 @@ BUG-MANUAL-1, ENH-DEVDOCS-1/2, ENH-L10N-1 maradék.
 - **ENH-TOOLTIP-1** ✅ — KÉSZ (Session CK): modeButton + snippetRow edit `.help()` hozzáadva; 3 xcstrings kulcs; audit megerősítette hogy minden más elem már megvolt
 - **FOCUSABLE-AUDIT** ✅ — KÉSZ (Session CL): minden Button-szintű `.focusable(false)` → `.focusEffectDisabled()` cserélve 6 fájlban; szándékos kivételek megőrizve (LongPressStepperButton Image, SnippetEditSheet/AboutView/AddCountdownSheet container-szintű workaround-ok)
 - **BUG-SNIPPEDITBEACHBALL-1** ✅ — LEZÁRVA (2026-08-16): `LazyVStack`→`VStack` csere (Session 23-B) megszüntette; felhasználói megerősítés alapján
-- **BUG-MANUAL-1** 🟡 — újranyitva (3 frissítési ok felhalmozódott: snippet save/dismiss logika,
-  project delete, app név változás) — MINDIG UTOLSÓ, mert a screenshotok csak a végleges UI
-  állapotot tükrözhetik
+- **BUG-MANUAL-TEXT** 🟡 — a régi `BUG-MANUAL-1` szöveg-fele (screenshot-független): 3 nyitott tétel (snippet save/dismiss, project delete, app név); Fülsor/Tab Bar tétel lezárva (CV)
+- **BUG-MANUAL-SCREENSHOTS** 🟡 — a régi `BUG-MANUAL-1` screenshot-fele: változatlanul a legvégén, végleges UI-ra várva
 
 **ENH-SETTINGS-2 ✅ KÉSZ (Session BU + CC)**
 
@@ -94,7 +126,8 @@ szekció, #2 pont (eredeti 4 + új kb. 13 hiányzó kulcs xcstrings-be felvétel
 audit), plusz #5 (`SunTimesService.swift` nyitott kérdés).
 
 - **ENH-DEVDOCS-2** 🟡 — README + install.md (Distribution csomag); projektnév egyeztetés
-- **BUG-MANUAL-1** 🟡 — manual frissítés (snippet save/dismiss logika, project delete, app név)
+- (a `BUG-MANUAL-1` mostantól `BUG-MANUAL-TEXT` + `BUG-MANUAL-SCREENSHOTS` — ld. a
+  "Buglist állapot összefoglaló" fenti listáját)
 
 ---
 

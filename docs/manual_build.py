@@ -1,27 +1,62 @@
 #!/usr/bin/env python3
 """
-manual_build.py — Converts countdownApp-manual.md to a self-contained HTML file.
+manual_build.py — Converts a manual .md to a self-contained HTML file.
 All referenced images are base64-encoded and embedded inline.
-Usage: python3 manual_build.py
-Output: /Users/ArrayOfLilly/tools/countdownApp/countdownApp/docs/manual/countdownApp-manual.html
+
+Usage:
+  python3 manual_build.py               → countdownApp-manual.md      → countdownApp-manual.html
+  python3 manual_build.py nightshift    → nightshiftApp-manual.md     → nightshiftApp-manual.html
+  python3 manual_build.py nightshift_hu → nightshiftApp-manual-hu.md  → nightshiftApp-manual-hu.html
 """
 
 import re
+import sys
 import base64
 import mimetypes
 from pathlib import Path
 
-MANUAL_MD       = Path("/Users/ArrayOfLilly/tools/countdownApp/countdownApp/docs/manual/countdownApp-manual.md")
-OUTPUT_HTML     = Path("/Users/ArrayOfLilly/tools/countdownApp/countdownApp/docs/manual/countdownApp-manual.html")
+MANUAL_DIR      = Path("/Users/ArrayOfLilly/tools/countdownApp/countdownApp/docs/manual")
 SCREENSHOTS_DIR = Path("/Users/ArrayOfLilly/tools/countdownApp/screenshots")
 
-# h2 headings that should trigger a page break before them (main chapters only)
-PAGE_BREAK_H2 = {
-    "Calculate Mode",
-    "Countdown Mode",
-    "Snippets",
-    "Tips",
+_VARIANTS = {
+    "countdown": {
+        "md":    MANUAL_DIR / "countdownApp-manual.md",
+        "html":  MANUAL_DIR / "countdownApp-manual.html",
+        "title": "countdownApp — User Manual",
+        "lang":  "en",
+        "page_break_h2": {"Calculate Mode", "Countdown Mode", "Snippets", "Tips"},
+    },
+    "nightshift": {
+        "md":    MANUAL_DIR / "nightshiftApp-manual.md",
+        "html":  MANUAL_DIR / "nightshiftApp-manual.html",
+        "title": "NightShift — User Manual",
+        "lang":  "en",
+        "page_break_h2": {"Calculate", "Countdown", "Snippets", "Settings", "Data Recovery", "Tips"},
+    },
+    "nightshift_hu": {
+        "md":    MANUAL_DIR / "nightshiftApp-manual-hu.md",
+        "html":  MANUAL_DIR / "nightshiftApp-manual-hu.html",
+        "title": "NightShift — Felhasználói kézikönyv",
+        "lang":  "hu",
+        # Hungarian H2 chapter titles — must match the actual headings in
+        # nightshiftApp-manual-hu.md, which use the Localizable.xcstrings
+        # translations for the tab names (Calculate→Kalkuláció, Countdown→
+        # Időzítő, Snippets→Gyorsszövegek), not the English source words.
+        "page_break_h2": {"Kalkuláció", "Időzítő", "Gyorsszövegek", "Beállítások", "Adathelyreállítás", "Tippek"},
+    },
 }
+
+_arg      = sys.argv[1].lower() if len(sys.argv) > 1 else "countdown"
+_variant  = _VARIANTS.get(_arg)
+if _variant is None:
+    print(f"Unknown variant '{_arg}'. Valid options: {', '.join(_VARIANTS)}")
+    sys.exit(1)
+
+MANUAL_MD     = _variant["md"]
+OUTPUT_HTML   = _variant["html"]
+HTML_TITLE    = _variant["title"]
+HTML_LANG     = _variant["lang"]
+PAGE_BREAK_H2 = _variant["page_break_h2"]
 
 CSS = """
     body {
@@ -379,11 +414,11 @@ def main():
     md_text = MANUAL_MD.read_text(encoding="utf-8")
     body    = md_to_html(md_text, MANUAL_MD.parent)
     html    = f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="{HTML_LANG}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>countdownApp — User Manual</title>
+<title>{HTML_TITLE}</title>
 <style>{CSS}</style>
 </head>
 <body>

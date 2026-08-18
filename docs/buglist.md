@@ -134,27 +134,51 @@ nem reprodukálható. Lezárva felhasználói megerősítés alapján (2026-08-1
 
 ---
 
-## BUG-MANUAL-1: Manual frissítése a bezárási metódus változása miatt 🟡
+## BUG-MANUAL-TEXT: Manual leíró szövege elavult 🟡
 
-Az AZ sessionben implementált pipa/X viselkedés (`NotesSheet` + `SnippetEditSheet` — pipa: ment+dismiss,
-X: dirty esetén confirm alert) BF sessionben dokumentálva lett a manualban (`05e` eye badge, `11b` Notes
-unsaved-changes, `17 Exit` Snippets unsaved-changes; git `515aa7e`) — EZ A RÉSZ KÉSZ volt.
+A pipa/X bezárási viselkedés (`NotesSheet` + `SnippetEditSheet` — pipa: ment+dismiss,
+X: dirty esetén confirm alert) BF sessionben dokumentálva lett a manualban (`05e` eye badge,
+`11b` Notes unsaved-changes, `17 Exit` Snippets unsaved-changes; git `515aa7e`) — EZ A RÉSZ
+KÉSZ volt.
 
-**ÚJRANYITVA:** azóta több olyan változás történt, ami újra elavulttá teszi a manualt:
+**Szabály (Session CV óta, `Claude.md` "Manual — szöveg vs. screenshot"):** a leíró szöveg
+azonnal javítandó abban a sessionben, ami elavulttá teszi — nem várja meg a screenshot-batch-et.
+Ez a lista a szabály bevezetése ELŐTT felhalmozódott, még nem javított tételeket tartja nyilván.
+
+**Nyitott tételek:**
 - **BUG-SNIPPETSAVE-1 + BUG-SNIPPETDUP-1** (BN session) — a save/dismiss logika változott
   (`shouldSaveOnDisappear`, snippet `@State` upsert) — a manual Snippets szerkesztés szekciója
   ezt még nem tükrözi
 - **BUG-PROJECTDELETE-1** (BL session) — project törlés viselkedése változott (General alá
   mozgatás adatvesztés helyett) — nincs a manualban
 - **App név változás** (BH+BJ session) — `countdownApp`/`NightShift` átnevezés (Display Name,
-  Bundle ID, PRODUCT_NAME) — a manual screenshotjai/szövege még a régi nevet tükrözhetik
+  Bundle ID, PRODUCT_NAME) — a manual szövege még a régi nevet tükrözheti (screenshotoktól
+  függetlenül is ellenőrizendő szöveg-szinten)
 
-**Függőség:** a manual frissítés (és screenshotok készítése) csak az összes többi nyitott, UI-t
-érintő további változás (pl. `ENH-HELP-1`) elkészülte után történjen — a manual mindig utolsóként
-jön, hogy a screenshotok a végleges állapotot tükrözzék.
+**Lezárt tételek:**
+- **Fülsor / Tab Bar ikonok** — ✅ JAVÍTVA (Session CV, EN+HU): a manual ikon+sötét-kör UI-t írt
+  le (Óra/@/Idézőjel, kör az aktív fül mögött), miközben a tényleges `ContentView.swift` csak
+  szöveglabeleket renderel, lekerekített téglalap háttérrel — az ikon+kör UI git history szerint
+  csak átmenetileg, ~70 commitból 2-3-ban élt, sosem lett a végleges megoldás, a manual mégis ezt
+  őrizte. Mindkét manual fájl (`nightshiftApp-manual.md`, `nightshiftApp-manual-hu.md`) "Tab Bar"
+  / "Fülsor" szekciója frissítve a tényleges UI-ra.
 
-**Státusz:** NYITOTT (újranyitva) — 3 frissítési ok felhalmozódott (snippet save/dismiss logika,
-project delete, app név), ezeket egyben, a legvégén érdemes elintézni
+**Státusz:** RÉSZBEN NYITOTT — 3 régi tétel maradt (snippet save/dismiss, project delete,
+app név), ezek szöveg-szintű javítása nem screenshot-függő, tehát elvégezhető külön, a
+screenshot-batch-től függetlenül, bármelyik következő sessionben.
+
+---
+
+## BUG-MANUAL-SCREENSHOTS: Manual screenshotjai a végleges UI-ra várnak 🟡
+
+A manual screenshotjai csak akkor készülnek/frissülnek, ha az érintett UI-terület már stabil —
+nem érdemes egy még változó nézetről ismételten újrakészíteni őket. Ez szándékosan batch-elt,
+a legvégén elintézendő feladat (`Claude.md` "Manual — szöveg vs. screenshot").
+
+**Függőség:** a screenshot-frissítés csak az összes többi nyitott, UI-t érintő további változás
+(pl. `ENH-HELP-1` már kész, de ha jön még UI-módosítás) elkészülte után történjen.
+
+**Státusz:** NYITOTT — várakozik a végleges UI-állapotra
 
 ---
 
@@ -164,7 +188,10 @@ Nincs külön fejlesztői dokumentáció (architektúra áttekintés, modul fele
 recovery infrastruktúra, hogyan fejlesztünk egy új feature-t) — jelenleg csak a `Claude.md` (fejlesztési policy) +
 `countdownApp-handoff.md` (session-állapot) létezik, ezek nem helyettesítik a termék/architektúra dokumentációt.
 
-**Státusz:** NYITOTT — tartalom + struktúra egyeztetése szükséges, implementáció külön session
+**Státusz:** ✅ KÉSZ (Session CV, 2026-08-18) — `docs/architecture.md` létrehozva, 5 szekció
+(Overview, Module responsibilities, Persistence layer, Recovery infrastructure, Adding a new
+feature), angol nyelven, a valós Swift forrás (Models/, App/, Services/, Views/) alapján írva.
+Git commit: FELHASZNÁLÓ FELADATA.
 
 ---
 
@@ -313,8 +340,17 @@ még **FELHASZNÁLÓ FELADATA**.
 `AddCountdownSheet.swift` Cancel/Add/LABEL/DEADLINE/placeholder, `DeadlineDetailSheet.swift`
 Close/CANCEL/RENAME/Rename deadline/Delete deadline, `ColorPickerSheet.swift` "PICK A COLOR"+close,
 `SunPanel.swift` LOADING/NO DATA, `SharedEditorComponents.swift`, `CopyButton.swift` (belső
-HTML/CSS/JS ill. hívó-adott accessibility label, nincs saját hardcoded string), `Snippet.swift`
-"General" default projektnév (döntés: adat-default, nem UI chrome, marad lokalizálatlan).
+HTML/CSS/JS ill. hívó-adott accessibility label, nincs saját hardcoded string).
+
+**FRISSÍTVE (Session CQ, 2026-08-18):** `Snippet.swift` `"General"` default projektnév — a korábbi
+döntés ("adat-default, nem UI chrome, marad lokalizálatlan") ÉRVÉNYTELENÍTVE. A `sectionHeader`
+(`SnippetsView.swift`) `Text(project.uppercased())`-je ténylegesen kirajzolja a tárolt projekt-tag
+literált, tehát a "General" mindig angolul jelent volna meg HU nyelven is — ez valódi kódhiba volt,
+nem szándékos adat-default. Megoldás: `Snippet.project` továbbra is a nyers `"General"` literált
+tárolja (kanonikus, locale-független storage-id), de `SnippetsView.sectionHeader` a megjelenítés
+pillanatában `String(localized: "General")`-re fordítja, ha `Snippet.isGeneralProject(_:)` igaz —
+más (felhasználó által megadott) projekttagek változatlanul nyersen jelennek meg. ÚJ xcstrings kulcs:
+`"General"` → `"Általános"`. Ld. `countdownApp-handoff.md` #56-59.
 
 ### 5) Nyitott kérdés
 `SunTimesService.swift` "Invalid request URL" (`lastError`) — tisztázandó, megjelenik-e valaha

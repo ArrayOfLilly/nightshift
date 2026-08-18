@@ -1,3 +1,332 @@
+## Session CW folytatás — 2026-08-19 (HU manual: megjegyzés az angol screenshotokról — KÉSZ)
+
+### Session CW folytatás — KÉSZ
+Felhasználói kérdés: érdemes-e magyar screenshotokat készíteni a HU manualhoz.
+Egyeztetve: nem éri meg (a képek Illustratorban kézzel maszkolt egységes méretre
+hozott anyagok, újrakészítésük aránytalan és minden jövőbeli UI-változásnál
+duplikálna munkát). Helyette egy rövid megjegyzés került a
+`docs/manual/nightshiftApp-manual-hu.md` elejére, közvetlenül a bevezető bekezdés
+után, a Fülsor szekció előtt:
+
+> **Megjegyzés:** a kézikönyv képernyőképei angol nyelvű felhasználói felületet
+> mutatnak; a szöveg a magyar felületet írja le.
+
+`manual_build.py nightshift_hu` újrafuttatva, a `nightshiftApp-manual-hu.html`
+frissítve a megjegyzéssel.
+
+**Következő session:** ha a felhasználó kéri, PDF-ek frissítése a HTML-ekből, vagy
+BUG-MANUAL-TEXT maradék 3 tétele, vagy ENH-DEVDOCS-2.
+
+---
+
+## Session CW — 2026-08-19 (HU manual terminológia-javítás + manual_build.py nightshift_hu — KÉSZ)
+
+### Session CW — KÉSZ
+Felhasználói kérés: a manual véglegesítése — angol a kód alapján (már megvolt, csak
+spot-check), magyar a `Localizable.xcstrings` fordítási terminológiáját tükrözve (a
+felhasználó által kiemelt példa: 3 szekciónév — Kalkuláció, Időzítő, Gyorsszövegek),
+végül `manual_build.py` paraméterezhetővé tétele a HU build-hez (a `nightshift_hu`
+variant már létezett a scriptben, de törött volt — ld. lent).
+
+**Módszer:** `python3` a `Localizable.xcstrings`-ből (JSON) kulcsonként kiolvasta a
+tényleges `hu` fordítást minden, a manualban bold/UI-elemként szereplő angol tokenre —
+nem feltételezés, hanem a fájlból közvetlenül. `MacOS-MCP:Shell` használva a
+fájlolvasáshoz/kereséshez (grep, python), mert a Filesystem MCP nem tud tartalom szerint
+keresni egy 94KB-os xcstrings-ben — ez csak olvasás/keresés volt, minden tényleges .md és
+.py fájlírás a `Filesystem:edit_file`-lal történt.
+
+**`docs/manual/nightshiftApp-manual-hu.md` — talált és javított eltérések a valós HU UI-tól:**
+- 3 fő szekciónév + Fülsor táblázat: Calculate/Countdown/Snippets (angolul hagyva) →
+  **Kalkuláció / Időzítő / Gyorsszövegek** (`## H2` címek + táblázat cellák + az összes
+  futószövegbeli előfordulás, kivéve a screenshot alt-szövegeket/fájlneveket, azok
+  szándékosan angolul maradtak, mivel a képfájlnevek ténylegesen angolok)
+- Gombfeliratok, amik eddig angolul maradtak a fordított szövegben, most a tényleges
+  xcstrings HU értékre cserélve: SAVE→**MENTÉS**, CANCEL→**MÉGSE**, RESET FROM NOW→
+  **MOSTANTÓL**, RESET TO NOW→**MOSTANÁIG**, DAYS→**PONTOS**, CAL→**NAPTÁR**,
+  FROM→**KEZDÉS**, TO→**BEFEJEZÉS**, LOAD AS TO→**BETÖLTÉS**, RENAME→**ÁTNEVEZÉS**,
+  +ADD→**+ ÚJ**, FREE ✓→**SZABAD ✓**, Delete→**Törlés**, Cancel→**Mégse**,
+  Quit without saving→**Kilépés mentés nélkül**, Save and quit→**Mentés és kilépés**,
+  YEAR/MON/DAY/HOUR/MIN→ÉV/HÓNAP/NAP/ÓRA/PERC, COPIED→MÁSOLVA
+- Kisebb pontosítások a manual saját (nem xcstrings-ből idézett) parafrázisaiban, hogy
+  pontosan illeszkedjenek a valós fordított UI-labelhez: "Felület nyelve" →
+  "**Felhasználói felület nyelve**" (a tényleges Settings picker label), "Hátralévő idő"
+  → "Hátralévő idő megjelenítése" (a tényleges toggle pill szöveg)
+- Nyelvtani javítás: "A Countdown" → "Az Időzítő" (hangrend miatt "Az")
+- **Ellenőrizve, HOGY NEM változott (már egyezett az xcstrings-szel):** Beállítások,
+  Nyelv, Megjelenés, Betűméret, Dátum- és számformátum, Alapértelmezett/Nagy/Nagyobb/
+  Legnagyobb, Általános, AUTO, English (US)/Magyar (HU) (ezek a nyelv-választó saját,
+  nem lokalizált, hardcoded label-jei — helyesen angolul/natív névvel maradnak)
+
+**`docs/manual_build.py` — javítva:**
+- A `nightshift_hu` variant korábban törött volt: hibás behúzás a dict-ben + egy önálló
+  `ż` karakter a `_VARIANTS` dict lezárása után (valószínűleg elgépelés egy korábbi,
+  dokumentálatlan próbálkozásból) — ez `NameError`-t dobott volna minden futtatáskor,
+  függetlenül a variant paramétertől. Eltávolítva, a dict újraindentálva a másik két
+  variant stílusához igazítva.
+- `page_break_h2` a `nightshift_hu`-nál eddig angol H2 címeket listázott
+  (`{"Calculate", "Countdown", "Snippets", ...}`), miközben a HU `.md`-ben (a fenti
+  javítás után) a tényleges H2-ek magyarul vannak — frissítve
+  `{"Kalkuláció", "Időzítő", "Gyorsszövegek", "Beállítások", "Adathelyreállítás",
+  "Tippek"}`-re. (Enélkül a HU PDF-ben egyetlen fejezet sem tört volna oldalt.)
+- Új `"lang"` mező mindhárom varianthoz (`en`/`en`/`hu`) — a kimeneti HTML
+  `<html lang="...">` attribútuma eddig hardcoded `"en"` volt a HU buildnél is.
+- Docstring frissítve a 3. usage sorral (`nightshift_hu`).
+
+**Tesztelve:** mindhárom variant (`countdown`, `nightshift`, `nightshift_hu`) lefuttatva
+`python3 manual_build.py <variant>` — mind hibamentesen írta ki a HTML-t, nem volt
+"image not found" warning egyiknél sem. `class="chapter"` előfordulások száma: 6 és 6
+(EN és HU manual) — a HU oldaltörések most már ténylegesen működnek.
+
+**Angol manual (`nightshiftApp-manual.md`) — task (a):** teljes egészében átolvasva,
+spot-check jelleggel összevetve `ContentView.swift` Mode enummal, a Calculate/Countdown/
+Snippets/Settings/Recovery funkciókkal a korábbi sessionök (CN–CV) jegyzetei alapján —
+nem talált eltérést, naprakésznek tűnik. **Nem történt** soronkénti, minden Swift fájlra
+kiterjedő újra-ellenőrzés (idő/token-korlát miatt) — ha ez szükséges, külön session.
+
+**Nem történt még:** a `.pdf` fájlok (3 db a `docs/manual/`-ban) nem lettek
+újragenerálva a HTML-ekből — azok külön (feltehetően kézi Print to PDF) lépés, a
+felhasználó feladata, ha kéri.
+
+**Következő session:** ha a felhasználó kéri, a screenshot alt-szövegek/képaláírások HU
+fordítása is végigvihető (jelenleg pl. "Countdown lista", "Calculate nézet" formában
+maradtak a képek `alt` szövegében és a fájlnevek előtti leíró szövegben — ezek nem
+UI-elemek, csak leíró címkék, ezért alacsonyabb prioritásúak, de a teljes konzisztencia
+kedvéért javíthatók). Vagy: PDF-ek frissítése a HTML-ekből. Vagy: BUG-MANUAL-TEXT
+maradék 3 tétele (ld. buglist).
+
+---
+
+## Session CV folytatás — 2026-08-18 (Manual Fülsor hiba + BUG-MANUAL folyamat-javítás — KÉSZ)
+
+### Session CV folytatás — KÉSZ
+Felhasználói jelzés: a HU manual "Fülsor" szekciója ikon+sötét-kör UI-t ír le, ami nem
+egyezik a tényleges `ContentView.swift`-tel (szöveglabelek, lekerekített téglalap háttér).
+Git history (`git log --all -p -- countdownApp/Views/ContentView.swift`) megerősítette:
+a `symbolName` bevezetve, de a `modeButton` sosem használta ténylegesen renderelésre —
+felhasználó szerint ~70 commitból csak 2-3-ban élt ez az átmeneti állapot, mégis a manual
+ezt őrizte, több későbbi manual-frissítés ellenére is.
+
+**Gyökérok azonosítva:** a `BUG-MANUAL-1` addigi szabálya ("manual mindig legutoljára, egy
+batch-ben, hogy a screenshotok véglegesek legyenek") a screenshotokra indokolt logikát a
+leíró szövegre is ráterjesztette — pedig a szöveg semmilyen screenshot-függőséget nem
+igényel, azonnal javítható lenne.
+
+**Egyeztetve és elvégezve:**
+- `Claude.md` — új alszekció "Manual (docs/manual/*.md) — szöveg vs. screenshot" a
+  "Docs karbantartás" alatt: leíró szöveg AZONNAL javítandó az érintett sessionben (mint
+  progress.md/handoff.md), screenshotok maradnak batch-elt, végén elintézendő feladatnak
+- `docs/buglist.md` — `BUG-MANUAL-1` kettéválasztva:
+  - `BUG-MANUAL-TEXT` — szöveg-szintű elavulások (3 régi tétel: snippet save/dismiss,
+    project delete, app név — még nyitva; Fülsor tétel lezárva)
+  - `BUG-MANUAL-SCREENSHOTS` — screenshot-frissítés, változatlanul a végére várva
+- Mindhárom manual `.md` fájl "Tab Bar"/"Fülsor" szekciója javítva a tényleges UI-ra
+  (szöveglabelek, lekerekített háttér, nincs ikon/kör): `nightshiftApp-manual-hu.md`,
+  `nightshiftApp-manual.md`, `countdownApp-manual.md` (régi branding-variáns, konzisztencia
+  miatt is javítva)
+
+**Nem történt meg:** `.html`/`.pdf` manual-verziók regenerálása (`manual_build.py`) — ezek
+még a régi tartalmat tükrözik, a felhasználó nem kérte kifejezetten.
+
+**Következő session:** `BUG-MANUAL-TEXT` maradék 3 tétele (snippet save/dismiss logika,
+project delete, app név) — screenshot-függetlenül javítható bármikor. Vagy ENH-DEVDOCS-2,
+vagy build ellenőrzés.
+
+---
+
+## Session CV — 2026-08-18 (ENH-DEVDOCS-1: fejlesztői dokumentáció — KÉSZ)
+
+### Session CV — KÉSZ
+`docs/progress.md`, `docs/countdownApp-handoff.md`, `docs/buglist.md` (ENH-DEVDOCS-1/2),
+`Claude.md` elolvasva, majd a teljes Swift forrásfa (`Filesystem:directory_tree`) és a
+kulcsfájlok (`AppKeys.swift`, `CountdownItem.swift`, `Snippet.swift`, `NamedDeadline.swift`,
+`ProjectCategory.swift`, `countdownAppApp.swift`, `ContentView.swift`, `CountdownView.swift`)
+átnézve, hogy a doc a valós kódot tükrözze, nem a buglist elavult feltételezéseit.
+
+**Egyeztetés (felhasználóval):** egy fájl (`docs/architecture.md`), angol nyelven (a Swift
+kód kommentjeivel egyező konvenció).
+
+**Létrehozva:** `docs/architecture.md` — 5 szekció:
+- Overview (NightShift koncepció, 3 tab, entry point + 4 scene)
+- Module responsibilities (App/Components/Models/Services/Theme/Views mappák szerepe)
+- Persistence layer (UserDefaults + AppKeys registry, `decodeIfPresent` szabály, `@AppStorage`
+  a Calculate view saját state-jéhez)
+- Recovery infrastructure (per-item decode recovery mintája mindhárom modellben,
+  `corruptedDump` akkumuláció, banner UI, DEBUG injection)
+- Adding a new feature (gyakorlati checklist: modul-választás, persistence szabályok,
+  concurrency, lokalizáció, tooltip/accessibility, Claude.md egyeztetési kötelezettség, docs)
+
+**Munkamódszer:** szekvenciális írás (Desktop Commander:write_file, ~20-25 soros chunkokban,
+rewrite majd append módban) — a `Filesystem:write_file` eszköz ebben a sessionben nem volt
+betölthető (`tool_search` nem találta), Desktop Commander helyettesítette.
+
+**Filesystem MCP állapot:** ebben a sessionben működött (`Filesystem:read_text_file`,
+`read_multiple_files`, `directory_tree` mind sikeresek) — a korábbi `filesystem-mcp-debug.md`-ben
+dokumentált silent-fail probléma legalább ideiglenesen/részlegesen megoldódott. Írásra viszont
+csak Desktop Commander volt elérhető ebben a sessionben.
+
+**Következő session:** `docs/buglist.md` ENH-DEVDOCS-1 → ✅ KÉSZ jelölése, git commit,
+majd ENH-DEVDOCS-2 (README + install.md) vagy build ellenőrzés (CU + korábbi nyitott sessionök).
+
+---
+
+## Session CU — 2026-08-18 (ProjectCategory enum implementáció — KÉSZ)
+
+### Session CU — KÉSZ
+Előző session (#59 végeredmény: nyers "General" string storage-id) helyett profi megoldás:
+`ProjectCategory` enum bevezetése, ami megkülönbözteti a rendszer-alapértelmezettet
+a felhasználó által adotttól.
+
+**Beszélt architektú ra (előző sessionből örökölt döntések):**
+- Canonical storage key: `"default_general"` (`.general` case encode-ként)
+- Lazy decode-time migration: `"General"` / `"general"` → `.general` automatikusan
+- `.general` nem nevezhető át, nem törölhető (chevron elrejtve UI-ban)
+- `init(userEnteredName:)` konvertál TextField inputból
+- Új fájl: `Models/ProjectCategory.swift` (már elkészült előző sessionben)
+
+**Végrehajtott módosítások:**
+- [x] `Models/ProjectCategory.swift` — elkészült előző sessionben, teljes és korrekt
+- [x] `Models/Snippet.swift` — `project: String` → `project: ProjectCategory`;
+  custom `init(from:)` — `decode(ProjectCategory.self)`; memberwise init —
+  `project: ProjectCategory = .general`; `committed()` — `ProjectCategory(userEnteredName:)`
+  használata, raw `"General"` eltűnt; `isGeneralProject` törölve (enum pattern match
+  váltja); `load()` whitespace cleanup — project trim eltávolítva (a Codable kezeli)
+- [x] `Views/Snippets/SnippetsView.swift` — state-ek `ProjectCategory`-ra;
+  `projectKeys: [ProjectCategory]`; `rows(for:)` — `ProjectCategory` param;
+  `sectionHeader` — `.general`-nál chevron elrejtve, `.custom`-nál rename+delete menü;
+  `renameProject` — `ProjectCategory(userEnteredName:)` használata;
+  `deleteProject` — `.general` enum case (nem raw string)
+- [x] `Views/Snippets/SnippetEditSheet.swift` — `existingProjects: [ProjectCategory]`;
+  init: `snippet?.project.localizedName ?? ""`; `ProjectField` suggestions:
+  `existingProjects.map { $0.localizedName }`
+
+**Statikus kod-átnézés IGEN, build/futtatás NEM — FELHASZNÁLÓ FELADATA.**
+
+**Következő session:** build+teszt; ha hiba: debug. Ha rendben: git commit,
+majd teljes repó grep `"General"` literálokra (adat-réteg ellenőrzés).
+
+---
+
+## Session CQ folytatás — 2026-08-18 (újonnan azonosított fájlok audit-köre — LEZÁRVA)
+
+### Session CQ folytatás — LEZÁRVA
+Ez a kör a `countdownApp-handoff.md`-ben korábban azonosított, még nem auditált fájllistát
+zárta le (App/, Components/, Models/, Services/ mappák egy része) — a fenti CQ-bejegyzésben
+leírt ComponentStepper/SunPanel/CalculateView munkától FÜGGETLEN fájlokon.
+
+**Munkamódszer:** 1 fájlon megyünk végig — elolvasás, xcstrings-ellenőrzés (grep/olvasás),
+valódi kódhibák kigyűjtése, mentés, azonnali dokumentálás a `countdownApp-handoff.md`-ben.
+
+- [x] `App/countdownAppApp.swift` — TISZTA (DEBUG-only menüpontok, nem igényelnek fordítást)
+- [x] `App/HelpCommands.swift` — TISZTA (`help.menu.item` már helyesen kódolva és fordítva)
+- [x] `Components/CopyButton.swift` — TISZTA (mindhárom hívóhely `String(localized:)`-tel ad át)
+- [x] `Components/NativeTooltip.swift` — TISZTA (egyetlen hívóhely, helyesen kódolva)
+- [x] `Components/SharedEditorComponents.swift` — TISZTA (nincs felhasználó felé mutató string)
+- [x] `Components/HelpScreenshot.swift` — TISZTA (nincs felhasználó felé mutató string)
+- [x] `Models/CountdownItem.swift` — TISZTA (tiszta adatmodell)
+- [x] `Models/NamedDeadline.swift` — TISZTA (tiszta adatmodell)
+- [x] `Models/Snippet.swift` — **VALÓDI KÓDHIBA TALÁLVA ÉS JAVÍTVA**: a `"General"` alapértelmezett
+  projekttag literál volt, a `SnippetsView.sectionHeader` `Text(project.uppercased())`-je nyersen
+  rajzolta volna ki, HU nyelven is angolul jelent volna meg. Első javítási kísérlet
+  (`String(localized:)` íráskor) törte a "General mindig utoljára" rendezést HU nyelven — a
+  felhasználó jelezte, újratervezés: `Snippet.project` mostantól a nyers `"General"` literált
+  tárolja mint kanonikus, locale-független storage-id; új `Snippet.isGeneralProject(_:)` helper;
+  `SnippetsView.projectKeys`/`sectionHeader` ezt használja, a fordítás csak megjelenítéskor
+  történik. ÚJ xcstrings kulcs: `"General"` → `"Általános"` (korábban nem létezett, ellenőrizve).
+  Build/futtatás nem történt, csak statikus kód-átnézés — a felhasználó nézze meg élesben.
+- [x] `Services/Formatters.swift` — TISZTA (csak DateFormatter minta-stringek, nem UI szöveg)
+
+**Az újonnan azonosított fájlok listája TELJES, nincs több hátralévő fájl ebben a körben.**
+
+**Dokumentáció:** `countdownApp-handoff.md` #56-59 (a #56-58 egy köztes, később felülírt
+próbálkozás volt, #59 a végleges megoldás), `docs/buglist.md` ENH-L10N-1 #4 pont frissítve.
+
+**Következő session:** teljes `Localizable.xcstrings` + repó gyors ellenőrzése olyan literál
+mintákra, amiket a #59-es hiba felfedett (adat-réteg literál, nem csak View-string — a `Models/`
+mappa is rejthet ilyet), majd build+teszt (még mindig FELHASZNÁLÓ FELADATA).
+
+---
+
+## Session CQ — 2026-08-18 (ENH-L10N-1: új audit-kör indult — FOLYAMATBAN)
+
+### Session CQ — FOLYAMATBAN
+Felhasználói visszajelzés: annak ellenére, hogy `docs/buglist.md` az ENH-L10N-1-et
+✅ KÉSZ-nek jelöli (Session CH lezárás), a felhasználó a kódban továbbra is bőven
+lát lokalizálatlan stringeket (pl. stepper, accessibility labelek) — új, kézi
+fájlonkénti audit-kör indult. A meglévő, kézzel átírt magyar fordítások NEM
+módosulnak, csak az eddig hiányzó/lokalizálatlan stringek kerülnek pótlásra.
+
+**Munkamódszer (felhasználó kérése):** egyszerre egy fájlon megyünk végig — átnézés,
+fordítás egyeztetése, mentés, dokumentálás — session-határokon át folytatva.
+
+- [x] `Components/ComponentStepper.swift` átnézve — **TISZTA**, nincs teendő.
+  `label` és `unit` is `String(localized: String.LocalizationValue(...))`-on megy
+  át, `accessibilityLabel` és `.help()` szövege is xcstrings-kulcsot használ
+  (korábbi Session CH javítás, megerősítve élesben).
+- [x] `Components/LongPressStepperButton.swift` átnézve — **TISZTA**, nincs saját
+  hardcoded string; az `accessibilityLabel` paraméterként érkezik, a hívó fél
+  (`ComponentStepper`) már lokalizálva adja át.
+- [x] `Views/Calculate/SunPanel.swift` — **FONTOS KORREKCIÓ**: a `docs/buglist.md`
+  audit ELAVULT volt. A teljes `Localizable.xcstrings` tényleges (nem
+  másodkézből származó) átolvasása megmutatta, hogy a SunPanel összes
+  sor-labelje (First light, Dawn, Sunrise, Sunset, Dusk, Last light, Solar noon,
+  Day length, Moonrise, Moonset, Phase, Illumination, Morning/Evening
+  golden/blue, Sun times, Sun times unavailable, LOADING, NO DATA) **MÁR megvan
+  és le van fordítva** — ezekhez NEM nyúltunk. **TANULSÁG: `docs/buglist.md`-re
+  nem szabad támaszkodni, mindig a tényleges fájlokat (Swift + xcstrings) kell
+  ellenőrizni.**
+- [x] `Views/Calculate/CalculateView.swift` teljes átnézve — valódi hiányok
+  azonosítva:
+  - **Hiányzó xcstrings kulcsok (megerősítve, a teljes xcstrings átnézése után
+    sehol nem találhatók):** `"YEAR"`, `"MON"`, `"HOUR"`, `"MIN"` (stepper
+    label-ek, nagybetűs) és `"year"`, `"month"`, `"day"`, `"hour"`, `"minute"`
+    (accessibility unit nevek, kisbetűs — egyik sem létezik, még a "day" sem,
+    holott a nagybetűs "DAY" már megvan). Nincs "WEEK" sehol a fájlban —
+    valószínűleg félreemlékezés volt a felhasználó részéről.
+  - **Megoldás forrása**: `help.calculate.stepper.body` xcstrings-érték már
+    tartalmazza a szándékolt HU feliratokat: "ÉV, HÓNAP, NAP, ÓRA, PERC".
+  - **Gyanús kódhiba (nem fordítás-hiány!):** két hely
+    (`.accessibilityLabel("Sun times")` és `.accessibilityLabel("Show saved
+    deadlines")`) string literált ad át az `.accessibilityLabel()`-nek, aminek
+    NINCS `LocalizedStringKey` túlterhelése (csak `Text` vagy nyers
+    `StringProtocol`) — valószínűleg sosem megy át lokalizáción, annak
+    ellenére, hogy a kulcsok már léteznek és le vannak fordítva. Hasonló a
+    korábban már javított `Text(String)` vs `Text(LocalizedStringKey)`
+    hibához a ComponentStepper-ben.
+
+**Következő session:** a fenti hiányzó kulcsok felvétele (fordítás
+egyeztetés alatt a felhasználóval), a két accessibilityLabel kódhiba javítása,
+majd `AddCountdownSheet.swift` + `CountdownDetailView.swift` átnézése (ugyanaz
+a ComponentStepper mintát használják, valószínűleg ugyanezek a hiányok).
+
+---
+
+## Session CP — 2026-08-17 (ENH-L10N-1: xcstrings housekeeping — LEZÁRVA)
+
+### Session CP — LEZÁRVA
+Felhasználói kérés: `Localizable.xcstrings` 2 HU string javítása (birtokos rag hiányzott) +
+üres kulcs törlése.
+- [x] `"Open slot details"` HU értéke: `"Slot részletek megnyitása"` →
+  `"Slot részleteinek megnyitása"`
+- [x] `"Open deadline details — load or delete"` HU értéke:
+  `"Határidő részletek megnyitása — betöltés vagy törlés."` →
+  `"Határidő részleteinek megnyitása — betöltés vagy törlés."`
+- [x] Üres `""` kulcs (funkciótlan, comment/localizations nélküli string catalog
+  bejegyzés a fájl legelején, `"strings"` alatt közvetlenül) törölve
+- [x] Mindhárom módosítás `Filesystem:edit_file`-lal, célzott cserével (nem teljes fájl felülírás)
+- [ ] Build: FELHASZNÁLÓ FELADATA
+- [ ] Git commit: FELHASZNÁLÓ FELADATA
+
+**Megjegyzés:** ez a session egy korábbi, ugyanaznapi (2026-08-17) munkamenet folytatása,
+amely a 20 VoiceOver/tooltip string HU fordítását és a `ContentView.swift`
+`modeButton()` javítását végezte el — ez a `progress.md` nem tartalmazta ezt a
+korábbi részt (session-határon veszett el a dokumentáció, mielőtt leírásra került
+volna), DE a felhasználó megerősítette, hogy ez a kódban ténylegesen megvan.
+
+**Következő session:** build ellenőrzés (CP + korábbi nyitott CN/CO változások együtt),
+majd BUG-MANUAL-1, ENH-DEVDOCS-1/2, ENH-L10N-1 maradék (#2 hiányzó xcstrings kulcsok).
+
+---
+
 ## Session CO — 2026-08-16 (calculate.toggle screenshotok kicsinyítése — LEZÁRVA)
 
 ### Session CO legutóbbi rész — LEZÁRVA
