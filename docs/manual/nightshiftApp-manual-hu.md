@@ -4,83 +4,86 @@ A NightShift egy macOS alkalmazás két időpont közötti különbség kiszám�
 visszaszámlálók kezeléséhez és újrafelhasználható szövegek tárolásához.
 Az ablak tetején három fül érhető el.
 
+> **Megjegyzés:** a kézikönyv képernyőképei angol nyelvű felhasználói felületet
+> mutatnak; a szöveg a magyar felületet írja le.
+
 ---
 
 ## Fülsor
 
-A fülsor az ablak tetején található. Az aktív fül mögött egy sötét teli kör jelzi
-a kiválasztott nézetet.
+A fülsor az ablak tetején található. A fülek szöveges címkék (nincs ikon); az aktív fül
+mögött egy sötét, lekerekített hátteret jelöl a kiválasztott nézetet.
 
-| Ikon | Fül | Mire való |
-|------|-----|-----------|
-| Óra | **Calculate** | Két időpont közötti különbség kiszámítása |
-| @ | **Countdown** | Visszaszámláló slotok listájának kezelése |
-| Idézőjel | **Snippets** | Újrafelhasználható szövegek tárolása |
+| Fül | Mire való |
+|-----|-----------|
+| **Kalkuláció** | Két időpont közötti különbség kiszámítása |
+| **Időzítő** | Visszaszámláló slotok listájának kezelése |
+| **Gyorsszövegek** | Újrafelhasználható szövegek tárolása |
 
 ---
 
-## Calculate
+## Kalkuláció
 
-A Calculate pontosan kiszámítja a FROM és TO dátum közötti időkülönbséget.
+A Kalkuláció pontosan kiszámítja a KEZDÉS és BEFEJEZÉS dátum közötti időkülönbséget.
 
 ![Calculate nézet – teljes nézet](../../screenshots/01 Calculate View - Calculated Days.png)
 
 ### Léptetők
 
-Két léptetősor látható: **FROM** (kezdő) és **TO** (záró). Minden sor öt részből áll:
-YEAR, MON, DAY, HOUR, MIN — mindegyiknek van egy felfelé és egy lefelé mutató gombja.
+Két léptetősor látható: **KEZDÉS** (kezdő) és **BEFEJEZÉS** (záró). Minden sor öt részből áll:
+ÉV, HÓNAP, NAP, ÓRA, PERC — mindegyiknek van egy felfelé és egy lefelé mutató gombja.
 
 - **Egyetlen kattintás** egy lépéssel mozgatja az értéket.
 - **Lenyomva tartás** rövid késleltetés után automatikusan ismétlődik, így gyorsan
   lehet navigálni.
 
-Az alkalmazás minden indításkor visszatölti az utoljára beállított FROM és TO értékeket.
+Az alkalmazás minden indításkor visszatölti az utoljára beállított KEZDÉS és BEFEJEZÉS értékeket.
 
 ### Reset gombok
 
-- **RESET FROM NOW** — a FROM időpontot az aktuális pillanatra állítja.
-- **RESET TO NOW** — a TO időpontot az aktuális pillanatra állítja.
+- **MOSTANTÓL** — a KEZDÉS időpontot az aktuális pillanatra állítja.
+- **MOSTANÁIG** — a BEFEJEZÉS időpontot az aktuális pillanatra állítja.
 
 ### Eredmény megjelenítése
 
 A léptetők alatt az alkalmazás mutatja a két időpont különbségét. Egy váltógomb két
 megjelenítési mód között vált:
 
-- **DAYS** — a teljes különbség napokban (pl. „142 nap").
-- **CAL** — naptár szerinti bontás: évek, hónapok és napok külön értékként.
+- **PONTOS** — a teljes különbség napokban (pl. „142 nap").
+- **NAPTÁR** — naptár szerinti bontás: évek, hónapok és napok külön értékként.
 
 A váltógomb állása megmarad az újraindítás után is.
 
 <!-- group -->
 ![Calculate nézet – DAYS mód](../../screenshots/01 Calculate View - Calculated Days - cropped.png)
-*Calculate nézet DAYS módban — az eredmény egyetlen összesített napszámként jelenik meg.*
+*Kalkuláció nézet PONTOS módban — az eredmény egyetlen összesített napszámként jelenik meg.*
 ![Calculate nézet – CAL mód](../../screenshots/01b Calculate View - Calculated Epochs - cropped.png)
-*Calculate nézet CAL módban — ugyanaz az időtartam évekre, hónapokra és napokra bontva.*
+*Kalkuláció nézet NAPTÁR módban — ugyanaz az időtartam évekre, hónapokra és napokra bontva.*
 <!-- /group -->
 
 ---
 
 ### Mentett határidők
 
-A **SAVE** gomb (könyvjelző ikon) lehetővé teszi, hogy a TO dátumot elments egy névvel,
+A **MENTÉS** gomb (könyvjelző ikon) lehetővé teszi, hogy a BEFEJEZÉS dátumot elments egy névvel,
 és később újra betölthesd anélkül, hogy újra be kellene gépelned.
 
 #### Határidő mentése
 
-1. Állítsd be a TO dátumot a kívánt határidőre.
-2. Kattints a **könyvjelző ikonra** (a SAVE gomb bal oldala). Egy panel nyílik meg.
-3. Írd be a határidő nevét, majd kattints a **SAVE** gombra. A határidő elmentésre kerül.
+1. Állítsd be a BEFEJEZÉS dátumot a kívánt határidőre.
+2. Kattints a **könyvjelző ikonra** (a MENTÉS gomb bal oldala). Egy panel nyílik meg.
+3. Írd be a határidő nevét, majd kattints a **MENTÉS** gombra. A határidő elmentésre kerül.
 
 <!-- group -->
 ![Határidő mentése – üres névmező](../../screenshots/02 Calculate View - Save Named Duration - empty - cropped.png)
-*A mentési panel üres névmezővel nyílik meg. Írd be a nevet, majd kattints a SAVE gombra.*
+*A mentési panel üres névmezővel nyílik meg. Írd be a nevet, majd kattints a MENTÉS gombra.*
 ![Határidő mentése – kitöltött névmező](../../screenshots/02b Calculate View - Save Named Duration - edit - cropped.png)
-*A névmező kitöltve. A SAVE elmenti, a CANCEL bezárja a panelt mentés nélkül.*
+*A névmező kitöltve. A MENTÉS elmenti, a MÉGSE bezárja a panelt mentés nélkül.*
 <!-- /group -->
 
 #### Mentett határidők megtekintése
 
-Kattints a SAVE gomb jobb oldalán lévő **chevronra (▾)**. Megjelenik egy lista az összes
+Kattints a MENTÉS gomb jobb oldalán lévő **chevronra (▾)**. Megjelenik egy lista az összes
 mentett határidővel.
 
 - **Egy sorra kattintva** megnyílik a részletek panel.
@@ -92,18 +95,18 @@ mentett határidővel.
 
 A részletek panel a határidő nevét és dátumát mutatja. Innen a következőket teheted:
 
-- **LOAD AS TO** — betölti a határidő dátumát a TO léptető mezőbe.
+- **BETÖLTÉS** — betölti a határidő dátumát a BEFEJEZÉS léptető mezőbe.
 - **Ceruza ikon** — átnevezési mód: a név szerkeszthető mezővé válik. Írd be az új nevet,
-  majd kattints a **RENAME** gombra a megerősítéshez, vagy a **CANCEL**-re az elvetéshez.
+  majd kattints a **ÁTNEVEZÉS** gombra a megerősítéshez, vagy a **MÉGSE**-re az elvetéshez.
 - **Kuka ikon** — véglegesen törli a határidőt. Megerősítő párbeszéd jelenik meg;
-  kattints a **Delete** gombra a megerősítéshez vagy a **Cancel**-re a visszalépéshez.
+  kattints a **Törlés** gombra a megerősítéshez vagy a **Mégse**-re a visszalépéshez.
 
 ![Határidő részletek panelje](../../screenshots/03b Calculate View - Saved Named Durations Details - cropped.png)
-*A részletek panel mutatja a határidő nevét és dátumát. Elérhető: LOAD AS TO, átnevezés (ceruza) és törlés (kuka).*
+*A részletek panel mutatja a határidő nevét és dátumát. Elérhető: BETÖLTÉS, átnevezés (ceruza) és törlés (kuka).*
 
 <!-- group -->
 ![Határidő átnevezése](../../screenshots/03c Calculate View - Edit Saved Named Durations - cropped.png)
-*Átnevezési mód: a név szerkeszthető szövegmezővé válik. Kattints a RENAME gombra vagy a CANCEL-re.*
+*Átnevezési mód: a név szerkeszthető szövegmezővé válik. Kattints a ÁTNEVEZÉS gombra vagy a MÉGSE-re.*
 ![Határidő törlésének megerősítő párbeszéde](../../screenshots/03d Calculate View - Delete Saved Named Durations - cropped.png)
 *Megerősítő párbeszéd jelenik meg a végleges törlés előtt.*
 <!-- /group -->
@@ -112,7 +115,7 @@ A részletek panel a határidő nevét és dátumát mutatja. Innen a következ�
 
 ### Nap- és holdadatok
 
-A Calculate képernyő alján egy napikon gomb megnyit egy panelt az aktuális dátumra és
+A Kalkuláció képernyő alján egy napikon gomb megnyit egy panelt az aktuális dátumra és
 helyszínre vonatkozó csillagászati adatokkal. A panel a következőket mutatja:
 
 - **Napkelte és napnyugta** időpontjai.
@@ -125,9 +128,9 @@ helyszínre vonatkozó csillagászati adatokkal. A panel a következőket mutatj
 
 ---
 
-## Countdown
+## Időzítő
 
-A Countdown nevesített visszaszámláló slotok listáját kezeli,
+Az Időzítő nevesített visszaszámláló slotok listáját kezeli,
 mindegyik egy adott határidőhöz kötve.
 
 ![Countdown nézet – teljes nézet](../../screenshots/05 CountDown View.png)
@@ -138,14 +141,14 @@ A bejegyzések két csoportban jelennek meg:
 
 - **Aktív bejegyzések** — a határidő a jövőben van. Növekvő sorrend a határidő szerint
   (leghamarabb lejáró legelöl). Borostyánszínű időzítővel jelenik meg.
-- **Szabad slotok** — a határidő lejárt. Színes **FREE ✓** jelzővel jelennek meg.
+- **Szabad slotok** — a határidő lejárt. Színes **SZABAD ✓** jelzővel jelennek meg.
   Húzással átrendezhetők a szabad slotok szekcióján belül.
 
 <!-- group -->
 ![Countdown lista – aktív sor](../../screenshots/05 CountDown View - Cooldown - cropped.png)
 *Egy aktív sor borostyánszínű élő időzítőt mutat; a sötét pill felirat bal oldalon.*
 ![Countdown lista – szabad slot](../../screenshots/05 CountDown View - Free Slot - cropped.png)
-*A szabad slot színes FREE ✓ jelzőt mutat, és húzással átrendezhető.*
+*A szabad slot színes SZABAD ✓ jelzőt mutat, és húzással átrendezhető.*
 <!-- /group -->
 
 ![Countdown lista – határidő megjelenítési mód](../../screenshots/05d CountDown View - Deadline - cropped.png)
@@ -156,14 +159,14 @@ A bejegyzések két csoportban jelennek meg:
 Az aktív sor bal oldalán egy sötét pill mutatja a bejegyzés nevét, jobb oldalán egy
 váltógomb vált a következők között:
 
-- **Hátralévő idő** — NN:ÓÓ:PP:MM élő visszaszámlálás.
+- **Hátralévő idő megjelenítése** — NN:ÓÓ:PP:MM élő visszaszámlálás.
 - **Határidő dátuma** — statikus dátum ÉÉÉÉ.HH.NN ÓÓ:PP formátumban.
 
 **A felirat másolása:** kattints a sötét pillre a felirat vágólapra másolásához.
-A pill röviden „COPIED" feliratot mutat visszajelzésként.
+A pill röviden „MÁSOLVA" feliratot mutat visszajelzésként.
 
 **Jegyzetjelző:** ha egy slothoz tartozik jegyzet, egy kis szemikon jelenik meg a pill
-feliratától jobbra. Az ikon eltűnik, amíg a „COPIED" felirat látszik.
+feliratától jobbra. Az ikon eltűnik, amíg a „MÁSOLVA" felirat látszik.
 
 ![Countdown lista – sor jegyzetjelzővel](../../screenshots/05e CountDown View - Existing note - cropped.png)
 *A narancs szemikon jelzi, hogy a slothoz tartozik jegyzet. Nyisd meg a részletek nézetet,
@@ -171,7 +174,7 @@ feliratától jobbra. Az ikon eltűnik, amíg a „COPIED" felirat látszik.
 
 ### Visszaszámláló hozzáadása
 
-Kattints a lista alján lévő **+ ADD** gombra. Megnyílik egy panel egy felirat mezővel
+Kattints a lista alján lévő **+ ÚJ** gombra. Megnyílik egy panel egy felirat mezővel
 és határidő léptetőkkel. Töltsd ki az adatokat, majd erősítsd meg a slot létrehozásához.
 
 ![Új elem hozzáadása panel](../../screenshots/06 Add New Item - cropped.png)
@@ -180,8 +183,8 @@ Kattints a lista alján lévő **+ ADD** gombra. Megnyílik egy panel egy felira
 ### Visszaszámláló törlése
 
 A listából kattints egy kártyára a részletes nézet megnyitásához, majd ott használd a
-kuka gombot. Törlés előtt mindig megerősítő párbeszéd jelenik meg — kattints a **Delete**
-gombra a megerősítéshez vagy a **Cancel**-re a visszalépéshez.
+kuka gombot. Törlés előtt mindig megerősítő párbeszéd jelenik meg — kattints a **Törlés**
+gombra a megerősítéshez vagy a **Mégse**-re a visszalépéshez.
 
 ![Visszaszámláló slot törlésének megerősítő párbeszéde](../../screenshots/06b Delete Item - cropped.png)
 *Megerősítő párbeszéd jelenik meg minden slot végleges törlése előtt.*
@@ -200,10 +203,10 @@ Nyomj Return-t vagy kattints el a megerősítéshez.
 **Időmegjelenítés:** a visszaszámlálás vagy a határidő dátuma az illusztráció fölé kerül
 a képernyő közepén.
 
-**Váltó pill:** a képernyő alján lévő sötét pill gomb vált a *Hátralévő idő*
+**Váltó pill:** a képernyő alján lévő sötét pill gomb vált a *Hátralévő idő megjelenítése*
 (NN:ÓÓ:PP:MM élő visszaszámlálás) és a *Határidő megjelenítése* (statikus dátum) között.
 
-**Határidő léptető:** öt részből álló léptetők (YEAR, MON, DAY, HOUR, MIN) teszik
+**Határidő léptető:** öt részből álló léptetők (ÉV, HÓNAP, NAP, ÓRA, PERC) teszik
 lehetővé a határidő módosítását. Lenyomva tartással gyorsan ismétlődik.
 A változtatások automatikusan mentődnek.
 
@@ -213,7 +216,7 @@ A változtatások automatikusan mentődnek.
 ![Részletes nézet – határidő mód](../../screenshots/07b CountDown Detail View - Deadline - cropped.png)
 *Részletes nézet határidő módban: a statikus célállapot dátuma jelenik meg.*
 ![Részletes nézet – lejárt (szabad) slot](../../screenshots/07c CountDown Detail View - Expired - cropped.png)
-*Lejárt slot: a FREE állapot jelölve, és a színválasztó gomb aktívvá válik.*
+*Lejárt slot: a SZABAD állapot jelölve, és a színválasztó gomb aktívvá válik.*
 <!-- /group -->
 
 #### Műveleti gombok
@@ -245,7 +248,7 @@ Az AUTO visszaállítja az alapértelmezett színt. A kiválasztás azonnal ment
 #### Törlés
 
 A kuka gomb véglegesen eltávolítja a slotot. Megerősítő párbeszéd jelenik meg;
-kattints a **Delete** gombra a megerősítéshez vagy a **Cancel**-re a visszalépéshez.
+kattints a **Törlés** gombra a megerősítéshez vagy a **Mégse**-re a visszalépéshez.
 A törlés nem vonható vissza.
 
 ---
@@ -282,8 +285,8 @@ ahonnan közvetlenül beilleszthető egy AI asszisztensbe vagy bármely más alk
 #### Jegyzetek törlése
 
 A panel fejlécében lévő **kuka gomb** törli a teljes tartalmát.
-Megerősítő párbeszéd jelenik meg; kattints a **Delete** gombra a megerősítéshez
-vagy a **Cancel**-re a visszalépéshez.
+Megerősítő párbeszéd jelenik meg; kattints a **Törlés** gombra a megerősítéshez
+vagy a **Mégse**-re a visszalépéshez.
 
 <!-- group -->
 ![Törlés megerősítő párbeszéde](../../screenshots/11 CountDown Detail View - Note Editor - Confirm Delete - cropped.png)
@@ -297,18 +300,18 @@ vagy a **Cancel**-re a visszalépéshez.
 Ha bezárod a panelt az **✕ gombbal**, miközben vannak nem mentett szerkesztések,
 megerősítő párbeszéd jelenik meg:
 
-- **Quit without saving** — elveti a változtatásokat és bezárja a panelt.
-- **Save and quit** — elmenti az aktuális szöveget és bezárja.
-- **Cancel** — visszatér a panelhez bezárás nélkül.
+- **Kilépés mentés nélkül** — elveti a változtatásokat és bezárja a panelt.
+- **Mentés és kilépés** — elmenti az aktuális szöveget és bezárja.
+- **Mégse** — visszatér a panelhez bezárás nélkül.
 
 ![Nem mentett változtatások megerősítő párbeszéde](../../screenshots/11b CountDown Detail View - Note Editor - Confirm Exit - cropped.png)
 *A párbeszéd csak akkor jelenik meg, ha vannak nem mentett változtatások. Egy már mentett panelt az ✕ azonnal bezár.*
 
 ---
 
-## Snippets
+## Gyorsszövegek
 
-A Snippets fül egy önálló gyorsszöveg-könyvtár, független a visszaszámláló slotoktól.
+A Gyorsszövegek fül egy önálló gyorsszöveg-könyvtár, független a visszaszámláló slotoktól.
 A gyorsszövegek projekt szerint csoportosulnak.
 
 ![Snippets nézet – teljes nézet](../../screenshots/13 Snippets View - Rows.png)
@@ -393,9 +396,9 @@ a gyorsszöveget.
 Ha bezárod a szerkesztőlapot az **✕ gombbal**, miközben vannak nem mentett szerkesztések,
 megerősítő párbeszéd jelenik meg:
 
-- **Quit without saving** — elveti a változtatásokat és bezárja a szerkesztőt.
-- **Save and quit** — elmenti és bezárja.
-- **Cancel** — visszatér a szerkesztőhöz.
+- **Kilépés mentés nélkül** — elveti a változtatásokat és bezárja a szerkesztőt.
+- **Mentés és kilépés** — elmenti és bezárja.
+- **Mégse** — visszatér a szerkesztőhöz.
 
 ![Gyorsszöveg-szerkesztő – nem mentett változtatások megerősítő párbeszéde](../../screenshots/17 Snippet Edtor - Exit - cropped.png)
 *A párbeszéd csak akkor jelenik meg, ha vannak nem mentett változtatások. Egy már mentett szerkesztőt az ✕ azonnal bezár.*
@@ -447,7 +450,7 @@ keresztül. Két fül érhető el.
 ![Beállítások – Nyelv fül](../../screenshots/21 Settings View - Languages.png)
 *A Nyelv fül: Felület nyelve és Dátum- és számformátum választók.*
 
-- **Felület nyelve** — beállítja az alkalmazás megjelenítési nyelvét. Válaszd a
+- **Felhasználói felület nyelve** — beállítja az alkalmazás megjelenítési nyelvét. Válaszd a
   *Rendszer alapértelmezett* lehetőséget a macOS követéséhez, vagy válaszd az
   *English* vagy *Magyar* lehetőséget explicit módon.
 - **Dátum- és számformátum** — szabályozza, hogyan jelennek meg a dátumok és számok
@@ -470,7 +473,7 @@ megjegyzés jelenik meg a fülön, amint bármelyik választó az alapértelmeze
 
 ## Tippek
 
-- A Calculate módban mentett határidők függetlenek a visszaszámláló slotoktól —
+- A Kalkuláció módban mentett határidők függetlenek a visszaszámláló slotoktól —
   a dátumkalkulátor referencia-pontjai, nem élő időzítők.
 - A Jegyzet és a Gyorsszöveg szerkesztők egyaránt támogatják a markdownt: fejlécek (`#`),
   listák (`-`), kódblokkok (` ``` `), táblázatok és kiemelt szöveg (`==szöveg==`).

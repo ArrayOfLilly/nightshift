@@ -110,6 +110,23 @@ Session végén kötelező:
 Ha egy session közben a handoff elavul (pl. fájlok átkerültek, döntés visszavonva),
 azonnal frissítsd — ne hagyd session végére.
 
+### Manual (docs/manual/*.md) — szöveg vs. screenshot
+
+A manual két, eltérő frissítési ütemű részből áll — ezeket nem szabad egybemosni:
+
+- **Leíró szöveg** (viselkedés, UI-elemek listája, workflow-k): amint egy session megváltoztat
+  egy olyan viselkedést, amit a manual leír, **azonnal** ellenőrizd az érintett manual
+  fájl(oka)t (`nightshiftApp-manual.md` EN + `nightshiftApp-manual-hu.md` HU, mindkettő), és ha
+  elavult, javítsd ki ugyanabban a sessionben — nem kell megvárni egy "manual session"-t.
+  Ez ugyanaz a fegyelem, mint a `docs/progress.md`/`countdownApp-handoff.md` azonnali
+  frissítése fent.
+- **Screenshotok**: ezek valóban megvárják, amíg az érintett UI-terület stabil (nem érdemes
+  ismételten újrakészíteni egy még változó nézetről) — ez marad batch-elt, session-határokon
+  átívelő feladat, lásd `docs/buglist.md` BUG-MANUAL-SCREENSHOTS.
+
+Ha nem egyértelmű, hogy egy változás érinti-e a manualt: grep a `docs/manual/*.md` fájlokban
+az érintett fül/funkció nevére, mielőtt a session lezárul.
+
 ---
 
 ## Fájlstruktúra
