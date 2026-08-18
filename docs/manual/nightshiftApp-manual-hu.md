@@ -1,34 +1,38 @@
-# NightShift App — Felhasználói kézikönyv
+# NightShift — Felhasználói kézikönyv
 
-A NightShift App egy macOS alkalmazás, amivel nyomon követheted a fontos határidőket,
-visszaszámlálókat kezelhetsz, és gyakran használt szövegeket tárolhatsz el. Az ablak
-tetején három fül érhető el.
+A NightShift egy macOS alkalmazás két időpont közötti különbség kiszámításához,
+visszaszámlálók kezeléséhez és újrafelhasználható szövegek tárolásához.
+Az ablak tetején három fül érhető el.
 
 ---
 
 ## Fülsor
 
-A fülsor az ablak tetején található. Az aktív fül mögött egy sötét teli kör jelzi a kiválasztott nézetet.
+A fülsor az ablak tetején található. Az aktív fül mögött egy sötét teli kör jelzi
+a kiválasztott nézetet.
 
 | Ikon | Fül | Mire való |
 |------|-----|-----------|
 | Óra | **Calculate** | Két időpont közötti különbség kiszámítása |
-| @ | **Countdown** | Visszaszámlálók listájának kezelése |
+| @ | **Countdown** | Visszaszámláló slotok listájának kezelése |
 | Idézőjel | **Snippets** | Újrafelhasználható szövegek tárolása |
 
 ---
 
-## Calculate nézet
+## Calculate
 
-A Calculate nézet pontosan kiszámítja, mennyi idő telt el vagy van még hátra két dátum között.
+A Calculate pontosan kiszámítja a FROM és TO dátum közötti időkülönbséget.
+
+![Calculate nézet – teljes nézet](../../screenshots/01 Calculate View - Calculated Days.png)
 
 ### Léptetők
 
 Két léptetősor látható: **FROM** (kezdő) és **TO** (záró). Minden sor öt részből áll:
-ÉV, HÓNAP, NAP, ÓRA, PERC — mindegyiknek van egy felfelé és egy lefelé mutató gombja.
+YEAR, MON, DAY, HOUR, MIN — mindegyiknek van egy felfelé és egy lefelé mutató gombja.
 
 - **Egyetlen kattintás** egy lépéssel mozgatja az értéket.
-- **Lenyomva tartás** rövid késleltetés után automatikusan ismétlődik, így gyorsan lehet navigálni.
+- **Lenyomva tartás** rövid késleltetés után automatikusan ismétlődik, így gyorsan
+  lehet navigálni.
 
 Az alkalmazás minden indításkor visszatölti az utoljára beállított FROM és TO értékeket.
 
@@ -39,8 +43,8 @@ Az alkalmazás minden indításkor visszatölti az utoljára beállított FROM �
 
 ### Eredmény megjelenítése
 
-A léptetők alatt az alkalmazás mutatja a két időpont különbségét napokban, órákban,
-percekben és másodpercekben. Egy váltógomb két megjelenítési mód között vált:
+A léptetők alatt az alkalmazás mutatja a két időpont különbségét. Egy váltógomb két
+megjelenítési mód között vált:
 
 - **DAYS** — a teljes különbség napokban (pl. „142 nap").
 - **CAL** — naptár szerinti bontás: évek, hónapok és napok külön értékként.
@@ -48,12 +52,11 @@ percekben és másodpercekben. Egy váltógomb két megjelenítési mód közöt
 A váltógomb állása megmarad az újraindítás után is.
 
 <!-- group -->
-![Calculate nézet – DAYS mód: a két dátum közötti napok száma](../../screenshots/01 Calculate View - Calculated Days.png)
+![Calculate nézet – DAYS mód](../../screenshots/01 Calculate View - Calculated Days - cropped.png)
 *Calculate nézet DAYS módban — az eredmény egyetlen összesített napszámként jelenik meg.*
-![Calculate nézet – CAL mód: évekre, hónapokra és napokra bontva](../../screenshots/01b Calculate View - Calculated Epochs.png)
+![Calculate nézet – CAL mód](../../screenshots/01b Calculate View - Calculated Epochs - cropped.png)
 *Calculate nézet CAL módban — ugyanaz az időtartam évekre, hónapokra és napokra bontva.*
 <!-- /group -->
-
 
 ---
 
@@ -69,9 +72,9 @@ A **SAVE** gomb (könyvjelző ikon) lehetővé teszi, hogy a TO dátumot elments
 3. Írd be a határidő nevét, majd kattints a **SAVE** gombra. A határidő elmentésre kerül.
 
 <!-- group -->
-![Határidő mentése – üres névmező](../../screenshots/02 Calculate View - Save Named Duration - empty.png)
+![Határidő mentése – üres névmező](../../screenshots/02 Calculate View - Save Named Duration - empty - cropped.png)
 *A mentési panel üres névmezővel nyílik meg. Írd be a nevet, majd kattints a SAVE gombra.*
-![Határidő mentése – kitöltött névmező](../../screenshots/02b Calculate View - Save Named Duration - edit.png)
+![Határidő mentése – kitöltött névmező](../../screenshots/02b Calculate View - Save Named Duration - edit - cropped.png)
 *A névmező kitöltve. A SAVE elmenti, a CANCEL bezárja a panelt mentés nélkül.*
 <!-- /group -->
 
@@ -82,8 +85,7 @@ mentett határidővel.
 
 - **Egy sorra kattintva** megnyílik a részletek panel.
 
-![Mentett határidők listája](../../screenshots/03 Calculate View - Saved Named Durations.png)
-
+![Mentett határidők listája](../../screenshots/03 Calculate View - Saved Named Durations - cropped.png)
 *A határidők listája minden mentett elemet megmutat. Kattints bármelyik sorra a részletek megnyitásához.*
 
 #### Részletek panel
@@ -91,43 +93,44 @@ mentett határidővel.
 A részletek panel a határidő nevét és dátumát mutatja. Innen a következőket teheted:
 
 - **LOAD AS TO** — betölti a határidő dátumát a TO léptető mezőbe.
-- **Ceruza ikon** — átnevezési mód: a név szerkeszthető mezővé válik.
-  Írd be az új nevet, majd kattints a **RENAME** gombra a megerősítéshez, vagy a **CANCEL**-re az elvetéshez.
-- **Kuka ikon** — véglegesen törli a határidőt. Megerősítő párbeszéd jelenik meg; kattints a **Delete** gombra a megerősítéshez vagy a **Cancel**-re a visszalépéshez.
+- **Ceruza ikon** — átnevezési mód: a név szerkeszthető mezővé válik. Írd be az új nevet,
+  majd kattints a **RENAME** gombra a megerősítéshez, vagy a **CANCEL**-re az elvetéshez.
+- **Kuka ikon** — véglegesen törli a határidőt. Megerősítő párbeszéd jelenik meg;
+  kattints a **Delete** gombra a megerősítéshez vagy a **Cancel**-re a visszalépéshez.
 
-![Határidő részletek panelje – név, dátum és műveleti gombok](../../screenshots/03b Calculate View - Saved Named Durations Details.png)
-
+![Határidő részletek panelje](../../screenshots/03b Calculate View - Saved Named Durations Details - cropped.png)
 *A részletek panel mutatja a határidő nevét és dátumát. Elérhető: LOAD AS TO, átnevezés (ceruza) és törlés (kuka).*
 
 <!-- group -->
-![Határidő átnevezése – szerkeszthető névmező RENAME és CANCEL gombokkal](../../screenshots/03c Calculate View - Edit Saved Named Durations.png)
-*Átnevezési mód: a név szerkeszthető szövegmezővé válik. Kattints a RENAME gombra a megerősítéshez.*
-![Határidő törlésének megerősítő párbeszéde](../../screenshots/03d Calculate View - Delete Saved Named Durations.png)
-*A végleges törlés előtt megerősítő párbeszéd jelenik meg.*
+![Határidő átnevezése](../../screenshots/03c Calculate View - Edit Saved Named Durations - cropped.png)
+*Átnevezési mód: a név szerkeszthető szövegmezővé válik. Kattints a RENAME gombra vagy a CANCEL-re.*
+![Határidő törlésének megerősítő párbeszéde](../../screenshots/03d Calculate View - Delete Saved Named Durations - cropped.png)
+*Megerősítő párbeszéd jelenik meg a végleges törlés előtt.*
 <!-- /group -->
-
 
 ---
 
 ### Nap- és holdadatok
 
-A Calculate képernyő alján egy napikon gomb megnyit egy panelt a mai napra vonatkozó
-csillagászati adatokkal. A panel a következőket mutatja:
+A Calculate képernyő alján egy napikon gomb megnyit egy panelt az aktuális dátumra és
+helyszínre vonatkozó csillagászati adatokkal. A panel a következőket mutatja:
 
 - **Napkelte és napnyugta** időpontjai.
-- **Arany óra** és **kék óra** ablakok (reggel és este).
+- **Aranyóra** ablakok (reggel és este).
 - **Holdfázis** a fázis nevével és a megvilágítás százalékával.
 - A jelenlegi holdciklus holdfázis-csíkja.
 
-![Nap- és holdadatok panel](../../screenshots/04 Calculate View - Sun and Moon Data.png)
-
-*A Nap & Hold panel megmutatja a mai napkeltét/napnyugtát, az arany óra ablakait és az aktuális holdfázist.*
+![Nap- és holdadatok panel](../../screenshots/04 Calculate View - Sun and Moon Data - cropped.png)
+*A Nap & Hold panel megmutatja a mai napkeltét/napnyugtát, az aranyóra ablakait és az aktuális holdfázist.*
 
 ---
 
-## Countdown nézet
+## Countdown
 
-A Countdown nézet nevesített visszaszámláló slotok listáját kezeli, mindegyik egy adott határidőhöz kötve.
+A Countdown nevesített visszaszámláló slotok listáját kezeli,
+mindegyik egy adott határidőhöz kötve.
+
+![Countdown nézet – teljes nézet](../../screenshots/05 CountDown View.png)
 
 ### A lista
 
@@ -136,433 +139,344 @@ A bejegyzések két csoportban jelennek meg:
 - **Aktív bejegyzések** — a határidő a jövőben van. Növekvő sorrend a határidő szerint
   (leghamarabb lejáró legelöl). Borostyánszínű időzítővel jelenik meg.
 - **Szabad slotok** — a határidő lejárt. Színes **FREE ✓** jelzővel jelennek meg.
-  A szabad slotok átrendezhetők húzással a szabad slotok szekcióján belül.
+  Húzással átrendezhetők a szabad slotok szekcióján belül.
 
 <!-- group -->
-![Countdown lista – aktív és szabad slotok összesítve](../../screenshots/05 CountDown View.png)
-*Az aktív bejegyzések borostyánszínű időzítőt mutatnak; a szabad slotok színes FREE ✓ jelzőt és húzással rendezhetők.*
-![Countdown lista – bejegyzés sor határidő megjelenítési módban](../../screenshots/05d CountDown View - Deadline.png)
-*A jobb oldali váltógomb határidő módra állt: a statikus célállapot dátuma jelenik meg az élő visszaszámlálás helyett.*
+![Countdown lista – aktív sor](../../screenshots/05 CountDown View - Cooldown - cropped.png)
+*Egy aktív sor borostyánszínű élő időzítőt mutat; a sötét pill felirat bal oldalon.*
+![Countdown lista – szabad slot](../../screenshots/05 CountDown View - Free Slot - cropped.png)
+*A szabad slot színes FREE ✓ jelzőt mutat, és húzással átrendezhető.*
 <!-- /group -->
+
+![Countdown lista – határidő megjelenítési mód](../../screenshots/05d CountDown View - Deadline - cropped.png)
+*A jobb oldali váltógomb határidő módra állt: a statikus célállapot dátuma jelenik meg az élő visszaszámlálás helyett.*
 
 ### Aktív sor
 
-Egy aktív sor bal oldalán egy sötét pill mutatja a bejegyzés nevét, jobb oldalán egy
-váltógomb választ a következők között:
+Az aktív sor bal oldalán egy sötét pill mutatja a bejegyzés nevét, jobb oldalán egy
+váltógomb vált a következők között:
 
 - **Hátralévő idő** — NN:ÓÓ:PP:MM élő visszaszámlálás.
-- **Határidő dátuma** — statikus dátum ÉÉÉÉ.HH.NN ÓÓ:pp formátumban.
+- **Határidő dátuma** — statikus dátum ÉÉÉÉ.HH.NN ÓÓ:PP formátumban.
 
-**A név másolása:** koppints a sötét pillre, hogy vágólapra kerüljön a szöveg.
+**A felirat másolása:** kattints a sötét pillre a felirat vágólapra másolásához.
 A pill röviden „COPIED" feliratot mutat visszajelzésként.
 
-**Megjegyzés jelző:** ha a slothoz megjegyzés tartozik, egy kis szem ikon jelenik meg
-a pill jobb oldalán. Az ikon eltűnik, amíg a „COPIED" felirat látszik.
+**Jegyzetjelző:** ha egy slothoz tartozik jegyzet, egy kis szemikon jelenik meg a pill
+feliratától jobbra. Az ikon eltűnik, amíg a „COPIED" felirat látszik.
 
-![Countdown lista – bejegyzés sor megjegyzés jelzővel](../../screenshots/05e CountDown View - Existing note.png)
-
-*A narancsszínű szem ikon jelzi, hogy a slothoz megjegyzés tartozik. Nyisd meg a részletek nézetet a szerkesztéshez.*
-
+![Countdown lista – sor jegyzetjelzővel](../../screenshots/05e CountDown View - Existing note - cropped.png)
+*A narancs szemikon jelzi, hogy a slothoz tartozik jegyzet. Nyisd meg a részletek nézetet,
+és kattints a Jegyzet gombra a megtekintéshez vagy szerkesztéshez.*
 
 ### Visszaszámláló hozzáadása
 
-Koppints a lista alján lévő **+ ADD** gombra. Megnyílik egy panel egy névmezővel és
-határidő-léptetőkkel. Töltsd ki az adatokat, majd erősítsd meg a slot létrehozásához.
+Kattints a lista alján lévő **+ ADD** gombra. Megnyílik egy panel egy felirat mezővel
+és határidő léptetőkkel. Töltsd ki az adatokat, majd erősítsd meg a slot létrehozásához.
 
-![Új elem hozzáadása panel – névmező és határidő-léptetők](../../screenshots/06 Add New Item.png)
-
-*A hozzáadás panel: adj meg egy nevet és állítsd be a határidőt, majd erősítsd meg a slot létrehozásához.*
+![Új elem hozzáadása panel](../../screenshots/06 Add New Item - cropped.png)
+*A panel: adj meg egy feliratot és állítsd be a határidő dátumát, majd erősítsd meg a slot létrehozásához.*
 
 ### Visszaszámláló törlése
 
-A listából koppints egy kártyára a részletek nézet megnyitásához, majd használd az ottani
-kuka gombot. A törlés előtt mindig megjelenik egy megerősítő párbeszéd — kattints a
-**Delete** gombra a megerősítéshez vagy a **Cancel**-re az elvetéshez.
+A listából kattints egy kártyára a részletes nézet megnyitásához, majd ott használd a
+kuka gombot. Törlés előtt mindig megerősítő párbeszéd jelenik meg — kattints a **Delete**
+gombra a megerősítéshez vagy a **Cancel**-re a visszalépéshez.
 
-![Visszaszámláló törlésének megerősítő párbeszéde](../../screenshots/06b Delete Item.png)
-
-*A végleges törlés előtt mindig megerősítő párbeszéd jelenik meg.*
+![Visszaszámláló slot törlésének megerősítő párbeszéde](../../screenshots/06b Delete Item - cropped.png)
+*Megerősítő párbeszéd jelenik meg minden slot végleges törlése előtt.*
 
 ---
 
-### Részletek nézet
+### Részletes nézet
 
-Bármelyik sorkártyára koppintva megnyílik a teljes részletek nézet.
+Bármelyik kártyára kattintva megnyílik az adott bejegyzés teljes képernyős részletes nézete.
 
-**Név szerkesztése:** koppints a tetején lévő nagy feliratú névre az inline szerkesztéshez.
-Nyomd meg az Enter billentyűt vagy kattints máshová a megerősítéshez.
+**Felirat szerkesztése:** kattints a felső nagy felirat szövegére az inline szerkesztéshez.
+Nyomj Return-t vagy kattints el a megerősítéshez.
 
-**Másolás gomb:** a név melletti dokumentum ikon vágólapra másolja a nevet.
+**Másolás gomb:** a felirat melletti dokumentumikon a feliratot a vágólapra másolja.
 
-**Időkijelző:** a visszaszámláló vagy a határidő dátuma az illusztrációra rávetítve jelenik meg.
+**Időmegjelenítés:** a visszaszámlálás vagy a határidő dátuma az illusztráció fölé kerül
+a képernyő közepén.
 
-**Váltó pill:** a képernyő alján lévő sötét pill gomb vált a *Hátralévő idő* (NN:ÓÓ:PP:MM)
-és a *Határidő megjelenítése* (statikus dátum) között.
+**Váltó pill:** a képernyő alján lévő sötét pill gomb vált a *Hátralévő idő*
+(NN:ÓÓ:PP:MM élő visszaszámlálás) és a *Határidő megjelenítése* (statikus dátum) között.
 
-**Határidő-léptető:** öt összetevős léptető (ÉV, HÓNAP, NAP, ÓRA, PERC) lehetővé teszi
-a határidő módosítását. Lenyomva tartással gyorsan léptethetsz. A módosítások automatikusan mentésre kerülnek.
+**Határidő léptető:** öt részből álló léptetők (YEAR, MON, DAY, HOUR, MIN) teszik
+lehetővé a határidő módosítását. Lenyomva tartással gyorsan ismétlődik.
+A változtatások automatikusan mentődnek.
 
 <!-- group -->
-![Részletek nézet visszaszámlálási módban – élő kijelző](../../screenshots/07 CountDown Detail View - Countdown.png)
-*Visszaszámlálási mód: az élő hátralévő idő jelenik meg az illusztráción.*
-![Részletek nézet határidő módban – statikus dátum](../../screenshots/07b CountDown Detail View - Deadline.png)
-*Határidő mód: a statikus célállapot dátuma jelenik meg az élő visszaszámlálás helyett.*
-![Részletek nézet lejárt (szabad) slothoz](../../screenshots/07c CountDown Detail View - Expired.png)
-*Egy lejárt slot a részletek nézetben: a FREE állapot látható és a színválasztó gomb elérhetővé válik.*
+![Részletes nézet – visszaszámlálás mód](../../screenshots/07 CountDown Detail View - Countdown - cropped.png)
+*Részletes nézet visszaszámlálás módban: az élő hátralévő idő az illusztráció fölött látható.*
+![Részletes nézet – határidő mód](../../screenshots/07b CountDown Detail View - Deadline - cropped.png)
+*Részletes nézet határidő módban: a statikus célállapot dátuma jelenik meg.*
+![Részletes nézet – lejárt (szabad) slot](../../screenshots/07c CountDown Detail View - Expired - cropped.png)
+*Lejárt slot: a FREE állapot jelölve, és a színválasztó gomb aktívvá válik.*
 <!-- /group -->
-
 
 #### Műveleti gombok
 
-Négy ikongomb jelenik meg sorban a részletek nézet alján:
+Négy ikongomb jelenik meg egy sorban a részletes nézet alján:
 
 | Gomb | Ikon | Mikor elérhető | Művelet |
 |------|------|----------------|---------|
-| Hang | Hangszóró | Mindig | Rendszerhangot játszik le, amikor a slot határideje lejár |
-| Megjegyzések | Cetli | Mindig | Megnyitja a megjegyzésszerkesztőt ehhez a slothoz |
+| Hang | Hangszóró | Mindig | Bekapcsol/kikapcsol egy rendszerhangot, amely a határidő lejártakor szól |
+| Jegyzet | Jegyzet | Mindig | Megnyitja az adott slot Jegyzet szerkesztőjét |
 | Szín | Ecset | Csak szabad slotoknál | Megnyitja a színválasztót |
-| Törlés | Kuka | Mindig | Törli ezt a slotot (megerősítés szükséges) |
+| Törlés | Kuka | Mindig | Törli a slotot (megerősítés szükséges) |
 
-#### Hang kapcsoló
+#### Hangváltó
 
-Ha be van kapcsolva (hangszóró hullám ikon), az alkalmazás rendszerhangot játszik le
-a slot határidejének lejártakor. Ha ki van kapcsolva (áthúzott hangszóró), nem hallható hang.
-A beállítás slotonként mentésre kerül.
+Ha be van kapcsolva (hanghullám ikon), az alkalmazás rendszerhangot játszik le a slot
+határidejének lejártakor. Ha ki van kapcsolva (áthúzott hangszóró ikon), nincs hang.
+A beállítás slotonként eltérő és megmarad az újraindítás után.
 
 #### Színválasztó (csak szabad slotoknál)
 
-A színválasztó panel tizenkét kiemelőszín-mintát és egy **AUTO** lehetőséget mutat.
-Koppints bármelyik mintára a szabad slot kártyájára való alkalmazáshoz. Az AUTO visszaállítja
-az alapértelmezett színt. A kiválasztás azonnal mentésre kerül.
+A színválasztó panelen tizenkét ékezőszín és egy **AUTO** lehetőség látható.
+Kattints bármelyik kockára a szabad slot kártyájára való alkalmazáshoz.
+Az AUTO visszaállítja az alapértelmezett színt. A kiválasztás azonnal mentődik.
 
-![Színválasztó panel – tizenkét kiemelőszín és AUTO lehetőség](../../screenshots/08 CountDown Detail View - Color Picker.png)
-
-*A színválasztó tizenkét kiemelőszínt és egy AUTO lehetőséget kínál. A kiválasztás azonnal érvénybe lép.*
+![Színválasztó panel](../../screenshots/08 CountDown Detail View - Color Picker - cropped.png)
+*A színválasztó tizenkét színt és egy AUTO lehetőséget kínál. A kiválasztás azonnal érvénybe lép.*
 
 #### Törlés
 
 A kuka gomb véglegesen eltávolítja a slotot. Megerősítő párbeszéd jelenik meg;
-kattints a **Delete** gombra a megerősítéshez vagy a **Cancel**-re az elvetéshez.
+kattints a **Delete** gombra a megerősítéshez vagy a **Cancel**-re a visszalépéshez.
 A törlés nem vonható vissza.
 
 ---
 
-### Megjegyzések
+### Jegyzetek
 
-Minden visszaszámláló slothoz tartozik egy szabad formátumú megjegyzésmező,
-amely a részletek nézetben a megjegyzés gombbal érhető el.
+Minden visszaszámláló slothoz tartozik egy szabad formátumú szöveg-jegyzetek mező,
+amely a részletes nézet Jegyzet gombjával érhető el.
 
-A megjegyzések panel alapértelmezetten **Megtekintő módban** nyílik meg, amely az
-tartalmat formázott markdown-ként jeleníti meg (fejlécek, listák, kódblokkök, táblázatok, kiemelés).
+A Jegyzetek panel alapértelmezés szerint **Megjelenítő módban** nyílik meg, amely a
+tartalmat formázott markdownként jeleníti meg (fejlécek, listák, kódblokkok, táblázatok,
+kiemelt szöveg).
 
-#### Módváltás
 
-A fejléc váltógombja vált a következők között:
+#### Módok közötti váltás
 
-- **Megtekintő mód** — formázott markdown egy görgetethető nézetben.
-- **Szerkesztő mód** — egyszerű szövegszerkesztő markdown írásához/szerkesztéséhez.
+A panel fejlécében lévő váltógomb két mód között vált:
+
+- **Megjelenítő mód** — formázott markdown egy görgethető webnézetben.
+- **Szerkesztő mód** — egyszerű szövegszerkesztő a markdown közvetlen írásához vagy szerkesztéséhez.
 
 <!-- group -->
-![Megjegyzések panel szerkesztő módban](../../screenshots/09 CountDown Detail View - Note Editor - Editor View.png)
-*Szerkesztő mód: írj vagy szerkessz markdown szöveget közvetlenül.*
-![Megjegyzések panel megtekintő módban – megjelenített markdown](../../screenshots/10 CountDown Detail View - Note Editor - Viewer View.png)
-*Megtekintő mód: a markdown fejlécekkel, listákkal, kódblokkökkel és kiemeléssel jelenik meg.*
+![Jegyzetpanel szerkesztő módban – egyszerű szöveges markdown szerkesztő](../../screenshots/09 CountDown Detail View - Note Editor - Editor View - cropped.png)
+*Szerkesztő mód: írj vagy szerkessz nyers markdownt közvetlenül. A változtatások azonnal megjelennek Megjelenítő módban is.*
+![Jegyzetpanel megjelenítő módban – renderelt markdown kimenet](../../screenshots/10 CountDown Detail View - Note Editor - Viewer View - cropped.png)
+*Megjelenítő mód: a markdown fejlécekkel, listákkal, kódblokkokkal és kiemelt szöveggel renderelve jelenik meg.*
 <!-- /group -->
 
-
-#### Megjegyzések másolása
+#### Jegyzetek másolása
 
 A **Másolás** gomb (mindkét módban elérhető) a nyers markdown szöveget a vágólapra másolja,
-ahonnan bármely más alkalmazásba beillesztheted.
+ahonnan közvetlenül beilleszthető egy AI asszisztensbe vagy bármely más alkalmazásba.
 
-#### Megjegyzések törlése
+#### Jegyzetek törlése
 
-A fejléc **kuka gombja** törli a teljes megjegyzésmezőt.
-Megerősítő párbeszéd jelenik meg; kattints a **Delete** gombra a megerősítéshez.
+A panel fejlécében lévő **kuka gomb** törli a teljes tartalmát.
+Megerősítő párbeszéd jelenik meg; kattints a **Delete** gombra a megerősítéshez
+vagy a **Cancel**-re a visszalépéshez.
 
 <!-- group -->
-![Megjegyzések törlésének megerősítő párbeszéde](../../screenshots/11 CountDown Detail View - Note Editor - Confirm Delete.png)
-*A megerősítő párbeszéd megjelenik, mielőtt a megjegyzés tartalmát véglegesen törölnéd.*
-![Megjegyzések panel – üres állapot](../../screenshots/12 CountDown Detail View - Note Editor - Empty.png)
-*Ha még nincs megjegyzés, egy helyőrző jelenik meg. Koppints rá a szerkesztő mód megnyitásához.*
+![Törlés megerősítő párbeszéde](../../screenshots/11 CountDown Detail View - Note Editor - Confirm Delete - cropped.png)
+*Megerősítő párbeszéd jelenik meg a tartalom végleges törlése előtt.*
+![Üres jegyzetek panel helyőrzővel](../../screenshots/12 CountDown Detail View - Note Editor - Empty - cropped.png)
+*Ha még nincs tartalom, egy helyőrző szöveg jelenik meg. Kattints rá, hogy rögtön szerkesztő módba ugorj.*
 <!-- /group -->
 
-#### Bezárás mentetlen módosításokkal
+#### Bezárás nem mentett változtatásokkal
 
-Ha a **✕ gombbal** zársz be egy megjegyzéspanelt, miközben vannak mentetlen módosítások,
+Ha bezárod a panelt az **✕ gombbal**, miközben vannak nem mentett szerkesztések,
 megerősítő párbeszéd jelenik meg:
 
-- **Kilépés mentés nélkül** — elveti a módosításokat és bezárja a panelt.
-- **Mentés és kilépés** — elmenti az aktuális szöveget, majd bezárja.
-- **Mégse** — visszatér a panelre bezárás nélkül.
+- **Quit without saving** — elveti a változtatásokat és bezárja a panelt.
+- **Save and quit** — elmenti az aktuális szöveget és bezárja.
+- **Cancel** — visszatér a panelhez bezárás nélkül.
 
-![Megjegyzések panel – mentetlen módosítások megerősítő párbeszéde](../../screenshots/11b CountDown Detail View - Note Editor - Confirm Exit.png)
-
-*A párbeszéd csak akkor jelenik meg, ha vannak mentetlen módosítások. Tiszta panel esetén azonnal bezárul.*
+![Nem mentett változtatások megerősítő párbeszéde](../../screenshots/11b CountDown Detail View - Note Editor - Confirm Exit - cropped.png)
+*A párbeszéd csak akkor jelenik meg, ha vannak nem mentett változtatások. Egy már mentett panelt az ✕ azonnal bezár.*
 
 ---
 
 ## Snippets
 
-A Snippets fül újrafelhasználható szövegrészletek könyvtára, projekt neve szerint csoportosítva.
-A snippetek teljesen függetlenek a visszaszámláló slotoktól.
+A Snippets fül egy önálló gyorsszöveg-könyvtár, független a visszaszámláló slotoktól.
+A gyorsszövegek projekt szerint csoportosulnak.
+
+![Snippets nézet – teljes nézet](../../screenshots/13 Snippets View - Rows.png)
 
 ### A lista
 
-A snippetek projektenként, ábécérendben vannak csoportosítva, a **General** mindig az utolsó.
-Minden sor a snippet nevét és tartalmának rövid előnézetét mutatja. A sorok jobb oldalán
-lévő **Másolás** gomb azonnal a vágólapra másolja a teljes szöveget, az editor megnyitása nélkül.
+A gyorsszövegek projekt szerint, ábécésorrendben csoportosulnak. Minden sor a gyorsszöveg
+címét és a tartalom rövid előzetesét mutatja. A sor jobb oldalán lévő **Másolás** gomb
+a teljes tartalmat azonnal a vágólapra másolja, a szerkesztőlap megnyitása nélkül.
 
-Egy sorra koppintva megnyílik a snippet a szerkesztőpanelen.
+Kattints egy sorra a gyorsszöveg szerkesztőlapban való megnyitásához.
 
-A jobb felső sarokban lévő **+** gombbal hozz létre új snippetet.
+Kattints az eszköztár **+ gombjára** új gyorsszöveg létrehozásához.
 
-![Snippets lista – projektcsoportok snippet sorokkal](../../screenshots/13 Snippets View - Rows.png)
+![Snippets lista – sor a címmel, előzetesssel és Másolás gombbal](../../screenshots/13b Snippets View - Row - cropped.png)
+*Minden sor megjeleníti a címet, a tartalom előzetesét és a Másolás gombot.*
 
-*A Snippets lista projektenként csoportosítva. Minden sor a nevet, egy előnézetet és egy Másolás gombot tartalmaz.*
+### Gyorsszöveg-szerkesztő lap
 
+A szerkesztőlap fejlécében lévő gombbal két mód között lehet váltani:
 
-### Snippet szerkesztőpanel
+- **Megjelenítő mód** — a gyorsszöveg törzsét formázott markdownként jeleníti meg.
+- **Szerkesztő mód** — egyszerű szövegszerkesztő a markdown közvetlen írásához.
 
-A szerkesztőpanel a fejlécben lévő gombbal két mód között vált:
+A fejléc ezenkívül tartalmaz:
 
-- **Megtekintő mód** — a snippet testét formázott markdownként jeleníti meg.
-- **Szerkesztő mód** — egyszerű szövegszerkesztő markdown írásához közvetlenül.
-
-A fejléc tartalmaz még:
-
-- **Másolás** — a teljes nyers markdown testét a vágólapra másolja.
-- **Törlés** — megerősítés után véglegesen törli a snippetet.
+- **Másolás** — a nyers markdown törzset a vágólapra másolja.
+- **Törlés** — megerősítés után véglegesen törli a gyorsszöveget.
 
 <!-- group -->
-![Snippet szerkesztő megtekintő módban – megjelenített markdown](../../screenshots/14 Snippet Edtor - Viewer.png)
-*Megtekintő mód: a snippet teste formázott markdownként jelenik meg.*
-![Snippet szerkesztő szerkesztő módban](../../screenshots/15 Snippet Edtor - Editor.png)
-*Szerkesztő mód: szerkeszd a nevet, a projektet és a testet közvetlenül. A test mező teljes markdownt támogat.*
+![Gyorsszöveg-szerkesztő megjelenítő módban – renderelt markdown](../../screenshots/14 Snippet Edtor - Viewer - cropped.png)
+*Megjelenítő mód: a gyorsszöveg törzsét formázott markdownként jeleníti meg — fejlécek, listák, kódblokkok és egyéb elemekkel.*
+![Gyorsszöveg-szerkesztő szerkesztő módban – egyszerű szöveges markdown szerkesztő](../../screenshots/15 Snippet Edtor - Editor - cropped.png)
+*Szerkesztő mód: a cím, a projekt és a törzs közvetlenül szerkeszthető. A törzsmező teljes markdownt támogat.*
 <!-- /group -->
 
 #### Mezők
 
 | Mező | Leírás |
 |------|--------|
-| Cím | Rövid név a snippetnek |
-| Projekt | Csoportosítja a snippetet a listában; koppintásra megnyílik a projektkiválasztó |
-| Szöveg | A snippet tartalma (markdown támogatott) |
+| Cím | A gyorsszöveg rövid neve |
+| Projekt | A listában csoportosítja a gyorsszöveget; kattints a projektválasztó megnyitásához |
+| Törzs | A gyorsszöveg tartalma (markdown támogatott) |
 
-#### Projektkiválasztó
+#### Projektválasztó
 
-A projekt mezőre koppintva legördülő lista jelenik meg a meglévő projektnevekkel.
-Válassz egy meglévő projektet a snippet hozzárendeléséhez, vagy gépelj be egy új nevet
-új projektcsoport létrehozásához. A lista gépelés közben szűr.
+A projekt mezőre kattintva legördülő lista jelenik meg a meglévő projektnevekkel.
+Válassz egy meglévő projektet a gyorsszöveg hozzárendeléséhez, vagy írj be egy új nevet
+egy új projektcsoport létrehozásához.
 
-![Projektkiválasztó legördülő lista](../../screenshots/16 Snippet Edtor - Projectname choser Dropdown List.png)
+#### Az Általános csoport
 
-*A projektkiválasztó az összes meglévő projektnevet mutatja. Válassz egyet, vagy gépelj be egy újat.*
+Minden projekt nélküli gyorsszöveg az **Általános** csoportba kerül.
+Az Általános mindig utoljára jelenik meg, az összes nevesített projektcsoport után.
+Nem nevezhető át és nem törölhető — ez egy állandó gyűjtőcsoport a besorolatlan
+gyorsszövegek számára.
+Egy nevesített projektcsoport törlésekor az ahhoz tartozó összes gyorsszöveg automatikusan
+az Általános csoportba kerül.
 
+#### Helyi menü (gyorsszöveg sorok)
 
-#### Projektmenü
+Hosszú lenyomással vagy jobb egérgombbal kattintva egy gyorsszöveg soron helyi menü
+nyílik meg gyorsműveletekkel, köztük átnevezéssel és törléssel.
 
-Minden projektszekció fejlécében a projektnév mellett egy kis **chevron (▾) gomb** látható.
-Rákattintva egy menü nyílik meg két lehetőséggel:
+<!-- group -->
+![Projektválasztó legördülő lista – meglévő projektnevek](../../screenshots/16 Snippet Edtor - Projectname choser Dropdown List - cropped.png)
+*A projektválasztó az összes meglévő projektnevet mutatja. Válassz egyet, vagy írj be új nevet egy csoport létrehozásához.*
+![Gyorsszöveg sor helyi menüje – gyorsműveletek](../../screenshots/16b Snippets View - Project Editing Context Menu - cropped.png)
+*Jobb egérgombbal kattintva vagy hosszan lenyomva egy sort helyi menü nyílik meg gyorsműveletekkel.*
+<!-- /group -->
 
-- **Projekt átnevezése…** — párbeszéd nyílik meg, ahol beírhatsz egy új nevet.
-  A projekthez tartozó összes snippet automatikusan az új névre kerül.
-- **Projekt törlése** — eltávolítja a projektmappát. **A benne lévő snippetek nem törlődnek.**
-  Átkerülnek a **General** projektbe, és ott teljesen elérhetők maradnak.
-  A megerősítő párbeszéd ezt az üzenetet mutatja a törlés előtt.
+#### Gyorsszöveg törlése
 
-![Projektszekció fejlécmenüje – Átnevezés és Törlés lehetőségekkel](../../screenshots/16b Snippets View - Project Editing Context Menu.png)
+A szerkesztőlap fejlécében lévő **Törlés** gomb megerősítés után véglegesen törli
+a gyorsszöveget.
 
-*A projektnév melletti chevron megnyitja a projektmenüt. A Törlés minden snippetet a General projektbe mozgat — semmi sem vész el.*
+![Gyorsszöveg törlésének megerősítő párbeszéde](../../screenshots/17 Snippet Edtor - Delete - cropped.png)
+*Megerősítő párbeszéd jelenik meg a gyorsszöveg végleges törlése előtt.*
 
-#### Snippet törlése
+#### Bezárás nem mentett változtatásokkal
 
-A szerkesztőpanel fejlécében lévő **Törlés** gomb megerősítés után véglegesen eltávolítja a snippetet.
-Ez különbözik a projekt törlésétől: az egyes snippetek törlése nem vonható vissza.
-
-![Snippet törlésének megerősítő párbeszéde](../../screenshots/17 Snippet Edtor - Delete.png)
-
-*Megerősítő párbeszéd jelenik meg, mielőtt a snippetet véglegesen törölnéd.*
-
-#### Bezárás mentetlen módosításokkal
-
-Ha a **✕ gombbal** zársz be egy snippet szerkesztőt, miközben vannak mentetlen módosítások,
+Ha bezárod a szerkesztőlapot az **✕ gombbal**, miközben vannak nem mentett szerkesztések,
 megerősítő párbeszéd jelenik meg:
 
-- **Kilépés mentés nélkül** — elveti a módosításokat és bezárja a szerkesztőt.
-- **Mentés és kilépés** — elmenti és bezárja.
-- **Mégse** — visszatér a szerkesztőhöz.
+- **Quit without saving** — elveti a változtatásokat és bezárja a szerkesztőt.
+- **Save and quit** — elmenti és bezárja.
+- **Cancel** — visszatér a szerkesztőhöz.
 
-![Snippet szerkesztő – mentetlen módosítások megerősítő párbeszéde](../../screenshots/17 Snippet Edtor - Exit.png)
-
-*A párbeszéd csak mentetlen módosítások esetén jelenik meg.*
-
+![Gyorsszöveg-szerkesztő – nem mentett változtatások megerősítő párbeszéde](../../screenshots/17 Snippet Edtor - Exit - cropped.png)
+*A párbeszéd csak akkor jelenik meg, ha vannak nem mentett változtatások. Egy már mentett szerkesztőt az ✕ azonnal bezár.*
 
 ---
 
 ## Adathelyreállítás
 
 Ha az alkalmazás indításkor azt észleli, hogy egyes tárolt adatok nem tölthetők be —
-például mert egy fájl megsérült vagy inkompatibilis formátumban van —, a problémás
-fülön egy helyreállítási sáv jelenik meg.
+például mert egy fájl sérült, vagy inkompatibilis formátumban lett elmentve — egy
+helyreállítási sáv jelenik meg az érintett fül tetején.
 
 ### Helyreállítási sáv
 
 A sáv mindhárom fülön egymástól függetlenül jelenik meg: minden fül csak akkor mutatja,
-ha a saját adatain volt probléma. A sáv megjeleníti a nem betölthető elemek számát,
-és két műveletet kínál.
+ha a saját adatkészlete ütközött problémába. A sáv megjeleníti a be nem töltött elemek
+számát, és két műveletet kínál.
 
-<!-- group -->
-![Helyreállítási sáv a Calculate nézetben](../../screenshots/18 Calculate View - Corrupted Data Warning.png)
-*Calculate nézet: „3 ITEMS COULD NOT BE LOADED" a Raw Data másolása és Elvetés gombokkal.*
-![Helyreállítási sáv a Countdown nézetben](../../screenshots/18b Countdown View - Corrupted Data Warning.png)
-*Countdown nézet: a sáv színe kissé sötétebb, hogy kontrasztot adjon a borostyánszínű háttérrel.*
-![Helyreállítási sáv a Snippets nézetben](../../screenshots/18c Snippets View - Corrupted Data Warning.png)
-*Snippets nézet: a sáv a snippet lista felett helyezkedik el.*
-<!-- /group -->
+![Helyreállítási sáv – 3 elem nem tölthető be](../../screenshots/18c Snippets View - Corrupted Data Warning - cropped.png)
+*„3 ELEM NEM TÖLTHETŐ BE" — a sáv az érintett fül tetején jelenik meg Nyers adatok másolása és Elvetés gombokkal.*
 
 ### Nyers adatok másolása
 
-Kattints a **Copy Raw Data** gombra, hogy a nem olvasható elemek nyers JSON-ját vágólapra
-másold. Az adat olvasható formátumban jelenik meg, így megtekinthető vagy supportnak
-továbbítható. Ez a művelet nem zárja be a sávot.
+Kattints a **Nyers adatok másolása** gombra az olvashatatlan elemek nyers JSON-jának
+vágólapra másolásához. Az adatok szép formázott JSON-ként kerülnek a vágólapra,
+így ellenőrizhetők vagy továbbíthatók a támogatásnak.
+Ez a művelet nem zárja be a sávot.
 
 ### Elvetés
 
-Kattints a **Dismiss** gombra a sáv eltávolításához. A nem olvasható elemek törlődnek
-a helyreállítási pufferből. Ha következő indításkor új sérülés kerül felismerésre, a sáv
-ismét megjelenik.
+Kattints az **Elvetés** gombra a sáv eltávolításához. Az olvashatatlan elemek törlődnek
+a helyreállítási pufferből. Ha az alkalmazás egy következő indításkor újabb adatsérülést
+észlel, a sáv újra megjelenik.
 
-> **Megjegyzés:** A helyreállítási sávban szereplő elemek nem kerültek be az alkalmazásba —
-> nem láthatók a listában és adataik nem aktívak. A sáv elvetése a nyers adatok másolása
-> után biztonságos; a vágólapon lévő másolat az egyetlen hivatkozás ezekre az elemekre.
-
----
-
-## Névjegy
-
-A Névjegy ablak mutatja az alkalmazás verzióját és jóváírásait. Nyisd meg a menüsorból:
-**NightShift → About NightShift**.
-
-![Névjegy ablak – alkalmazás ikon, név, verzió és jóváírások](../../screenshots/19 About.png)
-
-*A Névjegy ablak mutatja az alkalmazás ikonját, verziószámát, a fejlesztő elérhetőségét és a képek jóváírását.*
-
-Az ablak a következőket tartalmazza:
-
-- **Alkalmazás ikon és név** — a tetején jelenik meg.
-- **Verzió** — az aktuális verzió- és buildszám, pl. „Version 1.0 (42)".
-- **Fejlesztő** — kattintható link, amely megnyit egy előre megcímzett e-mailt
-  visszajelzés vagy kérdés küldéséhez.
-- **Képek** — az alkalmazásban használt hold- és naprajzok jóváírása.
-  A linkre kattintva megnyílik az alkotó weboldala.
-
-
----
-
-## Súgó
-
-A Súgó ablak az összes főbb funkcióhoz kínál kereshető, beépített dokumentációt.
-Nyisd meg a menüsorból: **Help → NightShift Help**.
-
-![Súgó ablak – szekciók és kereshető súgótételek](../../screenshots/20 Help.png)
-
-*A Súgó ablak szekcióba rendezve listázza az összes funkciót. A tetején lévő keresőmező segítségével gyorsan megtalálhatod a témát.*
-
-### Szekciók
-
-A súgótartalom öt szekcióba van szervezve:
-
-| Szekció | Mit tartalmaz |
-|---------|---------------|
-| Overview | Mit csinál az alkalmazás és hogyan illeszkedik a három fül egymáshoz |
-| Countdown | Slotok hozzáadása, nevek, időzítők, megjegyzések, szabad slotok és átrendezés |
-| Calculate | Dátum-léptetők, eredménymódok, mentett határidők és a Nap & Hold panel |
-| Snippets | Snippetek létrehozása, szerkesztése, szervezése és másolása |
-| Recovery | Mit jelent a helyreállítási sáv és mit tegyél, ha megjelenik |
-
-### Keresés
-
-Gépelj be bármilyen szót a felső keresőmezőbe a súgótételek szűréséhez. A keresés
-a témanevekre illeszkedik, így a „notes" gépelésével csak a megjegyzésekkel kapcsolatos
-tételek jelennek meg, a „sun" gépelésével csak a nappanel tételei. A keresőmező
-törlésével visszatérhetsz az összes szekcióhoz.
+> **Megjegyzés:** A helyreállítási sávban megjelenő elemek nem töltődtek be az
+> alkalmazásba — nem láthatók a listában, és adataik nem aktívak. A sáv elvetése a
+> nyers adatok vágólapra másolása után biztonságos; a vágólapon lévő másolat az egyetlen
+> megmaradt hivatkozás ezekre az elemekre.
 
 ---
 
 ## Beállítások
 
-Nyisd meg a Beállításokat a menüsorból: **NightShift → Settings…** (vagy nyomd meg a **⌘ ,** billentyűkombinációt).
-A Beállítások ablak két fület tartalmaz.
+Nyisd meg a Beállításokat a **Cmd+,** billentyűkombinációval vagy a NightShift menün
+keresztül. Két fül érhető el.
 
-### Language (Nyelv) fül
+### Nyelv
 
-![Beállítások – Language fül: felület nyelve és dátumformátum választók](../../screenshots/21 Settings View - Languages.png)
+![Beállítások – Nyelv fül](../../screenshots/21 Settings View - Languages.png)
+*A Nyelv fül: Felület nyelve és Dátum- és számformátum választók.*
 
-*A Language fül lehetővé teszi a felület nyelvének és a dátumformátumnak a független megadását.*
+- **Felület nyelve** — beállítja az alkalmazás megjelenítési nyelvét. Válaszd a
+  *Rendszer alapértelmezett* lehetőséget a macOS követéséhez, vagy válaszd az
+  *English* vagy *Magyar* lehetőséget explicit módon.
+- **Dátum- és számformátum** — szabályozza, hogyan jelennek meg a dátumok és számok
+  az alkalmazásban. Válassz a *Rendszer alapértelmezett*, *English (US)* vagy
+  *Magyar (HU)* lehetőségek közül.
 
-Két választó szabályozza a szövegek és számok megjelenítési módját:
+Mindkét beállítás újraindítást igényel a változtatás érvénybe lépéséhez. Egy tájékoztató
+megjegyzés jelenik meg a fülön, amint bármelyik választó az alapértelmezettől eltér.
 
-- **Interface Language (Felület nyelve)** — válassz a *System Default* (Rendszer alapértelmezett),
-  English (Angol) vagy Magyar lehetőségek közül. A System Default a macOS Rendszerbeállításokban
-  megadott nyelvet követi.
-- **Date & Number Format (Dátum- és számformátum)** — válassz a *System Default*,
-  English (US) vagy Magyar (HU) lehetőségek közül. Ez szabályozza a dátumok és számok
-  formázását az egész alkalmazásban.
+### Megjelenés
 
-> **Fontos:** A nyelvi módosítások újraindítást igényelnek. Ha bármelyik választó
-> nem alapértelmezett értékre van állítva, a fül alján egy üzenet emlékeztet arra,
-> hogy a módosítás érvénybe lépéséhez indítsd újra a NightShift alkalmazást.
-> Az alkalmazás az újraindításig normálisan működik tovább.
+![Beállítások – Megjelenés fül](../../screenshots/21b Settings View - Fontsize.png)
+*A Megjelenés fül: Betűméret szegmens vezérlő.*
 
-### Appearance (Megjelenés) fül
-
-![Beállítások – Appearance fül: betűméret szegmentált választó](../../screenshots/21b Settings View - Fontsize.png)
-
-*A megjelenés fül lehetővé teszi a nagyobb betűméret kiválasztását. A módosítás azonnal érvénybe lép.*
-
-A **Font Size (Betűméret)** szegmentált vezérlőnek négy lehetősége van:
-
-| Lehetőség | Leírás |
-|-----------|--------|
-| Default | Normál betűméret |
-| Large | Kissé nagyobb |
-| Larger | Észrevehetően nagyobb |
-| Largest | Maximális méret |
-
-A kiválasztott méret azonnal érvényes az egész alkalmazásra — újraindítás nem szükséges.
-
----
-
-## Tooltipek
-
-Az alkalmazás legtöbb gombja és interaktív eleme rövid leírást jelenít meg, ha az
-egérmutatót egy pillanatra megállítod fölötte, kattintás nélkül. Ezt a súgót
-**tooltip**-nek hívják.
-
-![Tooltip példa – egy gomb fölé helyezett kurzor rövid leírást mutat](../../screenshots/20b Tooltip System - cropped.png)
-
-*Egy gomb fölé mozgatott kurzor rövid leírást mutat arról, mit csinál az adott gomb.*
-
-Tooltipek az egész alkalmazásban elérhetők: a fülsor gombjain, a visszaszámláló részletes
-nézetének műveleti gombjain, a snippet lista másolásgombjain, a léptető chevronokon és még
-sok másutt. Ha nem tudod, mit csinál egy gomb, csak tartsd fölötte az egérmutatót egy
-másodpercig, és a tooltip megjelenik.
+- **Betűméret** — szabályozza a szöveg méretét az egész alkalmazásban. Négy fokozat
+  érhető el: *Alapértelmezett*, *Nagy*, *Nagyobb*, *Legnagyobb*. A változtatás azonnal
+  érvénybe lép, újraindítás nem szükséges.
 
 ---
 
 ## Tippek
 
-- A Calculate nézetben mentett határidők függetlenek a visszaszámláló slotoktól —
-  ezek a dátumkalkulátor referencia-időpontjai, nem élő időzítők.
-- A Megjegyzések és a Snippet szerkesztők is támogatják a markdownt:
-  fejlécek (`#`), listák (`-`), kódblokkök (` ``` `), táblázatok és kiemelés (`==szöveg==`).
+- A Calculate módban mentett határidők függetlenek a visszaszámláló slotoktól —
+  a dátumkalkulátor referencia-pontjai, nem élő időzítők.
+- A Jegyzet és a Gyorsszöveg szerkesztők egyaránt támogatják a markdownt: fejlécek (`#`),
+  listák (`-`), kódblokkok (` ``` `), táblázatok és kiemelt szöveg (`==szöveg==`).
 - A hang csak a lejárat pillanatában szól — ha az alkalmazás nem fut, amikor a határidő
-  lejár, a hang nem szólal meg visszamenőlegesen.
-- A szabad slotok sorrendje megmarad az újraindítás után is.
-- Egy **projekt** törlése a Snippets nézetben nem törli a snippeteket — azok átkerülnek
-  a General projektbe. Egy egyes **snippet** törlése a szerkesztőben végleges.
-- Az összes adat (visszaszámláló slotok, mentett határidők, snippetek, megjegyzések)
-  helyileg van tárolva ezen a Macen. Nincs felhőszinkronizálás.
-- Ha nem tudod, mit csinál egy gomb, tartsd fölötte az egérmutatót: egy tooltip rövid
-  leírással jelenik meg.
+  lejár, a hang visszamenőlegesen nem szólal meg.
+- A szabad slotok sorrendje újraindítás után is megmarad.
+- Minden adat (visszaszámláló slotok, mentett határidők, gyorsszövegek, jegyzetek)
+  helyileg, ezen a Mac-en kerül tárolásra a UserDefaults segítségével.
+  Nincs felhő-szinkronizáció.

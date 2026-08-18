@@ -23,6 +23,14 @@
 
 ## Következő session feladata
 
+**Session CP (2026-08-17) LEZÁRVA:** `Localizable.xcstrings` housekeeping — 2 HU string
+javítva (`"Open slot details"`, `"Open deadline details — load or delete"`: hiányzó
+birtokos rag pótolva, "részletek" → "részleteinek"), és a fájl legelején lévő funkciótlan
+üres `""` kulcs törölve. **MEGJEGYZÉS:** egy korábbi, ugyanaznapi munkamenet állítólag
+20 VoiceOver/tooltip string HU fordítását is elvégezte, de az nincs dokumentálva sem
+itt, sem a progress.md-ben — ellenőrzésre/utólagos rögzítésre szorulhat.
+- Build: FELHASZNÁLÓ FELADATA
+
 **Session CO (2026-08-16) LEZÁRVA:** **ENH-HELP-2** teljes egészében kész — mind
 5 Help szekció (Overview, Countdown, Calculate, Snippets, Recovery), 25/25 item
 body szövege mélyítve EN+HU-ban. Utólag (felhasználói visszajelzés alapján): a
