@@ -32,8 +32,8 @@ tabs — a quick reminder of where you were when a cooldown interrupted the work
 
 ## Requirements
 
-- macOS 13 Ventura or later
-- Xcode 15 or later (to build from source)
+- macOS 26.5 or later
+- Xcode 26 or later (to build from source)
 
 ## Installation
 
