@@ -1,3 +1,22 @@
+## Session CX — 2026-08-19 (ENH-DEVDOCS-2: README + install.md — KÉSZ)
+
+### Session CX — KÉSZ
+ENH-DEVDOCS-2 lezárva. 4 fájl létrehozva a repo gyökerében:
+- `README.md` — EN, publikus GitHub, személyes hangvétel ("I built this for myself because...")
+- `README-hu.md` — HU változat
+- `install.md` — EN, .dmg drag-to-Applications + build-from-source
+- `install-hu.md` — HU változat
+
+Egyeztetett döntések: NightShift projektnév végleges, Bundle ID `com.arraoyoflilly.nightshift`
+(már kész volt, nem kellett Xcode rename). README framing: éjszakai side project fejlesztés,
+ingyenes AI-fiókok cooldown-kezelése, napkelte mint kemény határ. Install: .dmg (Releases link)
++ Xcode build-from-source, first-launch Gatekeeper megjegyzéssel, adattárolás-megjegyzéssel.
+Nyelv: EN+HU (mint a manualnál).
+
+Build: N/A (csak dokumentáció). Git commit: FELHASZNÁLÓ FELADATA.
+
+---
+
 ## Session CW folytatás — 2026-08-19 (HU manual: megjegyzés az angol screenshotokról — KÉSZ)
 
 ### Session CW folytatás — KÉSZ

@@ -524,7 +524,8 @@ mások szeretnék mindenütt. Lehetséges irányok:
   hajnali fejlesztési szokás (első fény = húzás aludni), context management sessionok között (snippets).
   Jobb projektnevet is ki kell találni (a "countdownApp" csak munkacím).
 
-**Státusz:** NYITOTT — README szöveg + install.md megírása külön session; projektnév egyeztetés szükséges
+**Státusz:** ✅ KÉSZ (Session CX, 2026-08-19) — 4 fájl létrehozva: `README.md`, `README-hu.md`,
+`install.md`, `install-hu.md`. Git commit: FELHASZNÁLÓ FELADATA.
 
 ---
 
