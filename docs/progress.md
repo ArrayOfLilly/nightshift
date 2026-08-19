@@ -1,3 +1,116 @@
+## Session D1 — 2026-08-19 (Privacy Policy .md fájlok — KÉSZ)
+
+### Session D1 — KÉSZ
+Privacy Policy xcstrings tartalom (18 kulcs, EN+HU mind teljes) alapján létrehozva
+2 standalone dokumentum:
+- `docs/privacy-policy.md` — EN változat
+- `docs/privacy-policy-hu.md` — HU változat
+
+Mindkét fájl tartalmaz: intro (Your Privacy Matters / Az adataid védelme fontos),
+local data szekció bullet listával (5 item), network access szekció, no tracking szekció,
+contact szekció (mailto link), footer (Last updated: 2026 / Utoljára frissítve: 2026).
+
+A tartalom kizárólag a `Localizable.xcstrings` privacy.* kulcsaiból generálva —
+nem kézzel írva, ezért automatikusan tükrözi az app szövegét.
+
+Build: N/A (csak dokumentáció). Git commit: FELHASZNÁLÓ FELADATA.
+
+**Következő session:** Release folyamat (GitHub Actions? manuális .dmg? App Store? —
+egyeztetés a felhasználóval), majd `BUG-SNIPPETPROJECTGENERAL-1` build-megerősítés
+ja CZ/CY build-ek ellenőrzése, ha az még nem történt meg.
+
+---
+
+## Session D0 — 2026-08-19 (ENH-PRIVACY-1: PrivacyPolicyView 2 build hiba — KÉSZ)
+
+### Session D0 — KÉSZ
+Privacy policy munka közben (`PrivacyPolicyView.swift`) két független build hiba:
+
+1. **65. sor** — `.foregroundStyle(.accentColor)`: `Type 'ShapeStyle' has no member 'accentColor'`.
+   Régi `.accentColor(_:)` view modifier / `Color.accentColor` névütközés — `ShapeStyle`-nak
+   nincs ilyen statikus tagja. Javítás: `.foregroundStyle(Color.accentColor)`, ugyanaz a minta,
+   amit a fájl másik része (`PolicySection`, kb. 103. sor) már helyesen használt.
+2. **126. sor** — `ForEach(items, id: \.self)` ahol `items: [LocalizedStringKey]`:
+   `Generic struct 'ForEach' requires that 'LocalizedStringKey' conform to 'Hashable'`.
+   `LocalizedStringKey` nem `Hashable`. Javítás: `PolicyBulletList.items` típusa
+   `[LocalizedStringKey]` → `[String]` (a hívó oldal már String literalokat adott át,
+   nem kellett változtatni), a megjelenítésnél `Text(key)` →
+   `Text(String(localized: String.LocalizationValue(key)))` — ugyanaz a dinamikus
+   lokalizációs minta, amit a kódbázis már használ máshol (pl. `ContentView.modeButton`).
+
+**Érintett fájl:** `Views/PrivacyPolicyView.swift` (2 célzott csere, `Filesystem:edit_file`).
+xcstrings tartalom nem változott.
+
+Build: FELHASZNÁLÓ FELADATA. Git commit: FELHASZNÁLÓ FELADATA.
+
+**Következő session:** ha build megerősíti, folytatás a privacy policy munkával (pl.
+ENH-PRIVACY-1 hu/en xcstrings tartalom átnézése, ha még nem teljes), majd vissza a korábbi
+napirendre (ld. CZ/CY alatt).
+
+---
+
+## Session CZ — 2026-08-19 (BUG-XCSTRINGS-SYMBOLCLASH-1: xcstrings szimbólumütközés — KÉSZ)
+
+### Session CZ — KÉSZ
+Privacy policy munka közben Xcode hiba: "day"/"DAY", "hour"/"HOUR", "year"/"YEAR" xcstrings
+kulcsok ugyanazt a generált Swift szimbólumot eredményezték volna.
+
+**Diagnózis:** Xcode 26 `STRING_CATALOG_GENERATE_SYMBOLS = YES` (fő target Debug+Release) —
+a kulcsok automatikus Swift-szimbólum-generálása a nagybetűs kulcsokat (`"DAY"`) camelCase-eli,
+ami ugyanarra a szimbólumnévre fut ki, mint a kisbetűs `"day"` — innen mindhárom ütközés.
+A kódbázis sehol nem használ generált szimbólumot, mindenhol `String(localized:)` mintát követ —
+a funkció felesleges volt itt.
+
+**Javítás:** `project.pbxproj` — `STRING_CATALOG_GENERATE_SYMBOLS = YES` → `NO` a fő
+(com.arrayoflilly.nightshift) target mindkét configjában (Debug + Release), így illeszkedik
+a Tests/UITests targetekhez, amik már eddig is `NO`-n álltak. `Filesystem:edit_file`-lal,
+célzott cserével, 2 külön hívással (a két YES előfordulás nem volt egyedi kontextusban
+megkülönböztethető első körben, dryRun-nal ellenőrizve melyik sor cserélődik).
+
+**Érintett fájl:** `countdownApp.xcodeproj/project.pbxproj` (2 sor). xcstrings tartalom
+NEM változott — a kulcsok ("day"/"DAY" stb.) érintetlenek maradtak.
+
+Build: FELHASZNÁLÓ FELADATA — ellenőrizendő, hogy a hiba eltűnt és a lokalizáció
+(String(localized:) hívások) továbbra is helyesen működik. Git commit: FELHASZNÁLÓ FELADATA.
+
+**Következő session:** ha build megerősíti, vissza a privacy policy munkára, majd a korábbi
+napirendre (ld. CY alatt: BUG-SNIPPETPROJECTGENERAL-1 build-ellenőrzés).
+
+---
+
+## Session CY — 2026-08-19 (BUG-SNIPPETPROJECTGENERAL-1: "default.General" projektnév hiba — KÓD JAVÍTVA)
+
+### Session CY — KÓD JAVÍTVA, build FELHASZNÁLÓ FELADATA
+Felhasználói bugjelzés: SnippetsView-ban "General" helyett "default.General" jelenik meg, és ABC
+rendben a "d" betűnél szerepel (nem utolsóként, ahogy `.general`-nek kellene).
+
+**Diagnózis:** `ProjectCategory.swift`, `SnippetsView.swift`, `Snippet.swift` átnézve — a jelenlegi
+kód (canonical key `"default_general"`, `projectKeys` `.general`-t utoljára rendezi) önmagában
+helyes. A hiba forrása régi/hibás adat a felhasználó `UserDefaults`-jában: egy vagy több snippet
+`project` mezője szó szerint `"default.General"` (PONT, nem aláhúzás) — valószínűleg a CU
+session (`ProjectCategory` bevezetése) körüli átmeneti/hibás build írta. A jelenlegi decoder
+ezt a változatot nem ismeri fel legacy formának, így `.custom("default.General")`-ként
+dekódolódik — innen a nyers felirat és a "d" betűs ABC-pozíció.
+
+**Javítás:** `Models/ProjectCategory.swift` `init(from decoder:)` — a nyers stringet
+összehasonlítás előtt normalizáljuk (`lowercased()`, majd `_` és `.` eltávolítva); így
+`"default_general"`, `"General"`, `"general"`, `"default.General"`, `"default.general"` mind
+`.general`-re migrál a következő betöltéskor — nincs szükség kézi `UserDefaults` törlésre/
+migrációra, a meglévő lazy decode-time migration mintát követi, csak szélesebb felismeréssel.
+
+**Érintett fájl:** `Models/ProjectCategory.swift` (1 függvény, `Filesystem:edit_file`-lal).
+`docs/buglist.md` új bejegyzés: `BUG-SNIPPETPROJECTGENERAL-1`.
+
+Build: FELHASZNÁLÓ FELADATA — élesben ellenőrizendő, hogy a "General" szekció most helyesen
+"General" felirattal és utolsóként jelenik-e meg. Git commit: FELHASZNÁLÓ FELADATA.
+
+**Következő session:** ha a build megerősíti a javítást, `BUG-SNIPPETPROJECTGENERAL-1` → ✅ KÉSZ
+a buglist.md-ben, git commit. Ha nem (pl. további ismeretlen malformed variant van az adatban),
+akkor a további variant feltérképezése szükséges. Ezután vissza a korábbi napirendre:
+screenshot alt-szövegek HU fordítása, PDF-ek frissítése, vagy BUG-MANUAL-TEXT maradék 3 tétele.
+
+---
+
 ## Session CX — 2026-08-19 (ENH-DEVDOCS-2: README + install.md — KÉSZ)
 
 ### Session CX — KÉSZ

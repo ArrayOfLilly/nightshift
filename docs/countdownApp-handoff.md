@@ -23,6 +23,62 @@
 
 ## Következő session feladata
 
+**Session D1 (2026-08-19) KÉSZ:** Privacy Policy EN+HU `.md` fájlok létrehozva a
+`Localizable.xcstrings` privacy.* kulcsai alapján (18 kulcs, mind teljes):
+`docs/privacy-policy.md` (EN) és `docs/privacy-policy-hu.md` (HU). 5 szekció:
+intro, local data (5 bullet), network access, no tracking, contact + footer.
+Git commit: FELHASZNÁLÓ FELADATA.
+
+**Következő session témája:** Release folyamat — build/archive/dmg/GitHub Release
+egyeztetése; majd CZ/CY/D0 build-megerősítés ha még nem történt meg.
+
+---
+
+**Session D0 (2026-08-19) KÉSZ:** `PrivacyPolicyView.swift` két build hiba javítva:
+(1) `.foregroundStyle(.accentColor)` → `.foregroundStyle(Color.accentColor)` (65. sor,
+`ShapeStyle`-nak nincs `.accentColor` tagja); (2) `PolicyBulletList.items` típusa
+`[LocalizedStringKey]` → `[String]`, mert a `LocalizedStringKey` nem `Hashable` — a
+`ForEach(items, id: \.self)` emiatt nem fordított. Megjelenítés
+`Text(String(localized: String.LocalizationValue(key)))`-re váltva (126. sor). Részletek:
+`progress.md` Session D0.
+- Build: FELHASZNÁLÓ FELADATA. Git commit: FELHASZNÁLÓ FELADATA.
+
+**Következő session témája:** ha build megerősíti, folytatás a privacy policy munkával;
+utána vissza a korábbi napirendre (ld. CZ/CY alatt).
+
+---
+
+**Session CZ (2026-08-19) KÉSZ:** `BUG-XCSTRINGS-SYMBOLCLASH-1` — privacy policy munka közben
+Xcode hiba: "day"/"DAY", "hour"/"HOUR", "year"/"YEAR" xcstrings kulcsok ütköző Swift
+szimbólumot generáltak volna. Root cause: Xcode 26 `STRING_CATALOG_GENERATE_SYMBOLS = YES` a
+fő targeten — a nagybetűs kulcsok camelCase-elt szimbólumneve egybeesik a kisbetűsével. A
+kódbázis nem használ generált szimbólumot (mindenhol `String(localized:)`), ezért a beállítás
+kikapcsolva (`NO`) a `project.pbxproj`-ban, mindkét (Debug+Release) configban a fő targeten —
+így illeszkedik a Tests/UITests targetekhez. xcstrings tartalom nem változott.
+- Build: FELHASZNÁLÓ FELADATA — ellenőrizendő hogy a hiba eltűnt, lokalizáció változatlanul
+  működik. Git commit: FELHASZNÁLÓ FELADATA.
+
+**Következő session témája:** ha build megerősíti, vissza a privacy policy munkára; utána a
+korábbi napirend (ld. CY alatt).
+
+---
+
+**Session CY (2026-08-19) KÓD JAVÍTVA:** `BUG-SNIPPETPROJECTGENERAL-1` — felhasználói bugjelzés:
+SnippetsView-ban "General" helyett "default.General" jelent meg, ABC szerint "d"-nél, nem
+utolsóként. Root cause: régi/hibás adat a `UserDefaults`-ban (`"default.General"` PONT-tal, egy
+korábbi átmeneti build írhatta a CU session — `ProjectCategory` bevezetése — körül), amit a
+decoder addig nem ismert fel legacy formának. Javítás: `ProjectCategory.init(from decoder:)`
+normalizálja a nyers stringet (`_`/`.` eltávolítva, kisbetűsítve) összehasonlítás előtt, így a
+malformed variant is `.general`-re migrál automatikusan a következő betöltéskor — nincs szükség
+kézi adatjavításra. `docs/buglist.md` új bejegyzés.
+- Build: FELHASZNÁLÓ FELADATA — élesben ellenőrizendő. Git commit: FELHASZNÁLÓ FELADATA.
+
+**Következő session témája:** ha a build megerősíti, `BUG-SNIPPETPROJECTGENERAL-1` → ✅ KÉSZ +
+git commit. Ha további malformed variant derül ki, azt is fel kell térképezni. Ezután vissza a
+korábbi napirendre (lásd CW alatt).
+
+---
+
 **Session CW (2026-08-19) KÉSZ:** A manual véglegesítése. Angol manual
 (`nightshiftApp-manual.md`) spot-check átolvasva a kód alapján, eltérés nem találva.
 Magyar manual (`nightshiftApp-manual-hu.md`) terminológiája átírva, hogy ténylegesen a
@@ -81,6 +137,8 @@ másik 2 meglévő screenshotos item 1.0-n marad).
 BUG-MANUAL-1, ENH-DEVDOCS-1/2, ENH-L10N-1 maradék.
 
 **Buglist állapot összefoglaló** (`docs/buglist.md`) — nyitott tételek:
+- **BUG-SNIPPETPROJECTGENERAL-1** 🟡 — KÓD JAVÍTVA (Session CY): "default.General" projektnév hiba
+  a SnippetsView-ban, decoder normalizációval javítva; build/vizuális ellenőrzés FELHASZNÁLÓ FELADATA
 - **ENH-HELP-1** ✅ — KÉSZ (S1–S6 + BW session + CN session: projekt törlés + tooltipek hozzáadva)
 - **ENH-HELP-2** ✅ — KÉSZ (Session CO): mind az 5 Help szekció (25/25 item) body szövege mélyítve EN+HU-ban
 - **ENH-DEVDOCS-1** ✅ — KÉSZ (Session CV): `docs/architecture.md` — architektúra, modul-felelősségek, persistence, recovery, new-feature checklist
